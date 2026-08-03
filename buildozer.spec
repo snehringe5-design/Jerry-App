@@ -28,7 +28,7 @@ orientation = portrait
 fullscreen = 0
 
 # (list) Whitelist of sub-architectures to build for
-android.archs = armeabi-v7a
+android.archs = arm64-v8a
 
 # (int) Android API to target
 android.api = 33
