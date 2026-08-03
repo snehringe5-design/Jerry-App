@@ -17,15 +17,16 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Restore Buildozer directory cache
+    - name: Cache Buildozer Global Directory
       uses: actions/cache@v4
       with:
         path: |
           .buildozer
           ~/.buildozer
-        key: buildozer-${{ hashFiles('buildozer.spec') }}
+          ~/.android
+        key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          buildozer-
+          ${{ runner.os }}-buildozer-
 
     - name: Install dependencies
       run: |
