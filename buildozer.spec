@@ -16,11 +16,7 @@ source.include_exts = py,png,jpg,kv,atlas
 source.include_patterns = assets/*,images/*
 
 # (list) Application requirements
-# (अगर आपके ऐप में और लाइब्रेरी की ज़रूरत न हो तो सिर्फ python3 और kivy रखें)
 requirements = python3,kivy
-
-# (str) Custom source folders for requirements
-#requirements.source.kivy = ../../../kivy
 
 # (list) Permissions
 #android.permissions = INTERNET
@@ -34,10 +30,6 @@ fullscreen = 0
 # (list) Whitelist of sub-architectures to build for
 android.archs = armeabi-v7a
 
-# (str) Supported orientations
-# Valid values are: landscape, portrait, sensorLandscape or sensorPortrait
-orientation = portrait
-
 [buildozer]
 
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
@@ -45,9 +37,3 @@ log_level = 2
 
 # (str) Path to build artifact storage, absolute or relative to spec file
 bin_dir = ./bin
-
-# (int) Target Android API, should be as high as possible.
-# android.api = 33
-
-# (int) Minimum API your APK will support.
-# android.minapi = 21
