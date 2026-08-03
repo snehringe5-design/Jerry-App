@@ -9,6 +9,9 @@ package.name = jerryapp
 # (str) Package domain (needed for android packaging)
 package.domain = org.snehringe
 
+# (str) Source directory where the application lives
+source.dir = .
+
 # (list) Source files to include (let it empty to include all files)
 source.include_exts = py,png,jpg,kv,atlas
 
@@ -18,18 +21,12 @@ source.exclude_exts = spec
 # (list) List of directory to exclude
 source.exclude_dirs = tests, bin, venv
 
-# (list) List of inclusions
-source.include_dir = .
-
 # (str) Application versioning
 version = 1.0
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
 requirements = python3,kivy
-
-# (str) Custom source folders for requirements
-#requirements.source.kivy = ../../../kivy
 
 # (list) Permissions
 android.permissions = INTERNET
@@ -42,9 +39,6 @@ android.minapi = 21
 
 # (int) Android NDK version to use
 ndk = 25b
-
-# (str) Android entry point, default is ok for kivy app
-#android.entrypoint = org.kivy.android.PythonActivity
 
 # (list) Application orientation
 orientation = portrait
