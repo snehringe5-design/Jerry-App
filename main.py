@@ -1,109 +1,94 @@
-import kivy
 from kivy.app import App
+from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
-from kivy.uix.scrollview import ScrollView
-from kivy.core.window import Window
+from kivy.uix.textinput import TextInput
 
-# Set background to dark theme like JARVIS
-Window.clearcolor = (0.05, 0.05, 0.08, 1)
+# --- Login Screen (सुरक्षा के लिए) ---
+class LoginScreen(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        layout = BoxLayout(orientation='vertical', padding=50, spacing=20)
 
-class JerryAI:
-    def __init__(self):
-        self.name = "Jerry"
-        self.mode = "JARVIS System Active"
+        # आपका नया पर्सनल PIN
+        self.secret_pin = "6263" 
 
-    def process_command(self, text):
-        text_lower = text.lower().strip()
-        
-        if not text_lower:
-            return "Sir, please give me an instruction."
-            
-        # Greeting
-        if any(word in text_lower for word in ["hello", "hi", "namaste", "jerry"]):
-            return "Greetings, Sir. Jerry is at your service. Systems nominal."
-            
-        # Identity / JARVIS reference
-        elif "who are you" in text_lower or "kaun ho" in text_lower:
-            return "I am Jerry, your personal high-intelligence AI assistant, designed to execute tasks seamlessly, Sir."
-            
-        # Calculations / Conversions (Tone, Tola, Kg, Grams)
-        elif any(unit in text_lower for unit in ["ton", "tola", "kg", "kilogram", "gram"]):
-            return "Sir, unit conversion module is initialized. I can calculate weight metrics including Tons, Tolas, and Kilograms accurately."
+        self.label = Label(
+            text="Jerry AI Locked 🔒\nOnly Sneh Sir can access.\nEnter PIN:", 
+            font_size='20sp', 
+            halign='center'
+        )
+        layout.add_widget(self.label)
 
-        # Default JARVIS response
+        self.pin_input = TextInput(
+            password=True, 
+            multiline=False, 
+            size_hint_y=0.2, 
+            halign='center',
+            hint_text="Enter Secret PIN"
+        )
+        layout.add_widget(self.pin_input)
+
+        btn = Button(text="Unlock Jerry", size_hint_y=0.2)
+        btn.bind(on_press=self.verify_pin)
+        layout.add_widget(btn)
+
+        self.add_widget(layout)
+
+    def verify_pin(self, instance):
+        if self.pin_input.text == self.secret_pin:
+            self.manager.current = 'jerry_main'
         else:
-            return f"Understood, Sir. Processing your command: '{text}'. I am getting smarter with every task."
+            self.label.text = "Wrong PIN! ❌\nUnauthorized Access."
+            self.pin_input.text = ""
 
-class JerryApp(App):
-    def build(self):
-        self.title = "Jerry AI - JARVIS System"
-        self.jerry = JerryAI()
-
-        main_layout = BoxLayout(orientation='vertical', padding=15, spacing=10)
-
-        # Header Title
-        header = Label(
-            text="[b]JERRY AI[/b]\n[size=12]Advanced Tactical Assistant[/size]",
-            markup=True,
-            font_size='22sp',
-            size_hint_y=0.15,
-            color=(0.2, 0.8, 1, 1)
+# --- Main AI Screen (Jerry) ---
+class JerryMainScreen(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        layout = BoxLayout(orientation='vertical')
+        
+        self.creator = "Sneh Ringe"
+        
+        self.welcome_label = Label(
+            text=f"नमस्ते! मैं Jerry हूँ।\nमुझे {self.creator} सर ने बनाया है।\nमैं सिर्फ़ Sneh सर की सेवा के लिए हूँ!",
+            font_size='20sp',
+            halign='center'
         )
-        main_layout.add_widget(header)
-
-        # Output / Chat Area
-        self.scroll = ScrollView(size_hint_y=0.7)
-        self.chat_history = Label(
-            text="[color=00e5ff]Jerry:[/color] Online and ready, Sir. How can I assist you today?\n",
-            markup=True,
-            font_size='16sp',
-            size_hint_y=None,
-            align='left',
-            valign='top',
-            color=(0.9, 0.9, 0.9, 1)
-        )
-        self.chat_history.bind(texture_size=self.chat_history.setter('size'))
-        self.scroll.add_widget(self.chat_history)
-        main_layout.add_widget(self.scroll)
-
-        # Input Area
-        input_layout = BoxLayout(orientation='horizontal', size_hint_y=0.15, spacing=5)
+        layout.add_widget(self.welcome_label)
         
         self.user_input = TextInput(
-            hint_text="Give command to Jerry...",
+            hint_text="Sneh सर, आदेश दीजिए...",
             multiline=False,
-            background_color=(0.15, 0.15, 0.2, 1),
-            foreground_color=(1, 1, 1, 1),
-            cursor_color=(0.2, 0.8, 1, 1)
+            size_hint_y=0.2
         )
-        self.user_input.bind(on_text_validate=self.send_command)
+        layout.add_widget(self.user_input)
         
-        send_btn = Button(
-            text="COMMAND",
-            size_hint_x=0.3,
-            background_color=(0, 0.6, 0.9, 1),
-            bold=True
+        self.send_btn = Button(
+            text="Command Jerry",
+            size_hint_y=0.2
         )
-        send_btn.bind(on_press=self.send_command)
+        self.send_btn.bind(on_press=self.process_command)
+        layout.add_widget(self.send_btn)
+        self.add_widget(layout)
 
-        input_layout.add_widget(self.user_input)
-        input_layout.add_widget(send_btn)
-        main_layout.add_widget(input_layout)
+    def process_command(self, instance):
+        text = self.user_input.text.lower()
+        if "who made you" in text or "kisne banaya" in text or "owner" in text:
+            self.welcome_label.text = f"मुझे मेरे मालिक {self.creator} सर ने बनाया है!"
+        else:
+            self.welcome_label.text = f"Sneh सर, आपका आदेश: '{self.user_input.text}' प्रोसेसिंग में है..."
+        self.user_input.text = ""
 
-        return main_layout
-
-    def send_command(self, instance):
-        query = self.user_input.text
-        if query.strip():
-            response = self.jerry.process_command(query)
-            current_text = self.chat_history.text
-            new_text = f"{current_text}\n[color=00ff88]You:[/color] {query}\n[color=00e5ff]Jerry:[/color] {response}\n"
-            self.chat_history.text = new_text
-            self.user_input.text = ""
+# --- App Manager ---
+class JerryApp(App):
+    def build(self):
+        sm = ScreenManager()
+        sm.add_widget(LoginScreen(name='login'))
+        sm.add_widget(JerryMainScreen(name='jerry_main'))
+        return sm
 
 if __name__ == '__main__':
     JerryApp().run()
-          
+    
