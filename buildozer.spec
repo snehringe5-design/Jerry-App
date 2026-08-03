@@ -1,35 +1,54 @@
 [app]
 
 # (str) Title of your application
-title = Jerry AI
+title = My Application
 
 # (str) Package name
-package.name = jerryapp
+package.name =myapp
 
 # (str) Package domain (needed for android packaging)
-package.domain = org.snehringe
+package.domain = org.test
 
-# (str) Source directory where the application lives
-source.dir = .
-
-# (list) Source files to include (let it empty to include all files)
+# (list) Source files to include (let it blank to include all files)
 source.include_exts = py,png,jpg,kv,atlas
 
-# (list) Source files to exclude (let it empty to exclude nothing)
-source.exclude_exts = spec
-
-# (list) List of directory to exclude
-source.exclude_dirs = tests, bin, venv
+# (list) Source directories to include
+source.dir = .
 
 # (str) Application versioning
-version = 1.0
+version = 0.1
 
 # (list) Application requirements
-# comma separated e.g. requirements = sqlite3,kivy
+# (python और आपकी app के लिए जरूरी modules यहाँ लिखे जाते हैं)
 requirements = python3,kivy
+
+# (str) Custom source folders for requirements
+#requirements.source_dir = ../
 
 # (list) Permissions
 android.permissions = INTERNET
+
+# (list) Features
+#android.features = android.hardware.usb.host
+
+# (str) Supported orientations
+orientation = portrait
+
+# (list) List of service to declare
+#services = NAME:gsAppService:-
+
+#
+# Android specific
+#
+
+# (bool) Indicate if the application should be fullscreen or not
+fullscreen = 0
+
+# (string) Presplash background color (hex color code)
+#android.presplash_color = #FFFFFF
+
+# (list) The Android archs to build for,, and aarch64
+android.archs = arm64-v8a, armeabi-v7a
 
 # (int) Target Android API, should be as high as possible.
 android.api = 33
@@ -38,18 +57,17 @@ android.api = 33
 android.minapi = 21
 
 # (int) Android NDK version to use
-ndk = 25b
+android.ndk = 25b
 
-# (list) Application orientation
-orientation = portrait
+# (str) Android SDK version to use
+android.sdk = 33
 
-# (bool) Indicate if the application should be fullscreen or not
-fullscreen = 0
+# (bool) Use --private data storage (True) or --dir public storage (False)
+android.private_storage = True
 
-[buildozer]
+# (str) XML main theme to use for Android
+#android.theme = @android:style/Theme.NoTitleBar
 
-# (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
-log_level = 2
-
-# (int) Display warning if buildozer is run as root (0 = False, 1 = True)
-warn_root = 1
+# (list) The format used to package the app for each architecture
+android.release_artifact = apk
+android.debug_artifact = apk
