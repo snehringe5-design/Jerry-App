@@ -42,6 +42,9 @@ android.ndk = 25b
 # (bool) Enable AndroidX support
 android.enable_androidx = True
 
+# (bool) Automatically accept Android SDK licenses
+android.accept_sdk_license = True
+
 [buildozer]
 
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
