@@ -1,73 +1,50 @@
 [app]
 
 # (str) Title of your application
-title = My Application
+title = Jerry App
 
 # (str) Package name
-package.name =myapp
+package.name = jerryapp
 
 # (str) Package domain (needed for android packaging)
-package.domain = org.test
+package.domain = org.jerry
 
-# (list) Source files to include (let it blank to include all files)
+# (list) Source files to include (let it empty to include all files)
 source.include_exts = py,png,jpg,kv,atlas
 
-# (list) Source directories to include
-source.dir = .
-
-# (str) Application versioning
-version = 0.1
+# (list) List of inclusion/exclusion patterns
+source.include_patterns = assets/*,images/*
 
 # (list) Application requirements
-# (python और आपकी app के लिए जरूरी modules यहाँ लिखे जाते हैं)
+# comma separated e.g. requirements = sqlite3,kivy
 requirements = python3,kivy
 
-# (str) Custom source folders for requirements
-#requirements.source_dir = ../
+# (str) Customized version of Python to compile (optional)
+# python.version = 3.10
 
-# (list) Permissions
-android.permissions = INTERNET
-
-# (list) Features
-#android.features = android.hardware.usb.host
-
-# (str) Supported orientations
+# (list) Supported orientations
 orientation = portrait
-
-# (list) List of service to declare
-#services = NAME:gsAppService:-
-
-#
-# Android specific
-#
 
 # (bool) Indicate if the application should be fullscreen or not
 fullscreen = 0
 
-# (string) Presplash background color (hex color code)
-#android.presplash_color = #FFFFFF
-
-# (list) The Android archs to build for,, and aarch64
-android.archs = arm64-v8a, armeabi-v7a
+# (list) Permissions
+android.permissions = INTERNET
 
 # (int) Target Android API, should be as high as possible.
 android.api = 33
 
-# (int) Minimum API your APK will support.
+# (int) Minimum API your APK will support
 android.minapi = 21
 
-# (int) Android NDK version to use
+# (str) Android NDK version to use
 android.ndk = 25b
-
-# (str) Android SDK version to use
-android.sdk = 33
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
 android.private_storage = True
 
-# (str) XML main theme to use for Android
-#android.theme = @android:style/Theme.NoTitleBar
+# (list) Supported architectures
+android.archs = arm64-v8a, armeabi-v7a
 
-# (list) The format used to package the app for each architecture
-android.release_artifact = apk
-android.debug_artifact = apk
+# (str) python-for-android branch to use
+p4a.branch = master
