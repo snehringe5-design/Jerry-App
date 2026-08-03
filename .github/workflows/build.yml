@@ -23,7 +23,6 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-          python3-pip \
           build-essential \
           git \
           python3-dev \
@@ -37,10 +36,10 @@ jobs:
           ant \
           openjdk-17-jdk
 
-    - name: Install Buildozer & Cython
+    - name: Install Buildozer & Dependencies
       run: |
-        pip install --upgrade pip
-        pip install cython==0.29.37 buildozer
+        python -m pip install --upgrade pip
+        pip install --upgrade cython==0.29.37 buildozer pillow
 
     - name: Build APK with Buildozer
       env:
