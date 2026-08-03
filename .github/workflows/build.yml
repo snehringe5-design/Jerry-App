@@ -23,9 +23,9 @@ jobs:
         path: |
           ~/.buildozer
           .buildozer
-        key: ${{ runner.os }}-buildozer-v5-${{ hashFiles('buildozer.spec') }}
+        key: ${{ runner.os }}-buildozer-v6-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          ${{ runner.os }}-buildozer-v5-
+          ${{ runner.os }}-buildozer-v6-
           ${{ runner.os }}-buildozer-
 
     - name: Install dependencies
@@ -37,7 +37,7 @@ jobs:
             libncurses5-dev ncurses-dev libtinfo5 make libffi-dev \
             libssl-dev ccache
         pip install --upgrade pip
-        pip install --user --upgrade cython==0.29.36 buildozer p4a
+        pip install --user --upgrade cython==0.29.36 buildozer python-for-android
 
     - name: Build APK with Buildozer
       run: |
