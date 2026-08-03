@@ -37,7 +37,9 @@ jobs:
           openjdk-17-jdk \
           autoconf \
           libtool \
-          pkg-config
+          pkg-config \
+          zip \
+          unzip
 
     - name: Install Buildozer & Dependencies
       run: |
@@ -59,6 +61,7 @@ jobs:
         ANDROID_NDK: /home/runner/.buildozer/android/platform/android-ndk-r25b
         ANDROID_NDK_HOME: /home/runner/.buildozer/android/platform/android-ndk-r25b
       run: |
+        buildozer --version
         yes | buildozer -v android debug
 
     - name: Upload APK Artifact
@@ -66,4 +69,3 @@ jobs:
       with:
         name: package
         path: bin/*.apk
-        
