@@ -22,7 +22,7 @@ source.include_exts = py,png,jpg,kv,atlas
 source.include_patterns = assets/*,images/*
 
 # (list) Application requirements
-requirements = python3,kivy
+requirements = python3,kivy,hostpython3
 
 # (list) Supported orientations
 orientation = portrait
