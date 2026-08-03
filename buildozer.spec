@@ -31,13 +31,16 @@ fullscreen = 0
 android.archs = armeabi-v7a
 
 # (int) Android API to target
-android.api = 31
+android.api = 33
 
 # (int) Minimum API your APK will support
 android.minapi = 21
 
 # (str) Android NDK version to use
 android.ndk = 25b
+
+# (bool) Enable AndroidX support
+android.enable_androidx = True
 
 [buildozer]
 
