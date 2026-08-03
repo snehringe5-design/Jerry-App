@@ -49,3 +49,6 @@ log_level = 2
 
 # (str) Path to build artifact storage, absolute or relative to spec file
 bin_dir = ./bin
+
+# (bool) Allow buildozer to run as root without pausing for input
+warn_on_root = 0
