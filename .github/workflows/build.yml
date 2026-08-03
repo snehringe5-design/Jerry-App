@@ -9,20 +9,20 @@ jobs:
     runs-on: ubuntu-22.04
     container:
       image: kivy/buildozer:latest
+      options: --user root
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Environment
+    - name: Fix permissions and safe directory
       run: |
-        echo "HOME=/github/home" >> $GITHUB_ENV
-        mkdir -p /github/home
         git config --global --add safe.directory /github/workspace
+        chmod -R 777 /github/workspace
 
     - name: Build APK with Buildozer
       run: |
-        buildozer -v android debug
+        yes | buildozer -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
