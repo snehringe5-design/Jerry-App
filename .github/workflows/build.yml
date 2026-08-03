@@ -8,15 +8,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: kivy/buildozer:latest
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Build APK with Buildozer Action
-      uses: ArtemShat/buildozer-action@v1
-      with:
-        command: buildozer --profile auto android debug
-        subpath: '.'
+    - name: Build APK with Buildozer
+      run: |
+        buildozer --profile auto android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
