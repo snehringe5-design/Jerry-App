@@ -9,12 +9,6 @@ package.name = jerryapp
 # (str) Package domain (needed for android packaging)
 package.domain = org.jerry
 
-# (str) Source code directory (where main.py is located)
-source.dir = .
-
-# (str) Application versioning
-version = 0.1
-
 # (list) Source files to include (let it empty to include all files)
 source.include_exts = py,png,jpg,kv,atlas
 
@@ -22,31 +16,38 @@ source.include_exts = py,png,jpg,kv,atlas
 source.include_patterns = assets/*,images/*
 
 # (list) Application requirements
-requirements = python3,kivy,hostpython3
+# (अगर आपके ऐप में और लाइब्रेरी की ज़रूरत न हो तो सिर्फ python3 और kivy रखें)
+requirements = python3,kivy
 
-# (list) Supported orientations
+# (str) Custom source folders for requirements
+#requirements.source.kivy = ../../../kivy
+
+# (list) Permissions
+#android.permissions = INTERNET
+
+# (str) Orientations supporting
 orientation = portrait
 
 # (bool) Indicate if the application should be fullscreen or not
 fullscreen = 0
 
-# (list) Permissions
-android.permissions = INTERNET
-
-# (int) Target Android API, should be as high as possible.
-android.api = 33
-
-# (int) Minimum API your APK will support
-android.minapi = 21
-
-# (str) Android NDK version to use
-android.ndk = 25b
-
-# (bool) Use --private data storage (True) or --dir public storage (False)
-android.private_storage = True
-
-# (list) Supported architectures (optimized to single architecture to save time and RAM)
+# (list) Whitelist of sub-architectures to build for
 android.archs = armeabi-v7a
 
-# (str) python-for-android branch to use
-p4a.branch = master
+# (str) Supported orientations
+# Valid values are: landscape, portrait, sensorLandscape or sensorPortrait
+orientation = portrait
+
+[buildozer]
+
+# (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
+log_level = 2
+
+# (str) Path to build artifact storage, absolute or relative to spec file
+bin_dir = ./bin
+
+# (int) Target Android API, should be as high as possible.
+# android.api = 33
+
+# (int) Minimum API your APK will support.
+# android.minapi = 21
