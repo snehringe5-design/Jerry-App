@@ -21,10 +21,7 @@ requirements = python3,kivy
 # (str) Version of your application
 version = 0.1
 
-# (list) Permissions
-#android.permissions = INTERNET
-
-# (str) Orientations supporting
+# (list) Orientations supporting
 orientation = portrait
 
 # (bool) Indicate if the application should be fullscreen or not
@@ -32,6 +29,15 @@ fullscreen = 0
 
 # (list) Whitelist of sub-architectures to build for
 android.archs = armeabi-v7a
+
+# (int) Android API to target
+android.api = 31
+
+# (int) Minimum API your APK will support
+android.minapi = 21
+
+# (str) Android NDK version to use
+android.ndk = 25b
 
 [buildozer]
 
