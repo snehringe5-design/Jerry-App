@@ -42,6 +42,7 @@ jobs:
     - name: Build APK with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
+        export MAKEFLAGS="-j$(nproc)"
         yes | buildozer -v android debug
 
     - name: Upload APK Artifact
