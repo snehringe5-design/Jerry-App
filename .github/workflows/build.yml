@@ -17,16 +17,15 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Cache Buildozer and Android SDK
+    - name: Cache Buildozer Global Directory
       uses: actions/cache@v4
       with:
         path: |
-          .buildozer
           ~/.buildozer
-          ~/.android
-        key: ${{ runner.os }}-buildozer-v4-${{ hashFiles('buildozer.spec') }}
+          .buildozer
+        key: ${{ runner.os }}-buildozer-v5-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          ${{ runner.os }}-buildozer-v4-
+          ${{ runner.os }}-buildozer-v5-
           ${{ runner.os }}-buildozer-
 
     - name: Install dependencies
@@ -36,9 +35,9 @@ jobs:
             git python3-pip openjdk-17-jdk unzip libltdl-dev \
             autoconf automake libtool pkg-config zlib1g-dev \
             libncurses5-dev ncurses-dev libtinfo5 make libffi-dev \
-            libssl-dev
+            libssl-dev ccache
         pip install --upgrade pip
-        pip install --user --upgrade cython==0.29.36 buildozer
+        pip install --user --upgrade cython==0.29.36 buildozer p4a
 
     - name: Build APK with Buildozer
       run: |
@@ -51,3 +50,4 @@ jobs:
       with:
         name: package
         path: bin/*.apk
+        
