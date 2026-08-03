@@ -1,20 +1,61 @@
 [app]
+
+# (str) Title of your application
 title = Jerry AI
+
+# (str) Package name
 package.name = jerryapp
-package.domain = org.jerry
-source.dir = .
+
+# (str) Package domain (needed for android packaging)
+package.domain = org.snehringe
+
+# (list) Source files to include (let it empty to include all files)
 source.include_exts = py,png,jpg,kv,atlas
-version = 0.1
+
+# (list) Source files to exclude (let it empty to exclude nothing)
+source.exclude_exts = spec
+
+# (list) List of directory to exclude
+source.exclude_dirs = tests, bin, venv
+
+# (list) List of inclusions
+source.include_dir = .
+
+# (str) Application versioning
+version = 1.0
+
+# (list) Application requirements
+# comma separated e.g. requirements = sqlite3,kivy
 requirements = python3,kivy
-orientation = portrait
-osx.python_version = 3
-osx.kivy_version = 1.9.1
-fullscreen = 0
+
+# (str) Custom source folders for requirements
+#requirements.source.kivy = ../../../kivy
+
+# (list) Permissions
 android.permissions = INTERNET
+
+# (int) Target Android API, should be as high as possible.
 android.api = 33
+
+# (int) Minimum API your APK will support.
 android.minapi = 21
-android.ndk_path = 
+
+# (int) Android NDK version to use
+ndk = 25b
+
+# (str) Android entry point, default is ok for kivy app
+#android.entrypoint = org.kivy.android.PythonActivity
+
+# (list) Application orientation
+orientation = portrait
+
+# (bool) Indicate if the application should be fullscreen or not
+fullscreen = 0
 
 [buildozer]
+
+# (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
 log_level = 2
-warn_on_root = 1
+
+# (int) Display warning if buildozer is run as root (0 = False, 1 = True)
+warn_root = 1
