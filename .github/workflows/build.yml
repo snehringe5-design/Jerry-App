@@ -17,15 +17,16 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Cache Buildozer Global Directory
+    - name: Cache Buildozer and Android SDK
       uses: actions/cache@v4
       with:
         path: |
           .buildozer
           ~/.buildozer
           ~/.android
-        key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
+        key: ${{ runner.os }}-buildozer-v2-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
+          ${{ runner.os }}-buildozer-v2-
           ${{ runner.os }}-buildozer-
 
     - name: Install dependencies
