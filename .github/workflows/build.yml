@@ -24,7 +24,7 @@ jobs:
           .buildozer
           ~/.buildozer
           ~/.android
-        key: ${{ runner.os }}-buildozer-${(hashFiles('buildozer.spec'))}}
+        key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
           ${{ runner.os }}-buildozer-
 
@@ -41,9 +41,9 @@ jobs:
 
     - name: Build APK with Buildozer
       run: |
-        # Ensure buildozer can find java and other tools
         export PATH=$PATH:~/.local/bin
-        buildozer -v android debug
+        # Automatically accept Android SDK licenses
+        yes | buildozer -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
