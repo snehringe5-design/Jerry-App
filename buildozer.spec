@@ -9,6 +9,12 @@ package.name = jerryapp
 # (str) Package domain (needed for android packaging)
 package.domain = org.jerry
 
+# (str) Source code directory (where main.py is located)
+source.dir = .
+
+# (str) Application versioning
+version = 0.1
+
 # (list) Source files to include (let it empty to include all files)
 source.include_exts = py,png,jpg,kv,atlas
 
@@ -16,11 +22,7 @@ source.include_exts = py,png,jpg,kv,atlas
 source.include_patterns = assets/*,images/*
 
 # (list) Application requirements
-# comma separated e.g. requirements = sqlite3,kivy
 requirements = python3,kivy
-
-# (str) Customized version of Python to compile (optional)
-# python.version = 3.10
 
 # (list) Supported orientations
 orientation = portrait
