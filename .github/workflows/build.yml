@@ -23,9 +23,9 @@ jobs:
         path: |
           ~/.buildozer
           .buildozer
-        key: ${{ runner.os }}-buildozer-v8-${{ hashFiles('buildozer.spec') }}
+        key: ${{ runner.os }}-buildozer-v9-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          ${{ runner.os }}-buildozer-v8-
+          ${{ runner.os }}-buildozer-v9-
           ${{ runner.os }}-buildozer-
 
     - name: Install dependencies
@@ -43,6 +43,7 @@ jobs:
       run: |
         export PATH=$PATH:~/.local/bin
         export MAKEFLAGS="-j$(nproc)"
+        export CFLAGS="-Wno-error=return-type"
         yes | buildozer -v android debug
 
     - name: Upload APK Artifact
