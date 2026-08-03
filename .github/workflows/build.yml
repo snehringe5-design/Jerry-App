@@ -14,10 +14,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Fix git safety directory
+    - name: Set up Environment
       run: |
+        echo "HOME=/github/home" >> $GITHUB_ENV
+        mkdir -p /github/home
         git config --global --add safe.directory /github/workspace
-        git config --global --add safe.directory /__w/Jerry-App/Jerry-App
 
     - name: Build APK with Buildozer
       run: |
