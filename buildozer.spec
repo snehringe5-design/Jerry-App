@@ -45,8 +45,8 @@ android.ndk = 25b
 # (bool) Use --private data storage (True) or --dir public storage (False)
 android.private_storage = True
 
-# (list) Supported architectures
-android.archs = arm64-v8a, armeabi-v7a
+# (list) Supported architectures (optimized to single architecture to save time and RAM)
+android.archs = armeabi-v7a
 
 # (str) python-for-android branch to use
 p4a.branch = master
