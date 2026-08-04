@@ -33,6 +33,8 @@ jobs:
       run: git config --global --add safe.directory /github/workspace
 
     - name: Build APK with Buildozer
+      env:
+        ANDROID_NDK_ROOT: ""
       run: |
         buildozer -v android debug
 
