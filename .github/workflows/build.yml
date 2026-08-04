@@ -46,7 +46,7 @@ jobs:
     - name: Fix safe directory
       run: git config --global --add safe.directory /github/workspace
 
-    - name: Build APK with Pre-installed SDK
+    - name: Build APK with Fixed SDK Paths
       env:
         ANDROID_HOME: /home/runner/android-sdk
         ANDROID_SDK_ROOT: /home/runner/android-sdk
