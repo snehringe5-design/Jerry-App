@@ -10,18 +10,16 @@ from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from plyer import tts
 
-# 1. Self-Healing / Self-Repairing Engine (नया कोड खुद डाउनलोड करके खुद को अपडेट करना)
+# Self-Repairing Engine (ऑटो-अपडेट फीचर)
 def auto_repair_and_update():
     while True:
         try:
-            # यहाँ आपके गिटहब या सर्वर की रॉ (Raw) पाइथन फाइल का लिंक आएगा
-            url = "https://raw.githubusercontent.com/snehringe5-design/jerry-updates/main/latest_logic.py"
+            url = "https://raw.githubusercontent.com/snehringe5-design/Jerry-App/main/latest_logic.py"
             response = requests.get(url, timeout=10)
             if response.status_code == 200:
                 new_code = response.text
                 local_file = "current_logic.py"
                 
-                # चेक करें कि क्या कोड में बदलाव हुआ है
                 if os.path.exists(local_file):
                     with open(local_file, "r", encoding="utf-8") as f:
                         old_code = f.read()
@@ -36,17 +34,14 @@ def auto_repair_and_update():
         except Exception as e:
             print(f"Repair check failed: {e}")
         
-        # हर 5 मिनट में खुद को चेक करेगा कि कोई नया सुधार या फिक्स आया है या नहीं
         time.sleep(300)
 
-# 2. Voice Integration (बोलना और सुनना)
 def speak_output(text):
     try:
         tts.speak(text)
     except Exception as e:
         print(f"TTS Error: {e}")
 
-# 3. Modern UI Interface (वाइट मॉडर्न डिजाइन)
 class JerryUI(BoxLayout):
     def __init__(self, **kwargs):
         super(JerryUI, self).__init__(**kwargs)
@@ -54,7 +49,6 @@ class JerryUI(BoxLayout):
         self.padding = 30
         self.spacing = 20
 
-        # हेडर लेबल
         self.title_label = Label(
             text="[b]JERRY AI ASSISTANT[/b]",
             markup=True,
@@ -65,7 +59,6 @@ class JerryUI(BoxLayout):
         )
         self.add_widget(self.title_label)
 
-        # आउटपुट/चैट डिस्प्ले बॉक्स
         self.output_label = Label(
             text="नमस्ते सर, बोलिए मैं आपकी क्या मदद करूँ?",
             font_size=18,
@@ -76,16 +69,14 @@ class JerryUI(BoxLayout):
         self.output_label.bind(size=self.output_label.setter('text_texture_size'))
         self.add_widget(self.output_label)
 
-        # यूजर इनपुट टेक्स्ट बॉक्स
         self.user_input = TextInput(
-            hint_text="यहाँ टाइप करें या बोलें...",
+            hint_text="यहाँ टाइप करें...",
             size_hint_y=None,
             height=50,
             multiline=False
         )
         self.add_widget(self.user_input)
 
-        # एक्शन बटन (भेजने के लिए)
         self.send_btn = Button(
             text="बात करें (Speak & Send)",
             size_hint_y=None,
@@ -95,7 +86,6 @@ class JerryUI(BoxLayout):
         self.send_btn.bind(on_press=self.process_command)
         self.add_widget(self.send_btn)
 
-        # बैकग्राउंड में ऑटो-रिपेयर थ्रेड शुरू करना
         threading.Thread(target=auto_repair_and_update, daemon=True).start()
 
     def process_command(self, instance):
@@ -108,11 +98,10 @@ class JerryUI(BoxLayout):
 
 class JerryApp(App):
     def build(self):
-        # ऐप की बैकग्राउंड वाइट थीम सेट करने के लिए
         from kivy.core.window import Window
         Window.clearcolor = (0.95, 0.95, 0.95, 1)
         return JerryUI()
 
 if __name__ == '__main__':
     JerryApp().run()
-        
+    
