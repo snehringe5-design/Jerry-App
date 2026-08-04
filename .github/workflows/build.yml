@@ -22,7 +22,12 @@ jobs:
     - name: Install System Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf automake libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev gettext
+        sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf automake libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev gettext autopoint
+
+    - name: Fix Libtool Macros for p4a
+      run: |
+        # Fix for LT_SYS_SYMBOL_USCORE macro error in libffi/libtool
+        sudo ln -sf /usr/share/aclocal/* /usr/local/share/aclocal/ 2>/dev/null || true
 
     - name: Install Python Packaging Tools
       run: |
@@ -48,6 +53,7 @@ jobs:
         ANDROID_HOME: /home/runner/android-sdk
         ANDROID_SDK_ROOT: /home/runner/android-sdk
         ANDROID_NDK_HOME: /home/runner/android-sdk/ndk/25.2.9519653
+        ACLOCAL_PATH: /usr/share/aclocal
       run: |
         export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
         
