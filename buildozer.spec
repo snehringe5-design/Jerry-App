@@ -1,43 +1,63 @@
 [app]
 
 # (str) Title of your application
-title = Jerry
+title = Jerry AI
 
 # (str) Package name
-package.name = jerry
+package.name = jerryai
 
 # (str) Package domain (needed for android packaging)
 package.domain = org.jerry
 
 # (list) Source files to include (let it empty to include all files)
-source.include_exts = py,png,jpg,kv,atlas
+source.include_exts = py,png,jpg,kv,atlas,json,txt
 
-# (list) Source files to exclude (let it empty to not exclude anything)
-#source.exclude_exts = spec
+# (list) List of directory to include (relative to source.dir)
+source.include_dirs = 
 
-# (str) Application versioning (method 1)
+# (list) List of exclusions
+source.exclude_exts = spec
+
+# (list) List of exclusion patterns
+source.exclude_patterns = license,images/*.jpg
+
+# --- यहाँ मुख्य बदलाव है (Source directory) ---
+# (str) Source directory (where the main.py file lives)
+source.dir = .
+
+# (list) Application versioning
 version = 0.1
 
 # (list) Application requirements
-requirements = python3,kivy,plyer,android
+# अपने प्रोजेक्ट के हिसाब से यहाँ पैकेज जोड़ सकते हैं (जैसे requests, pyjnius, आदि)
+requirements = python3,kivy
+
+# (str) Custom source folders for requirements
+#requirements.source.kivy = ../../../kivy
 
 # (list) Permissions
-#android.permissions = INTERNET
+android.permissions = INTERNET
 
-# (str) Supported orientations (landscape, portrait or all)
+# (list) Orientations
 orientation = portrait
 
 # (bool) Indicate if the application should be fullscreen or not
 fullscreen = 0
 
-# (int) Target Android API, should be as high as possible.
+# (list) The Android target API, defaults to 31 as per Google Play requirements
 android.api = 33
 
 # (int) Minimum API your APK will support.
 android.minapi = 21
 
-# (bool) Enable AndroidX support
-android.enable_androidx = True
+# (str) Android SDK version to use
+# android.sdk = 20
+
+# (str) Android NDK version to use
+# android.ndk = 23b
+
+# (bool) Use Android X
+android.androidx = True
 
 [buildozer]
 
@@ -46,6 +66,3 @@ log_level = 2
 
 # (int) Display warning if buildozer is run as root (0 = False, 1 = True)
 warn_root = 1
-
-# (str) Path to build artifact, local or remote
-bin_dir = ./bin
