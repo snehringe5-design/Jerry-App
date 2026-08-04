@@ -74,7 +74,8 @@ jobs:
           ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
           ANDROID_NDK_HOME: /home/runner/.buildozer/android/platform/android-sdk/ndk/25.2.9519653
         run: |
-          buildozer -v android debug
+          # Running with offline flag to prevent downloading missing components over broken links
+          buildozer --offline -v android debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
