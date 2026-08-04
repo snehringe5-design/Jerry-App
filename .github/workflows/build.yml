@@ -45,15 +45,14 @@ jobs:
             cmake \
             ant
 
-      - name: Cache Android SDK & Buildozer
+      - name: Cache Buildozer & Android SDK
         uses: actions/cache@v4
         with:
           path: |
             /home/runner/.buildozer
-            /usr/local/lib/android/sdk
-          key: ${{ runner.os }}-build-cache-${{ hashFiles('buildozer.spec') }}
+          key: ${{ runner.os }}-buildozer-sdk-v2-${{ hashFiles('buildozer.spec') }}
           restore-keys: |
-            ${{ runner.os }}-build-cache-
+            ${{ runner.os }}-buildozer-sdk-v2-
 
       - name: Install Buildozer and dependencies
         run: |
@@ -68,12 +67,18 @@ jobs:
       - name: Prepare SDK for Buildozer
         run: |
           export ANDROID_HOME=$ANDROID_SDK_ROOT
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools" "ndk;25.2.9519653"
+          
+          # Check if buildozer android platform SDK already exists from cache to save time
+          if [ -d "/home/runner/.buildozer/android/platform/android-sdk" ]; then
+            echo "SDK already cached, skipping download!"
+          else
+            yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+            $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools" "ndk;25.2.9519653"
 
-          mkdir -p /home/runner/.buildozer/android/platform
-          rm -rf /home/runner/.buildozer/android/platform/android-sdk
-          cp -r $ANDROID_HOME /home/runner/.buildozer/android/platform/android-sdk
+            mkdir -p /home/runner/.buildozer/android/platform
+            rm -rf /home/runner/.buildozer/android/platform/android-sdk
+            cp -r $ANDROID_HOME /home/runner/.buildozer/android/platform/android-sdk
+          fi
 
       - name: Build Android APK with Buildozer
         env:
