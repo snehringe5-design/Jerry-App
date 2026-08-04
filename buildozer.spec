@@ -27,7 +27,7 @@ orientation = portrait
 # (list) List of permissions
 android.permissions = INTERNET
 
-# (int) Target Android API, should match the workflow
+# (int) Target Android API
 android.api = 31
 
 # (int) Minimum API your APK will support.
