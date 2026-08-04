@@ -6,6 +6,12 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.scrollview import ScrollView
 
+# एंड्रॉइड पर आवाज (Speech) के लिए plyer का टेक्स्ट-टू-स्पीच इम्पोर्ट
+try:
+    from plyer import tts
+except ImportError:
+    tts = None
+
 # --- Login Screen ---
 class LoginScreen(Screen):
     def __init__(self, **kwargs):
@@ -46,7 +52,7 @@ class LoginScreen(Screen):
             self.pin_input.text = ""
 
 
-# --- Main AI Screen (Chat Style Jerry) ---
+# --- Main AI Screen (Autonomous & Voice Enabled Jerry) ---
 class JerryMainScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -54,18 +60,28 @@ class JerryMainScreen(Screen):
         main_layout = BoxLayout(orientation='vertical')
         self.creator = "Sneh Ringe"
 
-        # चैट हिस्ट्री दिखाने के लिए ScrollView और Layout
-        self.scroll = ScrollView(size_hint=(1, 0.8))
+        # चैट हिस्ट्री के लिए ScrollView
+        self.scroll = ScrollView(size_hint=(1, 0.7))
         self.chat_layout = BoxLayout(orientation='vertical', size_hint_y=None, spacing=10, padding=10)
         self.chat_layout.bind(minimum_height=self.chat_layout.setter('height'))
 
-        # वेलकम मैसेज जोड़े
-        self.add_chat_message("Jerry: Namaste Sneh Sir! Main aapka personal AI assistant hoon.")
+        welcome_text = "Jerry: Namaste Sneh Sir! Main sunne aur bolne ke liye taiyar hoon."
+        self.add_chat_message(welcome_text)
+        self.speak_text(welcome_text)
 
         self.scroll.add_widget(self.chat_layout)
         main_layout.add_widget(self.scroll)
 
-        # नीचे इनपुट और भेजने का बटन रखने के लिए लेआउट
+        # माइक और वॉयस कमांड के लिए बटन लेआउट
+        top_btn_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.1), spacing=5)
+        
+        self.mic_btn = Button(text="🎤 Bolkar Command Dein", background_color=(0.1, 0.6, 0.8, 1))
+        self.mic_btn.bind(on_press=self.listen_voice)
+        top_btn_layout.add_widget(self.mic_btn)
+        
+        main_layout.add_widget(top_btn_layout)
+
+        # इनपुट और सेंड बटन लेआउट
         bottom_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.2), spacing=5)
 
         self.user_input = TextInput(
@@ -85,6 +101,16 @@ class JerryMainScreen(Screen):
         main_layout.add_widget(bottom_layout)
         self.add_widget(main_layout)
 
+    def speak_text(self, text):
+        """जेरी को बोलकर जवाब देने का फंक्शन"""
+        try:
+            if tts:
+                # साफ़ करने के लिए 'Jerry: ' हटा देते हैं ताकि सिर्फ कम की बात बोले
+                clean_text = text.replace("Jerry:", "").strip()
+                tts.speak(clean_text)
+        except Exception as e:
+            print(f"TTS Error: {e}")
+
     def add_chat_message(self, message):
         lbl = Label(
             text=message,
@@ -97,26 +123,43 @@ class JerryMainScreen(Screen):
         lbl.bind(size=lbl.setter('text_size'))
         self.chat_layout.add_widget(lbl)
 
+    def listen_voice(self, instance):
+        """यहाँ एंड्रॉइड की स्पीच रिकग्निशन API जोड़ी जाएगी"""
+        self.add_chat_message("Jerry: Sir, mic feature abhi active ho raha hai. Aap text type karke aadesh dein.")
+        self.speak_text("Sir, aap text type karke aadesh dein.")
+
     def process_command(self, instance):
         text = self.user_input.text.strip()
         if not text:
             return
 
-        # यूजर का मैसेज चैट में जोड़ें
+        # यूजर का मैसेज दिखाएं
         self.add_chat_message(f"Sneh Sir: {text}")
         
-        # जेरी का स्मार्ट रिस्पॉन्स
         query = text.lower()
+        
+        # --- Jerry's Autonomous Brain (स्वयं निर्णय लेने की क्षमता) ---
         if "who made you" in query or "kisne banaya" in query:
-            response = f"Jerry: Mujhe mere malik {self.creator} ne banaya hai!"
+            response = f"Jerry: Mujhe mere malik {self.creator} ne banaya hai."
         elif "tum kon ho" in query or "who are you" in query:
-            response = f"Jerry: Main Jerry hoon, {self.creator} Sir ka personal AI assistant!"
-        elif "kaise ho" in query or "how are you" in query:
-            response = "Jerry: Main ekdum badiya hoon Sir!"
+            response = f"Jerry: Main Sneh Sir ka personal AI assistant hoon, jo poori tarah unke control mein kaam karta hai."
+        elif "gita" in query or "bhagwad gita" in query:
+            response = "Jerry: Shrimad Bhagwat Gita humein apne karm par dhyan dene aur bina fal ki chinta kiye mehnat karne ki sikh deti hai."
+        elif "ved" in query:
+            response = "Jerry: Bharat ke charon ved hain: Rigveda, Samaveda, Yajurveda, aur Atharvaveda."
+        elif "+" in query or "-" in query or "math" in query:
+            try:
+                res = eval(text)
+                response = f"Jerry: Iska calculation result hai: {res}"
+            except:
+                response = "Jerry: Sir, is maths calculation mein kuch error hai."
         else:
-            response = f"Jerry: Sneh Sir, aapka aadesh mila: '{text}'"
+            response = f"Jerry: Sir, aapka command mila. Main ise samajh raha hoon."
 
+        # चैट में जवाब जोड़ें और बोलकर भी सुनाएं
         self.add_chat_message(response)
+        self.speak_text(response)
+        
         self.user_input.text = ""
 
 
@@ -131,4 +174,4 @@ class JerryApp(App):
 
 if __name__ == '__main__':
     JerryApp().run()
-    
+        
