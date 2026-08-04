@@ -57,4 +57,4 @@ log_level = 2
 bin_dir = ./bin
 
 # (bool) Allow buildozer to run as root without pausing for input
-warn_on_root = 0
+warn_on_root = 1
