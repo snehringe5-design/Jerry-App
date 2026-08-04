@@ -1,51 +1,37 @@
 [app]
 
 # (str) Title of your application
-title = Jerry AI Assistant
+title = Jerry AI
 
 # (str) Package name
 package.name = jerryai
 
 # (str) Package domain (needed for android packaging)
-package.domain = org.jerry
+package.domain = org.sneh
 
-# (str) Source directory where the app lives of your code
-source.dir = .
-
-# (list) Source files to include (let it blank to include all files)
+# (list) Source files to include (let it include python files and assets)
 source.include_exts = py,png,jpg,kv,atlas
 
-# (list) Source files to exclude (let it blank to exclude nothing)
-source.exclude_exts = spec
-
-# (list) List of directory to exclude (let it blank to exclude nothing)
-source.exclude_dirs = tests, bin, venv
-
-# (str) Application versioning (method 1)
-version = 1.0
-
 # (list) Application requirements
-requirements = python3,kivy,plyer
-
-# (list) Permissions
-android.permissions = INTERNET, FOREGROUND_SERVICE, WAKE_LOCK, RECORD_AUDIO
+requirements = python3,kivy,plyer,requests,urllib3,idna,certifi,charset_normalizer
 
 # (str) Supported orientations
 orientation = portrait
 
-# (str) Author
-author = Sneh Ringe
+# (list) Permissions
+android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
 
-[buildozer]
+# (int) Target Android API, should be as high as possible.
+android.api = 33
 
-# (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
-log_level = 2
+# (int) Minimum API your APK will support
+android.minapi = 21
 
-# (str) Path to build artifact storage, absolute or relative to spec file
-bin_dir = ./bin
+# (str) Android SDK version to use
+android.sdk = 33
 
-# (list) Supported architectures (arm64-v8a)
+# (str) Android NDK version to use
+android.ndk = 25b
+
+# (str) Supported architectures
 android.archs = arm64-v8a
-
-# (bool) Enable AndroidX support
-android.enable_androidx = True
