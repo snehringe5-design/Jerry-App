@@ -19,22 +19,54 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install --upgrade buildozer cython==0.29.36
-
-    - name: Setup System Libraries
+    - name: Install System Dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
 
-    - name: Fix safe directory
-      run: git config --global --add safe.directory /github/workspace
-
-    - name: Build APK
+    - name: Install Python Packaging Tools
       run: |
-        buildozer -v android debug
+        python -m pip install --upgrade pip
+        pip install --upgrade cython==0.29.36 python-for-android kivy
+
+    - name: Set up Android SDK & NDK Manually
+      run: |
+        export ANDROID_HOME=$HOME/android-sdk
+        mkdir -p $ANDROID_HOME/cmdline-tools
+        wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+        unzip -q cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
+        mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+        rm cmdline-tools.zip
+
+        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+        
+        yes | sdkmanager --licenses || true
+        sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.0" "ndk;25.2.9519653"
+
+    - name: Build APK using Python-for-Android
+      env:
+        ANDROID_HOME: /home/runner/android-sdk
+        ANDROID_SDK_ROOT: /home/runner/android-sdk
+        ANDROID_NDK_HOME: /home/runner/android-sdk/ndk/25.2.9519653
+      run: |
+        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+        
+        p4a create \
+          --bootstrap=sdl2 \
+          --requirements=python3,kivy,plyer \
+          --package=org.jerry.jerryapp \
+          --name="Jerry App" \
+          --version=0.1 \
+          --dest_dir=./android-build \
+          --sdk-dir=$ANDROID_HOME \
+          --ndk-dir=$ANDROID_NDK_HOME \
+          --android-api=33 \
+          --orientation=portrait
+
+    - name: Find and Move APK
+      run: |
+        mkdir -p bin
+        find . -name "*.apk" -exec cp {} bin/ \;
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
