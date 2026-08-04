@@ -30,18 +30,24 @@ jobs:
           pip install --upgrade pip
           pip install --user Cython==0.29.36 buildozer
 
-      - name: Setup Android SDK and Accept Licenses
+      - name: Pre-download Android SDK tools and fix paths
         run: |
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           mkdir -p $ANDROID_HOME/cmdline-tools
           cd $ANDROID_HOME/cmdline-tools
           curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-          unzip commandlinetools.zip
+          unzip -o commandlinetools.zip
+          rm -rf latest
           mv cmdline-tools latest
+          
+          # Buildozer के लिए sdkmanager का पाथ सही करना
+          mkdir -p $ANDROID_HOME/tools/bin
+          ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
+
           mkdir -p $HOME/.android
           touch $HOME/.android/repositories.cfg
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.2" "platforms;android-33"
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
 
       - name: Build Android APK with Buildozer
         run: |
