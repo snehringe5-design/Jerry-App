@@ -9,8 +9,14 @@ package.name = jerryapp
 # (str) Package domain (needed for android packaging)
 package.domain = org.jerry
 
+# (str) Source code where the main.py lives
+source.dir = .
+
 # (list) Source files to include (let it as is or include your main.py)
 source.include_exts = py,png,jpg,kv,atlas
+
+# (str) Application versioning
+version = 1.0
 
 # (list) Application requirements
 # Specify your python dependencies here, e.g. kivy
