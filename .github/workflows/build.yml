@@ -39,15 +39,18 @@ jobs:
           pip install --upgrade cython==0.29.36
           pip install buildozer
 
-      - name: Accept SDK Licenses and Build
+      - name: Pre-install Android SDK Commandline Tools
         run: |
-          # SDK 37 लाइसेंस को ऑटो-एक्सेप्ट करने के लिए लाइसेंस फोल्डर और फाइल बनाना
-          ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
-          mkdir -p $HOME/.buildozer/android/platform/android-sdk/licenses
-          echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > $HOME/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          echo -e "\n24333f8a63b6825ea9c5514f83c2829b004d1fb8" >> $HOME/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          
-          rm -rf ~/.buildozer/android/platform/python-for-android
+          mkdir -p $HOME/.buildozer/android/platform/android-sdk/cmdline-tools
+          cd $HOME/.buildozer/android/platform/android-sdk
+          curl -o cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          unzip -q cmdline-tools.zip
+          mkdir -p cmdline-tools/latest
+          mv bin lib source.properties cmdline-tools/latest/ || true
+          rm cmdline-tools.zip
+
+      - name: Build APK with Buildozer
+        run: |
           buildozer -v android debug
 
       - name: Upload APK Artifact
