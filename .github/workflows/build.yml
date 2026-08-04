@@ -70,6 +70,9 @@ jobs:
           cp -r $ANDROID_HOME /home/runner/.buildozer/android/platform/android-sdk
 
       - name: Build Android APK with Buildozer
+        env:
+          ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
+          ANDROID_NDK_HOME: /home/runner/.buildozer/android/platform/android-sdk/ndk/25.2.9519653
         run: |
           buildozer -v android debug
 
