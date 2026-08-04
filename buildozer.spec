@@ -13,7 +13,7 @@ package.domain = org.jerry
 source.dir = .
 
 # (list) Source files to include (let it empty to include all files)
-source.include_exts = py,png,jpg,kv,atlas,ttf
+source.include_exts = py,png,jpg,kg,atlas,ttf
 
 # (list) Application requirements
 requirements = python3,kivy,plyer,android
