@@ -39,20 +39,22 @@ jobs:
           pip install --upgrade cython==0.29.36
           pip install buildozer
 
-      - name: Direct SDK Tools Setup (No Symlink)
+      - name: Correct SDK Tools Setup
         run: |
           rm -rf ~/.buildozer
-          mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools
+          mkdir -p ~/.buildozer/android/platform/android-sdk
           cd ~/.buildozer/android/platform/android-sdk
           
-          # कमांड-लाइन टूल्स डाउनलोड और एक्सट्रैक्ट करना
+          # कमांड-लाइन टूल्स डाउनलोड और अनजिप करना
           curl -o cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
           unzip -q cmdline-tools.zip
+          
+          # सही पाथ स्ट्रक्चर बनाना
           mkdir -p cmdline-tools/latest
-          mv bin lib source.properties cmdline-tools/latest/ || true
+          mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
           rm cmdline-tools.zip
           
-          # बिल्डोजर जिस 'tools' पाथ को खोजता है, वहाँ सीधे फोल्डर कॉपी करना
+          # बिल्डोजर के पुराने पाथ की जरूरत के लिए 'tools' फोल्डर तैयार करना
           mkdir -p tools
           cp -r cmdline-tools/latest/bin tools/
           cp -r cmdline-tools/latest/lib tools/
