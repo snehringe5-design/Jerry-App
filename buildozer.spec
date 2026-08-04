@@ -41,3 +41,7 @@ android.ndk = 25b
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
 android.private_storage = True
+
+# Explicit SDK and NDK paths to force Buildozer use our pre-installed tools
+android.sdk_path = /home/runner/android-sdk
+android.ndk_path = /home/runner/android-sdk/ndk/25.2.9519653
