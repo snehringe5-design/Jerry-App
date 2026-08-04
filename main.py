@@ -4,18 +4,14 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
-from kivy.core.text import LabelBase
+from kivy.uix.scrollview import ScrollView
 
-# (वैकल्पिक) हिंदी फॉंट सपोर्ट के लिए यदि आपके प्रोजेक्ट में कोई .ttf फॉंट हो तो उसका रास्ता दें, 
-# फिलहाल डिफ़ॉल्ट से एरर रोकने के लिए बेसिक सेटअप है।
-
-# --- Login Screen (सुरक्षा के लिए) ---
+# --- Login Screen ---
 class LoginScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         layout = BoxLayout(orientation='vertical', padding=20, spacing=10)
 
-        # आपका नया पर्सनल पिन
         self.secret_pin = "6263"
 
         self.label = Label(
@@ -50,46 +46,77 @@ class LoginScreen(Screen):
             self.pin_input.text = ""
 
 
-# --- Main AI Screen (Jerry) ---
+# --- Main AI Screen (Chat Style Jerry) ---
 class JerryMainScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        layout = BoxLayout(orientation='vertical', padding=20, spacing=10)
-
+        
+        main_layout = BoxLayout(orientation='vertical')
         self.creator = "Sneh Ringe"
 
-        self.welcome_label = Label(
-            text=f"Namaste! Main Jerry hoon.\nCreated by {self.creator} Sir.",
-            font_size='20sp',
-            halign='center',
-            valign='middle'
-        )
-        self.welcome_label.bind(size=self.welcome_label.setter('text_size'))
-        layout.add_widget(self.welcome_label)
+        # चैट हिस्ट्री दिखाने के लिए ScrollView और Layout
+        self.scroll = ScrollView(size_hint=(1, 0.8))
+        self.chat_layout = BoxLayout(orientation='vertical', size_hint_y=None, spacing=10, padding=10)
+        self.chat_layout.bind(minimum_height=self.chat_layout.setter('height'))
+
+        # वेलकम मैसेज जोड़े
+        self.add_chat_message("Jerry: Namaste Sneh Sir! Main aapka personal AI assistant hoon.")
+
+        self.scroll.add_widget(self.chat_layout)
+        main_layout.add_widget(self.scroll)
+
+        # नीचे इनपुट और भेजने का बटन रखने के लिए लेआउट
+        bottom_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.2), spacing=5)
 
         self.user_input = TextInput(
             hint_text="Sneh sir, aadesh dijiye...",
             multiline=False,
-            size_hint_y=0.2
+            size_hint_x=0.8
         )
-        layout.add_widget(self.user_input)
+        bottom_layout.add_widget(self.user_input)
 
         self.send_btn = Button(
-            text="Command Jerry",
-            size_hint_y=0.2
+            text="Send",
+            size_hint_x=0.2
         )
         self.send_btn.bind(on_press=self.process_command)
-        layout.add_widget(self.send_btn)
+        bottom_layout.add_widget(self.send_btn)
 
-        self.add_widget(layout)
+        main_layout.add_widget(bottom_layout)
+        self.add_widget(main_layout)
+
+    def add_chat_message(self, message):
+        lbl = Label(
+            text=message,
+            font_size='16sp',
+            size_hint_y=None,
+            height=40,
+            halign='left',
+            valign='middle'
+        )
+        lbl.bind(size=lbl.setter('text_size'))
+        self.chat_layout.add_widget(lbl)
 
     def process_command(self, instance):
-        text = self.user_input.text.lower()
-        if "who made you" in text or "kisne banaya" in text:
-            self.welcome_label.text = f"Mujhe mere malik {self.creator} ne banaya hai!"
-        else:
-            self.welcome_label.text = f"Sneh sir, aapka aadesh mila: {self.user_input.text}"
+        text = self.user_input.text.strip()
+        if not text:
+            return
+
+        # यूजर का मैसेज चैट में जोड़ें
+        self.add_chat_message(f"Sneh Sir: {text}")
         
+        # जेरी का स्मार्ट रिस्पॉन्स
+        query = text.lower()
+        if "who made you" in query or "kisne banaya" in query:
+            response = f"Jerry: Mujhe mere malik {self.creator} ne banaya hai!"
+        elif "tum kon ho" in query or "who are you" in query:
+            response = f"Jerry: Main Jerry hoon, {self.creator} Sir ka personal AI assistant!"
+        elif "kaise ho" in query or "how are you" in query:
+            response = "Jerry: Main ekdum badiya hoon Sir!"
+        else:
+            response = f"Jerry: Sneh Sir, aapka aadesh mila: '{text}'"
+
+        self.add_chat_message(response)
         self.user_input.text = ""
 
 
