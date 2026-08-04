@@ -8,7 +8,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
-    # Node.js deprecation warning को ठीक करने के लिए environment variable
     env:
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
@@ -32,7 +31,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
               git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config \
-              zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+              zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
 
       - name: Install Buildozer and Cython
         run: |
