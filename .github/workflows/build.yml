@@ -42,20 +42,26 @@ jobs:
       - name: Force Install SDK and Accept Licenses
         run: |
           rm -rf ~/.buildozer
-          mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools
+          mkdir -p ~/.buildozer/android/platform/android-sdk
           cd ~/.buildozer/android/platform/android-sdk
           
           # कमांड-लाइन टूल्स डाउनलोड और अनजिप करना
           curl -o cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
           unzip -q cmdline-tools.zip
+          
+          # फोल्डर स्ट्रक्चर को सही करना
           mkdir -p cmdline-tools/latest
-          mv bin lib source.properties cmdline-tools/latest/ || true
+          if [ -d "bin" ]; then
+            mv bin lib source.properties cmdline-tools/latest/
+          elif [ -d "cmdline-tools" ]; then
+            mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
+          fi
           rm cmdline-tools.zip
 
-          # टूल्स पाथ सेट करना ताकि sdkmanager सीधा चल सके
+          # पाथ सेट करना
           export PATH=$PATH:$(pwd)/cmdline-tools/latest/bin
 
-          # सभी लाइसेंस ऑटो-एक्सेप्ट करना और Build-Tools 37 इनिशियलाइज करना
+          # लाइसेंस एक्सेप्ट करना और बिल्ड-टूल्स इंस्टॉल करना
           yes | sdkmanager --licenses || true
           sdkmanager "platform-tools" "platforms;android-31" "build-tools;37.0.0"
 
