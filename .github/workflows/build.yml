@@ -25,7 +25,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install system dependencies
+      - name: Install system dependencies (including Ant)
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -50,9 +50,9 @@ jobs:
         with:
           path: |
             /home/runner/.buildozer
-          key: ${{ runner.os }}-buildozer-sdk-v2-${{ hashFiles('buildozer.spec') }}
+          key: ${{ runner.os }}-buildozer-sdk-v3-${{ hashFiles('buildozer.spec') }}
           restore-keys: |
-            ${{ runner.os }}-buildozer-sdk-v2-
+            ${{ runner.os }}-buildozer-sdk-v3-
 
       - name: Install Buildozer and dependencies
         run: |
@@ -68,7 +68,6 @@ jobs:
         run: |
           export ANDROID_HOME=$ANDROID_SDK_ROOT
           
-          # Check if buildozer android platform SDK already exists from cache to save time
           if [ -d "/home/runner/.buildozer/android/platform/android-sdk" ]; then
             echo "SDK already cached, skipping download!"
           else
@@ -84,6 +83,7 @@ jobs:
         env:
           ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
           ANDROID_NDK_HOME: /home/runner/.buildozer/android/platform/android-sdk/ndk/25.2.9519653
+          ANT_HOME: /usr/share/ant
         run: |
           buildozer -v android debug
 
