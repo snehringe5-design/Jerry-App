@@ -42,14 +42,15 @@ jobs:
             libsqlite3-dev \
             libffi-dev \
             libssl-dev \
-            cmake
+            cmake \
+            ant
 
       - name: Install Buildozer and dependencies
         run: |
           pip install --upgrade pip
           pip install cython==0.29.36
-          pip install buildozer
           pip install --upgrade git+https://github.com/kivy/buildozer.git@master
+          pip install --upgrade git+https://github.com/kivy/python-for-android.git@master
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
@@ -74,8 +75,7 @@ jobs:
           ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
           ANDROID_NDK_HOME: /home/runner/.buildozer/android/platform/android-sdk/ndk/25.2.9519653
         run: |
-          # Running with offline flag to prevent downloading missing components over broken links
-          buildozer --offline -v android debug
+          buildozer -v android debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
