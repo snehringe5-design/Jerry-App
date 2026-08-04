@@ -13,10 +13,10 @@ package.domain = org.jerry
 source.dir = .
 
 # (list) Source files to include (let it empty to include all files)
-source.include_exts = py,png,jpg,kv,atlas
+source.include_exts = py,png,jpg,kv,atlas,ttf
 
 # (list) Application requirements
-requirements = python3,kivy
+requirements = python3,kivy,plyer,android
 
 # (str) Version of your application
 version = 0.1
@@ -44,6 +44,9 @@ android.enable_androidx = True
 
 # (bool) Automatically accept Android SDK licenses
 android.accept_sdk_license = True
+
+# (list) Permissions
+android.permissions = INTERNET,RECORD_AUDIO,MODIFY_AUDIO_SETTINGS
 
 [buildozer]
 
