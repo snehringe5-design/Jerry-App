@@ -12,7 +12,7 @@ package.domain = org.test
 # (str) Source directory where the main.py file lives
 source.dir = .
 
-# (list) Source files to include (let it include all by default)
+# (list) Source files to include
 source.include_exts = py,png,jpg,kv,atlas
 
 # (list) Application requirements
@@ -27,19 +27,16 @@ orientation = portrait
 # (list) List of permissions
 android.permissions = INTERNET
 
-# (int) Target Android API, should be as high as possible.
+# (int) Target Android API
 android.api = 33
 
-# (int) Minimum API your APK will support.
+# (int) Minimum API your APK will support
 android.min_api = 21
-
-# (int) Android SDK version to use
-android.sdk = 33
 
 # (str) Android NDK version to use
 android.ndk = 25.2.9519653
 
-# (bool) Use --private data storage (True) or --dir public storage (False)
+# (bool) Use --private data storage
 android.private_storage = True
 
 # (str) python-for-android branch to use
