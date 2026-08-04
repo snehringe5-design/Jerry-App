@@ -12,17 +12,11 @@ package.domain = org.jerry
 # (list) Source files to include (let it blank to include all files)
 source.include_exts = py,png,jpg,kv,atlas
 
-# (list) List of inclusion patterns
-source.include_patterns = assets/*,images/*.png
-
 # (list) Source files to exclude (let it blank to exclude nothing)
 source.exclude_exts = spec
 
 # (list) List of directory to exclude (let it blank to exclude nothing)
 source.exclude_dirs = tests, bin, venv
-
-# (list) List of exclusions using pattern matching
-source.exclude_patterns = license,images/*~
 
 # (str) Application versioning (method 1)
 version = 1.0
@@ -30,33 +24,19 @@ version = 1.0
 # (list) Application requirements
 requirements = python3,kivy,plyer
 
-# (list) Garden requirements
-garden_requirements = 
-
 # (list) Permissions
 android.permissions = INTERNET, FOREGROUND_SERVICE, WAKE_LOCK, RECORD_AUDIO
 
 # (str) Supported orientations
 orientation = portrait
 
-#
-# Author
-#
+# (str) Author
 author = Sneh Ringe
-
-#
-# Icon & Presplash (Fixed paths)
-#
-icon.filename = icon.png
-presplash.filename = presplash.png
 
 [buildozer]
 
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
 log_level = 2
-
-# (int) Display warning if buildozer is run as root (0 = False, 1 = True)
-warn_root = 1
 
 # (str) Path to build artifact storage, absolute or relative to spec file
 bin_dir = ./bin
