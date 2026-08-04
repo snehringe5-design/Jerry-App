@@ -20,7 +20,7 @@ android.minapi = 21
 android.build_tools_version = 31.0.0
 
 # (int) Android NDK version to use
-android.ndk = 28c
+android.ndk = 25b
 
 android.private_storage = True
 
