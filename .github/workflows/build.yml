@@ -11,50 +11,54 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          build-essential \
-          git \
-          python3-pip \
-          autoconf \
-          libtool \
-          pkg-config \
-          zlib1g-dev \
-          libncurses5-dev \
-          libncursesw5-dev \
-          libreadline-dev \
-          libsqlite3-dev \
-          libssl-dev \
-          libffi-dev \
-          liblzma-dev \
-          ant \
-          default-jdk
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python3-pip \
+            build-setup \
+            git \
+            zip \
+            unzip \
+            autoconf \
+            libtool \
+            pkg-config \
+            zlib1g-dev \
+            libncurses5-dev \
+            libncursesw5-dev \
+            libsqlite3-dev \
+            libffi-dev \
+            libssl-dev
 
-    - name: Install Buildozer and Cython
-      run: |
-        pip install --upgrade pip
-        pip install --upgrade cython==0.29.36 buildozer
+      - name: Install Buildozer and Cython
+        run: |
+          pip install --upgrade pip
+          pip install cython==0.29.36
+          pip install buildozer
+          pip install --upgrade git+https://github.com/kivy/buildozer.git@master
 
-    - name: Accept Android SDK Licenses and Build
-      run: |
-        mkdir -p ~/.android
-        yes | sdkmanager --licenses || true
-        yes "y" | sdkmanager "build-tools;37.0.0" "platforms;android-34" || true
-        buildozer -v android debug
+      - name: Pre-install Android SDK Tools & Accept Licenses
+        run: |
+          export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
+          mkdir -p $ANDROID_HOME
+          # Buildozer dependencies check ke pehle tools setup
+          yes | sdkmanager --licenses || true
 
-    - name: Upload APK Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: package
-        path: bin/*.apk
-        
+      - name: Build Android APK with Buildozer
+        run: |
+          buildozer -v android debug
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: bin/*.apk
+          
