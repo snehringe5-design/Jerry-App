@@ -9,12 +9,17 @@ package.name = jerryapp
 # (str) Package domain (needed for android packaging)
 package.domain = org.jerry
 
+# (str) Source code where the main.py lives
+source.dir = .
+
 # (list) Source files to include (let it empty to include all files)
 source.include_exts = py,png,jpg,kv,atlas
 
 # (list) Application requirements
-# Add your dependencies here (e.g., kivy, plyer)
 requirements = python3,kivy,plyer,android
+
+# (str) Version of your application
+version = 0.1
 
 # (str) Supported orientations
 orientation = portrait
