@@ -21,8 +21,10 @@ jobs:
         git config --global --add safe.directory /__w/Jerry-App/Jerry-App
 
     - name: Build APK with Buildozer
+      env:
+        BUILDozer_ALLOW_ROOT: "1"
       run: |
-        buildozer -v android debug
+        yes | buildozer -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
