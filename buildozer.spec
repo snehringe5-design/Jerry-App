@@ -9,52 +9,27 @@ package.name = jerryapp
 # (str) Package domain (needed for android packaging)
 package.domain = org.jerry
 
-# (str) Source code where the main.py lives
-source.dir = .
-
 # (list) Source files to include (let it empty to include all files)
-source.include_exts = py,png,jpg,kg,atlas,ttf
+source.include_exts = py,png,jpg,kv,atlas
 
 # (list) Application requirements
+# Add your dependencies here (e.g., kivy, plyer)
 requirements = python3,kivy,plyer,android
 
-# (str) Version of your application
-version = 0.1
-
-# (list) Orientations supporting
+# (str) Supported orientations
 orientation = portrait
 
-# (bool) Indicate if the application should be fullscreen or not
-fullscreen = 0
+# (list) List of permissions
+android.permissions = INTERNET
 
-# (list) Whitelist of sub-architectures to build for
-android.archs = arm64-v8a
-
-# (int) Android API to target
+# (int) Target Android API, should be as high as possible.
 android.api = 33
 
-# (int) Minimum API your APK will support
+# (int) Minimum API your APK will support.
 android.minapi = 21
 
-# (str) Android NDK version to use
+# (int) Android NDK version to use
 android.ndk = 25b
 
-# (bool) Enable AndroidX support
-android.enable_androidx = True
-
-# (bool) Automatically accept Android SDK licenses
-android.accept_sdk_license = True
-
-# (list) Permissions
-android.permissions = INTERNET,RECORD_AUDIO,MODIFY_AUDIO_SETTINGS
-
-[buildozer]
-
-# (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
-log_level = 2
-
-# (str) Path to build artifact storage, absolute or relative to spec file
-bin_dir = ./bin
-
-# (bool) Allow buildozer to run as root without pausing for input
-warn_on_root = 1
+# (bool) Use --private data storage (True) or --dir public storage (False)
+android.private_storage = True
