@@ -61,6 +61,7 @@ jobs:
           --sdk-dir=$ANDROID_HOME \
           --ndk-dir=$ANDROID_NDK_HOME \
           --android-api=33 \
+          --arch=armeabi-v7a \
           --orientation=portrait
 
     - name: Find and Move APK
