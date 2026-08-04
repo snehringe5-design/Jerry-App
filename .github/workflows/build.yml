@@ -39,7 +39,7 @@ jobs:
           pip install --upgrade cython==0.29.36
           pip install buildozer
 
-      - name: Prepare Android SDK and Fake Old Tools Path
+      - name: Prepare SDK and Accept Licenses
         run: |
           rm -rf ~/.buildozer
           SDK_DIR="$HOME/.buildozer/android/platform/android-sdk"
@@ -47,26 +47,29 @@ jobs:
           mkdir -p "$SDK_DIR/tools/bin"
           mkdir -p "$SDK_DIR/licenses"
 
-          # कमांड-लाइन टूल्स डाउनलोड और एक्सट्रैक्ट करना
           cd "$SDK_DIR"
           curl -o cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
           unzip -q cmdline-tools.zip
           
           if [ -d "bin" ]; then
-            mv bin lib source.properties cmdline-tools/latest/
+            bin lib source.properties cmdline-tools/latest/
           elif [ -d "cmdline-tools" ]; then
             mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
           fi
           rm cmdline-tools.zip
 
-          # बिल्डोजर जिस 'tools/bin/sdkmanager' को खोजता है, उसे वहाँ डायरेक्ट लिंक या कॉपी कर देना
           cp -r cmdline-tools/latest/bin/* tools/bin/ || true
           cp -r cmdline-tools/latest/lib tools/ || true
 
-          # एंड्रॉइड लाइसेंस खुद से जनरेट करके डाल देना ताकि कभी अटके नहीं
+          # लाइसेंस पहले से डाल देना
           echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > licenses/android-sdk-license
           echo -e "\n24333f8a63b6825ea9c5514f83c2829b004d1fb8" >> licenses/android-sdk-license
           echo -e "\nd56f5187479451eabf01fb78af6dfcb131a648db" >> licenses/android-sdk-license
+
+          # सीधे sdkmanager से Build-Tools 33 इंस्टॉल करना ताकि 37 की जरूरत ही न पड़े
+          export PATH=$PATH:$SDK_DIR/cmdline-tools/latest/bin
+          yes | sdkmanager --licenses || true
+          sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
 
       - name: Build APK with Buildozer
         run: |
