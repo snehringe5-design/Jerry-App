@@ -27,11 +27,14 @@ orientation = portrait
 # (list) List of permissions
 android.permissions = INTERNET
 
-# (int) Target Android API, should be 31 for stable builds.
+# (int) Target Android API, should match the workflow
 android.api = 31
 
 # (int) Minimum API your APK will support.
 android.minapi = 21
+
+# (str) Android build tools version
+android.build_tools_version = 31.0.0
 
 # (int) Android NDK version to use
 android.ndk = 25b
