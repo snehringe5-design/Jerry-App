@@ -39,9 +39,12 @@ jobs:
           pip install --upgrade cython==0.29.36
           pip install buildozer
 
-      - name: Clear Cache and Build APK
+      - name: Force Fix SDK Build-Tools and Build
         run: |
           rm -rf ~/.buildozer
+          # Buildozer को चलाने से पहले एनवायरनमेंट में SDK 31 फिक्स करना
+          export ANDROIDAPI=31
+          export MINSDK=21
           buildozer -v android debug
 
       - name: Upload APK Artifact
