@@ -48,7 +48,8 @@ jobs:
     - name: Accept Android SDK Licenses and Build
       run: |
         mkdir -p ~/.android
-        sdkmanager --licenses || true
+        yes | sdkmanager --licenses || true
+        yes "y" | sdkmanager "build-tools;37.0.0" "platforms;android-34" || true
         buildozer -v android debug
 
     - name: Upload APK Artifact
