@@ -36,16 +36,20 @@ jobs:
           libsqlite3-dev \
           libssl-dev \
           libffi-dev \
-          liblzma-dev
+          liblzma-dev \
+          ant \
+          default-jdk
 
     - name: Install Buildozer and Cython
       run: |
         pip install --upgrade pip
         pip install --upgrade cython==0.29.36 buildozer
 
-    - name: Build APK with Buildozer
+    - name: Accept Android SDK Licenses and Build
       run: |
-        yes | buildozer -v android debug
+        mkdir -p ~/.android
+        sdkmanager --licenses || true
+        buildozer -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
