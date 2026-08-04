@@ -23,6 +23,3 @@ android.build_tools_version = 31.0.0
 android.ndk = 25b
 
 android.private_storage = True
-
-# SDK का रास्ता
-android.sdk_path = /home/runner/android-sdk
