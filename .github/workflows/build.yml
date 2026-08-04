@@ -45,6 +45,16 @@ jobs:
             cmake \
             ant
 
+      - name: Cache Buildozer global directory
+        uses: actions/cache@v4
+        with:
+          path: |
+            .buildozer
+            /home/runner/.buildozer
+          key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}-${{ hashFiles('*.py') }}
+          restore-keys: |
+            ${{ runner.os }}-buildozer-
+
       - name: Install Buildozer and dependencies
         run: |
           pip install --upgrade pip
@@ -58,14 +68,9 @@ jobs:
       - name: Prepare SDK for Buildozer
         run: |
           export ANDROID_HOME=$ANDROID_SDK_ROOT
-          
-          # Accept all Android SDK licenses automatically
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-          
-          # Install necessary packages
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools" "ndk;25.2.9519653"
 
-          # Forcefully create buildozer platform directory and COPY the working SDK there 
           mkdir -p /home/runner/.buildozer/android/platform
           rm -rf /home/runner/.buildozer/android/platform/android-sdk
           cp -r $ANDROID_HOME /home/runner/.buildozer/android/platform/android-sdk
