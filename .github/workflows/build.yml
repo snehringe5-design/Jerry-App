@@ -54,20 +54,20 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Configure SDK for Buildozer
+      - name: Prepare SDK for Buildozer
         run: |
           export ANDROID_HOME=$ANDROID_SDK_ROOT
           
-          # Accept licenses to avoid prompts
+          # Accept all Android SDK licenses automatically
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
           
-          # Install required components using the modern working sdkmanager
+          # Install necessary packages
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools" "ndk;25.2.9519653"
 
-          # Trick buildozer by linking the working runner SDK directly into buildozer's expected path
+          # Forcefully create buildozer platform directory and COPY the working SDK there 
           mkdir -p /home/runner/.buildozer/android/platform
           rm -rf /home/runner/.buildozer/android/platform/android-sdk
-          ln -s $ANDROID_HOME /home/runner/.buildozer/android/platform/android-sdk
+          cp -r $ANDROID_HOME /home/runner/.buildozer/android/platform/android-sdk
 
       - name: Build Android APK with Buildozer
         run: |
