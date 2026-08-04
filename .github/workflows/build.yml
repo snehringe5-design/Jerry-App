@@ -24,7 +24,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             python3-pip \
-            build-setup \
             git \
             zip \
             unzip \
@@ -49,7 +48,6 @@ jobs:
         run: |
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           mkdir -p $ANDROID_HOME
-          # Buildozer dependencies check ke pehle tools setup
           yes | sdkmanager --licenses || true
 
       - name: Build Android APK with Buildozer
