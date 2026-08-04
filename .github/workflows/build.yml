@@ -19,6 +19,12 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -35,31 +41,23 @@ jobs:
             libncursesw5-dev \
             libsqlite3-dev \
             libffi-dev \
-            libssl-dev
+            libssl-dev \
+            cmake
 
-      - name: Install Buildozer and Cython
+      - name: Install Buildozer and dependencies
         run: |
           pip install --upgrade pip
           pip install cython==0.29.36
           pip install buildozer
           pip install --upgrade git+https://github.com/kivy/buildozer.git@master
 
-      - name: Setup Android SDK and Command-line Tools manually
+      # This action correctly sets up the Android SDK, cmdline-tools, and accepts all licenses
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install required Android SDK packages
         run: |
-          ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
-          mkdir -p $ANDROID_HOME/cmdline-tools
-          
-          # Official Android Command-line Tools download
-          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
-          unzip -q cmdline-tools.zip -d temp_tools
-          
-          # Structure it correctly for sdkmanager
-          mkdir -p $ANDROID_HOME/cmdline-tools/latest
-          mv temp_tools/cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/
-          rm -rf cmdline-tools.zip temp_tools
-          
-          # Accept licenses in advance
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses --sdk_root=$ANDROID_HOME || true
+          yes | sdkmanager "platforms;android-33" "build-tools;33.0.2" "ndk;25.2.9519653"
 
       - name: Build Android APK with Buildozer
         run: |
@@ -70,3 +68,4 @@ jobs:
         with:
           name: package
           path: bin/*.apk
+          
