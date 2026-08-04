@@ -1,12 +1,16 @@
-name: Build APK
+name: Build Android APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    # Node.js deprecation warning को ठीक करने के लिए environment variable
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
     steps:
       - name: Checkout code
@@ -23,33 +27,20 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install dependencies
+      - name: Install Buildozer dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git zip unzip libltdl-dev libffi-dev libssl-dev python3-pip openjdk-17-jdk
-          pip install --upgrade pip
-          pip install --user Cython==0.29.36 buildozer
+          sudo apt-get install -y \
+              git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config \
+              zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
 
-      - name: Pre-download Android SDK tools and fix paths
+      - name: Install Buildozer and Cython
         run: |
-          export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
-          mkdir -p $ANDROID_HOME/cmdline-tools
-          cd $ANDROID_HOME/cmdline-tools
-          curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-          unzip -o commandlinetools.zip
-          rm -rf latest
-          mv cmdline-tools latest
-          
-          # Buildozer के लिए sdkmanager का पाथ सही करना
-          mkdir -p $ANDROID_HOME/tools/bin
-          ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
+          pip install --upgrade pip
+          pip install --upgrade cython==0.29.36
+          pip install buildozer
 
-          mkdir -p $HOME/.android
-          touch $HOME/.android/repositories.cfg
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
-
-      - name: Build Android APK with Buildozer
+      - name: Build with Buildozer
         run: |
           buildozer -v android debug
 
