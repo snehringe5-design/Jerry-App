@@ -25,7 +25,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install system dependencies (including Ant)
+      - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -45,14 +45,22 @@ jobs:
             cmake \
             ant
 
-      - name: Cache Buildozer & Android SDK
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK tools & NDK via sdkmanager
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools" "ndk;25.2.9519653"
+
+      - name: Cache Buildozer global directory
         uses: actions/cache@v4
         with:
           path: |
             /home/runner/.buildozer
-          key: ${{ runner.os }}-buildozer-sdk-v3-${{ hashFiles('buildozer.spec') }}
+          key: ${{ runner.os }}-buildozer-v4-${{ hashFiles('buildozer.spec') }}
           restore-keys: |
-            ${{ runner.os }}-buildozer-sdk-v3-
+            ${{ runner.os }}-buildozer-v4-
 
       - name: Install Buildozer and dependencies
         run: |
@@ -61,28 +69,10 @@ jobs:
           pip install --upgrade git+https://github.com/kivy/buildozer.git@master
           pip install --upgrade git+https://github.com/kivy/python-for-android.git@master
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Prepare SDK for Buildozer
-        run: |
-          export ANDROID_HOME=$ANDROID_SDK_ROOT
-          
-          if [ -d "/home/runner/.buildozer/android/platform/android-sdk" ]; then
-            echo "SDK already cached, skipping download!"
-          else
-            yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-            $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools" "ndk;25.2.9519653"
-
-            mkdir -p /home/runner/.buildozer/android/platform
-            rm -rf /home/runner/.buildozer/android/platform/android-sdk
-            cp -r $ANDROID_HOME /home/runner/.buildozer/android/platform/android-sdk
-          fi
-
       - name: Build Android APK with Buildozer
         env:
-          ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
-          ANDROID_NDK_HOME: /home/runner/.buildozer/android/platform/android-sdk/ndk/25.2.9519653
+          ANDROID_HOME: ${{ env.ANDROID_SDK_ROOT }}
+          ANDROID_NDK_HOME: ${{ env.ANDROID_SDK_ROOT }}/ndk/25.2.9519653
           ANT_HOME: /usr/share/ant
         run: |
           buildozer -v android debug
