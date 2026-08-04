@@ -39,6 +39,9 @@ android.sdk = 31
 # (str) Android NDK version to use
 android.ndk = 25b
 
+# (str) Custom Android SDK build-tools version
+android.build_tools_version = 31.0.0
+
 # (str) Supported architectures
 android.archs = arm64-v8a
 
