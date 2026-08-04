@@ -54,19 +54,20 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install SDK 33 and Link for Buildozer
+      - name: Configure SDK for Buildozer
         run: |
           export ANDROID_HOME=$ANDROID_SDK_ROOT
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses --sdk_root=$ANDROID_HOME || true
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools" "ndk;25.2.9519653" --sdk_root=$ANDROID_HOME
-
-          # Create buildozer expected directories and link them to the system Android SDK
-          mkdir -p /home/runner/.buildozer/android/platform
-          ln -s $ANDROID_HOME /home/runner/.buildozer/android/platform/android-sdk
           
-          # Also link build-tools 37 name to 33 so buildozer doesn't fail if it hardcodes 37
-          mkdir -p $ANDROID_HOME/build-tools/37.0.0
-          cp -r $ANDROID_HOME/build-tools/33.0.2/* $ANDROID_HOME/build-tools/37.0.0/
+          # Accept licenses to avoid prompts
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          
+          # Install required components using the modern working sdkmanager
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools" "ndk;25.2.9519653"
+
+          # Trick buildozer by linking the working runner SDK directly into buildozer's expected path
+          mkdir -p /home/runner/.buildozer/android/platform
+          rm -rf /home/runner/.buildozer/android/platform/android-sdk
+          ln -s $ANDROID_HOME /home/runner/.buildozer/android/platform/android-sdk
 
       - name: Build Android APK with Buildozer
         run: |
