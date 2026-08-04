@@ -9,8 +9,14 @@ package.name = jerryai
 # (str) Package domain (needed for android packaging)
 package.domain = org.sneh
 
+# (str) Source code where the main.py is located
+source.dir = .
+
 # (list) Source files to include (let it include python files and assets)
 source.include_exts = py,png,jpg,kv,atlas
+
+# (str) Application versioning (Needed by buildozer)
+version = 0.1
 
 # (list) Application requirements
 requirements = python3,kivy,plyer,requests,urllib3,idna,certifi,charset_normalizer
@@ -35,3 +41,7 @@ android.ndk = 25b
 
 # (str) Supported architectures
 android.archs = arm64-v8a
+
+[buildozer]
+log_level = 2
+warn_on_root = 1
