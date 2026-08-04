@@ -39,18 +39,19 @@ jobs:
           pip install --upgrade cython==0.29.36
           pip install buildozer
 
-      - name: Force Install SDK and Accept Licenses
+      - name: Prepare Android SDK and Fake Old Tools Path
         run: |
           rm -rf ~/.buildozer
-          mkdir -p ~/.buildozer/android/platform/android-sdk
-          cd ~/.buildozer/android/platform/android-sdk
-          
-          # कमांड-लाइन टूल्स डाउनलोड और अनजिप करना
+          SDK_DIR="$HOME/.buildozer/android/platform/android-sdk"
+          mkdir -p "$SDK_DIR/cmdline-tools/latest"
+          mkdir -p "$SDK_DIR/tools/bin"
+          mkdir -p "$SDK_DIR/licenses"
+
+          # कमांड-लाइन टूल्स डाउनलोड और एक्सट्रैक्ट करना
+          cd "$SDK_DIR"
           curl -o cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
           unzip -q cmdline-tools.zip
           
-          # फोल्डर स्ट्रक्चर को सही करना
-          mkdir -p cmdline-tools/latest
           if [ -d "bin" ]; then
             mv bin lib source.properties cmdline-tools/latest/
           elif [ -d "cmdline-tools" ]; then
@@ -58,12 +59,14 @@ jobs:
           fi
           rm cmdline-tools.zip
 
-          # पाथ सेट करना
-          export PATH=$PATH:$(pwd)/cmdline-tools/latest/bin
+          # बिल्डोजर जिस 'tools/bin/sdkmanager' को खोजता है, उसे वहाँ डायरेक्ट लिंक या कॉपी कर देना
+          cp -r cmdline-tools/latest/bin/* tools/bin/ || true
+          cp -r cmdline-tools/latest/lib tools/ || true
 
-          # लाइसेंस एक्सेप्ट करना और बिल्ड-टूल्स इंस्टॉल करना
-          yes | sdkmanager --licenses || true
-          sdkmanager "platform-tools" "platforms;android-31" "build-tools;37.0.0"
+          # एंड्रॉइड लाइसेंस खुद से जनरेट करके डाल देना ताकि कभी अटके नहीं
+          echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > licenses/android-sdk-license
+          echo -e "\n24333f8a63b6825ea9c5514f83c2829b004d1fb8" >> licenses/android-sdk-license
+          echo -e "\nd56f5187479451eabf01fb78af6dfcb131a648db" >> licenses/android-sdk-license
 
       - name: Build APK with Buildozer
         run: |
