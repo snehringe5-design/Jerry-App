@@ -1,7 +1,5 @@
 import os
 import threading
-import time
-import requests
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -34,26 +32,26 @@ class JerryJarvisBrain:
     def get_response(query):
         q = query.lower()
         
-        # 1. Creator & Identity (Strict rule: Sneh Ringe Sir / Sneh Sir)
+        # 1. Creator & Identity
         if any(w in q for w in ["kisne banaya", "who made you", "who created you", "kaun banaya", "tumhe kisne banaya"]):
             return "Sneh Sir, mujhe aap hi ke creator Sneh Ringe ne banaya hai. Main Sneh Ringe Sir ka personal AI assistant hoon."
         
         elif any(w in q for w in ["tum kon hon", "tum kon ho", "who are you", "kaun ho"]):
             return "Sneh Sir, main Jerry hoon—aapka apna zaati Jarvis-style AI assistant."
 
-        # 2. User Profile & Work Details (Patel Motors, Salary, Duty Time, Zomato, Gori Nagar, Indore)
+        # 2. User Profile & Work Details
         elif any(w in q for w in ["meri details", "mera profile", "meri jankari", "job", "salary", "duty", "zomato", "patel motors"]):
             return "Sneh Sir, aap Patel Motors par Service Advisor hain. Aapka duty time subah 9:30 se shaam 7:00 baje tak hai, salary 12000 hai. Extra income ke liye aap Zomato par kaam karna chahte hain. Aap Gori Nagar, Indore mein rehte hain aur aapka janm 21 May 2006 ko Indore mein hua hai."
 
-        # 3. Kundli, Grah, Nakshatra & Astrology (21-05-2006, Indore)
+        # 3. Kundli & Astrology
         elif any(w in q for w in ["kundli", "grah", "nakshatra", "rashifal", "astrology", "sitare", "planet"]):
             return "Sneh Sir, 21 May 2006 aur Indore janm sthan ke adhar par aapki kundli ke grah-nakshatra behad shubh aur unnati ke yog darsha rahe hain."
 
-        # 4. Units & Measurements (Kilogram, Ton, Kuntal)
+        # 4. Units & Measurements
         elif any(w in q for w in ["kg", "kilogram", "ton", "kuntal", "wajan", "weight"]):
             return "Sneh Sir, 1 Quintal = 100 किलोग्राम hota hai, aur 1 Ton = 1000 किलोग्राम (yaani 10 कंटल) hota hai."
 
-        # 5. World Currencies & Money
+        # 5. World Currencies
         elif any(w in q for w in ["currency", "paisa", "rupaye", "dollar", "money"]):
             return "Sneh Sir, alag-alag deshon mein alag currencies chalti hain jaise Bharat mein Indian Rupee (INR) aur US mein Dollar (USD)."
 
@@ -61,7 +59,7 @@ class JerryJarvisBrain:
         elif any(w in q for w in ["democracy", "tantra", "itihaas", "history", "yug", "satyug", "dwapar", "treta"]):
             return "Sneh Sir, purane yugo (Satyug, Treta, Dwapar aur Kaliyug) ka gyan hamare grantho mein hai, aur Bharat mein 1947 ke baad ek mazboot loktantra sthapit hai."
 
-        # 7. Vedas & Puranas (Chatur Ved, Shiv Puran, Garuda Puran)
+        # 7. Vedas & Puranas
         elif any(w in q for w in ["ved", "veda", "puran", "shiv puran", "garud puran", "gyan"]):
             return "Sneh Sir, charo ved aur puran jaise Shiv Puran aur Garuda Puran mein agath gyan samahit hai."
 
@@ -84,7 +82,7 @@ class JerryJarvisBrain:
                     return "Sneh Sir, flashlight off karne mein dikkat aayi."
             return "Sneh Sir, hardware module upabdh nahi hai."
 
-        # 9. Battery Status Check
+        # 9. Battery Status
         elif any(w in q for w in ["battery", "charge", "power"]):
             if HARDWARE_AVAILABLE:
                 try:
@@ -95,17 +93,17 @@ class JerryJarvisBrain:
                     return "Sneh Sir, battery status read karne mein asafalta rahi."
             return "Sneh Sir, battery data upalabdh nahi hai."
 
-        # 10. Camera & Vision Module
+        # 10. Camera
         elif any(w in q for w in ["camera", "dekh", "samne", "photo", "scan"]):
             return "Sneh Sir, camera module active kiya ja raha hai taaki samne ki sthiti ko scan kiya ja sake."
 
-        # 11. Apps Control (Instagram, WhatsApp, OTP/SMS)
+        # 11. Apps Control
         elif any(w in q for w in ["instagram", "insta", "whatsapp", "otp", "message", "sms"]):
             return "Sneh Sir, target app ya SMS/OTP ko track karne ki permission active kar di gayi hai."
 
-        # Default Jarvis Response
+        # Default Response
         else:
-            return f"Beshak Sneh Sir, maine aapki baat ' {query} ' dhyan se sun li hai. Hukam kijiye is par kya karyavahi ki jaye?"
+            return f"Beshak Sneh Sir, maine aapki baat '{query}' dhyan se sun li hai. Hukam kijiye is par kya karyavahi ki jaye?"
 
 class LoginScreen(BoxLayout):
     def __init__(self, switch_callback, open_change_pass, **kwargs):
@@ -253,12 +251,13 @@ class JerryUI(BoxLayout):
 
         self.add_widget(Label(
             text="JARVIS - JERRY AI (SUPREME SYSTEM CONTROL)",
-            font_size=18,
+            font_size=16,
             size_hint_y=None,
-            height=50,
+            height=40,
             color=(0, 0, 0, 1)
         ))
 
+        # Response label with proper text wrapping and sizing
         self.response_label = Label(
             text="Adab Sneh Sir! Main Sneh Ringe Sir ka personal AI assistant Jerry hoon. Hukam kijiye.",
             font_size=16,
@@ -266,7 +265,7 @@ class JerryUI(BoxLayout):
             halign='center',
             valign='middle'
         )
-        self.response_label.bind(size=lambda s, w: setattr(s, 'text_size', w))
+        self.response_label.bind(size=lambda s, w: setattr(s, 'text_size', (w[0] - 20, None)))
         self.add_widget(self.response_label)
 
         self.user_input = TextInput(
@@ -326,4 +325,4 @@ class JerryApp(App):
 
 if __name__ == '__main__':
     JerryApp().run()
-            
+    
