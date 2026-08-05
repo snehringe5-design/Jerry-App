@@ -10,6 +10,10 @@ jobs:
     
     env:
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+      ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
+      ANDROID_NDK_HOME: /home/runner/.buildozer/android/platform/android-ndk-r25b
+      ANDROIDNDK: /home/runner/.buildozer/android/platform/android-ndk-r25b
+      ANDROIDSDK: /home/runner/.buildozer/android/platform/android-sdk
 
     steps:
       - name: Checkout code
