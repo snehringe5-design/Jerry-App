@@ -7,6 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     
     env:
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
@@ -47,7 +48,6 @@ jobs:
 
       - name: Prepare SDK, NDK and Accept Licenses
         run: |
-          # गिटहब रनर के फालतू और पुराने एनडीके को पूरी तरह डिलीट करना ताकि r25b ही चले
           rm -rf /usr/local/lib/android/sdk/ndk/*
           rm -rf ~/.buildozer
           
