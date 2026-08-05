@@ -1,5 +1,6 @@
 import os
 import threading
+import requests
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scrollview import ScrollView
@@ -12,6 +13,9 @@ from kivy.core.window import Window
 from kivy.metrics import dp, sp
 
 Window.softinput_mode = "below_target"
+
+# ESP32 / ESP8266 Robot IP Address (Future hardware connectivity ke liye)
+ROBOT_IP = "http://192.168.4.1" 
 
 # Text-to-Speech Setup
 HARDWARE_TTS = False
@@ -28,6 +32,19 @@ try:
     HARDWARE_STT = True
 except Exception:
     pass
+
+class RobotController:
+    @staticmethod
+    def send_command(command_path):
+        """ESP32/ESP8266 ko background thread mein command bhejta hai."""
+        def send_request():
+            try:
+                url = f"{ROBOT_IP}/{command_path}"
+                requests.get(url, timeout=2)
+            except Exception:
+                pass  # Abhi hardware connect nahi hai toh app crash nahi hoga
+
+        threading.Thread(target=send_request, daemon=True).start()
 
 class JerryBrain:
     @staticmethod
@@ -48,23 +65,28 @@ class JerryBrain:
 
         # 4. Robot & Hardware Control Commands
         elif any(w in q for w in ["aage chalo", "forward", "aage badho"]):
+            RobotController.send_command("forward")
             return "Sneh Sir, robot ko aage chalane ka command bhej diya gaya hai! (Moving Forward)"
 
         elif any(w in q for w in ["peeche", "back", "piche"]):
+            RobotController.send_command("backward")
             return "Sneh Sir, robot ko peeche lene ka command bhej diya gaya hai! (Moving Backward)"
 
         elif any(w in q for w in ["ruk jao", "stop", "rok do"]):
+            RobotController.send_command("stop")
             return "Sneh Sir, robot ko rok diya gaya hai! (Robot Stopped)"
 
         elif any(w in q for w in ["light", "batti", "torch", "led"]):
+            RobotController.send_command("toggle_light")
             return "Sneh Sir, robot ki light on/off karne ka command execute ho gaya hai!"
 
         elif any(w in q for w in ["motor", "engine", "chalao"]):
+            RobotController.send_command("start_motor")
             return "Sneh Sir, robot ki motor start kar di gayi hai!"
 
         # 5. Phone / Battery Status
         elif any(w in q for w in ["battery", "batty", "charge"]):
-            return "Sneh Sir, aapka phone abhi charging par hai aur system bilkul fit kaam kar raha hai."
+            return "Sneh Sir, aapka phone system bilkul fit kaam kar raha hai."
 
         # 6. General Greetings
         elif any(w in q for w in ["hello", "hi", "hey", "namaste", "heloo", "kaise ho", "kya haal"]):
@@ -158,7 +180,7 @@ class JerryUI(BoxLayout):
             try:
                 stt.start(callback=self.on_speech_result)
                 self.user_input.hint_text = "Sun raha hoon Sneh Sir..."
-            except Exception as e:
+            except Exception:
                 self.user_input.hint_text = "Mic start nahi ho paya!"
         else:
             self.user_input.hint_text = "Type karke bhejein Sneh Sir!"
@@ -191,4 +213,4 @@ class JerryApp(App):
 
 if __name__ == '__main__':
     JerryApp().run()
-    
+                                  
