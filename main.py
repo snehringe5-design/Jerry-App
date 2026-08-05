@@ -9,9 +9,12 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.clock import Clock
+from kivy.core.window import Window
+
+# Android par keyboard aane par screen adjust karne ke liye
+Window.softinput_mode = "below_target"
 
 PASSWORD_FILE = "jerry_pass.txt"
-# Yahan apni OpenAI ya Gemini API key daal sakte hain Sneh Sir
 API_KEY = "YOUR_API_KEY_HERE"
 
 def get_saved_password():
@@ -31,7 +34,6 @@ class JerryBrain:
     def get_response(query):
         q = query.lower()
         
-        # Personal & Hardcoded Rules
         if any(w in q for w in ["kisne banaya", "who made you", "kaun banaya"]):
             return "Sneh Sir, mujhe aap hi ke creator Sneh Ringe ne banaya hai."
         
@@ -41,7 +43,6 @@ class JerryBrain:
         elif any(w in q for w in ["kundli", "grah", "nakshatra", "astrology"]):
             return "Sneh Sir, 21 May 2006 aur Indore janm sthan ke adhar par aapki kundli ke grah-nakshatra behad shubh hain."
 
-        # Online API Integration
         else:
             try:
                 if API_KEY != "YOUR_API_KEY_HERE":
@@ -115,13 +116,7 @@ class LoginScreen(BoxLayout):
         self.change_btn.bind(on_press=lambda x: self.open_change_pass())
         self.add_widget(self.change_btn)
 
-        self.msg_label = Label(
-            text="",
-            font_size=16,
-            color=(0.8, 0.1, 0.1, 1),
-            size_hint_y=None,
-            height=40
-        )
+        self.msg_label = Label(text="", font_size=16, color=(0.8, 0.1, 0.1, 1), size_hint_y=None, height=40)
         self.add_widget(self.msg_label)
 
     def verify_password(self, instance):
@@ -147,44 +142,17 @@ class ChangePasswordScreen(BoxLayout):
             color=(0.1, 0.1, 0.1, 1)
         ))
 
-        self.old_input = TextInput(
-            hint_text="Purana Password...",
-            password=True,
-            font_size=18,
-            size_hint_y=None,
-            height=60,
-            multiline=False
-        )
+        self.old_input = TextInput(hint_text="Purana Password...", password=True, font_size=18, size_hint_y=None, height=60, multiline=False)
         self.add_widget(self.old_input)
 
-        self.new_input = TextInput(
-            hint_text="Naya Password...",
-            password=True,
-            font_size=18,
-            size_hint_y=None,
-            height=60,
-            multiline=False
-        )
+        self.new_input = TextInput(hint_text="Naya Password...", password=True, font_size=18, size_hint_y=None, height=60, multiline=False)
         self.add_widget(self.new_input)
 
-        self.save_btn = Button(
-            text="SAVE",
-            font_size=18,
-            bold=True,
-            size_hint_y=None,
-            height=60,
-            background_color=(0.1, 0.7, 0.3, 1)
-        )
+        self.save_btn = Button(text="SAVE", font_size=18, bold=True, size_hint_y=None, height=60, background_color=(0.1, 0.7, 0.3, 1))
         self.save_btn.bind(on_press=self.update_password)
         self.add_widget(self.save_btn)
 
-        self.back_btn = Button(
-            text="Back",
-            font_size=16,
-            size_hint_y=None,
-            height=50,
-            background_color=(0.4, 0.4, 0.4, 1)
-        )
+        self.back_btn = Button(text="Back", font_size=16, size_hint_y=None, height=50, background_color=(0.4, 0.4, 0.4, 1))
         self.back_btn.bind(on_press=lambda x: self.back_to_login())
         self.add_widget(self.back_btn)
 
@@ -207,7 +175,7 @@ class JerryUI(BoxLayout):
     def __init__(self, **kwargs):
         super(JerryUI, self).__init__(**kwargs)
         self.orientation = 'vertical'
-        self.padding = 15
+        self.padding = 10
         self.spacing = 10
 
         self.add_widget(Label(
@@ -220,14 +188,14 @@ class JerryUI(BoxLayout):
         ))
 
         self.scroll = ScrollView(size_hint=(1, 1))
-        self.chat_layout = GridLayout(cols=1, spacing=10, size_hint_y=None)
+        self.chat_layout = GridLayout(cols=1, spacing=15, size_hint_y=None)
         self.chat_layout.bind(minimum_height=self.chat_layout.setter('height'))
         self.scroll.add_widget(self.chat_layout)
         self.add_widget(self.scroll)
 
         self.add_bubble("Jerry: Adab Sneh Sir! Hukam kijiye.", is_user=False)
 
-        input_box = BoxLayout(orientation='horizontal', size_hint_y=None, height=55, spacing=10)
+        input_box = BoxLayout(orientation='horizontal', size_hint_y=None, height=60, spacing=10)
         
         self.user_input = TextInput(
             hint_text="Yahan likhiye Sneh Sir...",
@@ -255,11 +223,11 @@ class JerryUI(BoxLayout):
             font_size=16,
             color=(1, 1, 1, 1) if is_user else (0.1, 0.1, 0.1, 1),
             size_hint_y=None,
-            text_size=(300, None),
+            text_size=(320, None),
             halign='right' if is_user else 'left',
             valign='middle'
         )
-        lbl.bind(texture_size=lambda s, w: setattr(s, 'height', max(45, w[1] + 15)))
+        lbl.bind(texture_size=lambda s, w: setattr(s, 'height', max(50, w[1] + 20)))
         self.chat_layout.add_widget(lbl)
         self.scroll.scroll_y = 0
 
@@ -277,7 +245,6 @@ class JerryUI(BoxLayout):
 
 class JerryApp(App):
     def build(self):
-        from kivy.core.window import Window
         Window.clearcolor = (0.95, 0.95, 0.95, 1)
         self.root_layout = BoxLayout(orientation='vertical')
         self.show_login()
@@ -297,4 +264,3 @@ class JerryApp(App):
 
 if __name__ == '__main__':
     JerryApp().run()
-        
