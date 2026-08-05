@@ -10,10 +10,10 @@ from kivy.uix.textinput import TextInput
 from kivy.clock import Clock
 
 try:
-    from plyer import tts
-    TTS_AVAILABLE = True
+    from plyer import tts, battery, flashlight
+    HARDWARE_AVAILABLE = True
 except Exception:
-    TTS_AVAILABLE = False
+    HARDWARE_AVAILABLE = False
 
 PASSWORD_FILE = "jerry_pass.txt"
 
@@ -34,41 +34,78 @@ class JerryJarvisBrain:
     def get_response(query):
         q = query.lower()
         
-        # 1. Creator Identity
-        if any(w in q for w in ["kisne banaya", "who made you", "who created you", "kaun banaya"]):
-            return "Janab, mujhe mere creator Sneh Ringe ne banaya hai. Main unhi ka banaya hua Jarvis hoon."
+        # 1. Creator & Identity (Strict rule: Sneh Ringe Sir / Sneh Sir)
+        if any(w in q for w in ["kisne banaya", "who made you", "who created you", "kaun banaya", "tumhe kisne banaya"]):
+            return "Sneh Sir, mujhe aap hi ke creator Sneh Ringe ne banaya hai. Main Sneh Ringe Sir ka personal AI assistant hoon."
         
-        # 2. General Identity
         elif any(w in q for w in ["tum kon hon", "tum kon ho", "who are you", "kaun ho"]):
-            return "Janab, main Jerry hoon—aapka apna zaati AI assistant, bilkul Jarvis ki tarah."
-        
-        # 3. Battery Status Check
+            return "Sneh Sir, main Jerry hoon—aapka apna zaati Jarvis-style AI assistant, jise aapke sabhi kaamo aur system control ke liye banaya gaya hai."
+
+        # 2. User Profile & Work Details (Patel Motors, Salary, Duty Time, Zomato, Gori Nagar, Indore)
+        elif any(w in q for w in ["meri details", "mera profile", "meri jankari", "job", "salary", "duty", "zomato", "patel motors"]):
+            return "Sneh Sir, aap Patel Motors par Service Advisor hain. Aapka duty time subah 9:30 se shaam 7:00 baje tak hai (overtime ka alag se bhugtan nahi hai), aur salary 12000 hai. Extra income ke liye aap Zomato par kaam karna chahte hain. Aap Gori Nagar, Indore mein rehte hain aur aapka janm 21 May 2006 ko Indore mein hua hai."
+
+        # 3. Kundli, Grah, Nakshatra & Astrology (21-05-2006, Indore)
+        elif any(w in q for w in ["kundli", "grah", "nakshatra", "rashifal", "astrology", "sitare", "planet"]):
+            return "Sneh Sir, 21 May 2006 aur Indore janm sthan ke adhar par aapki kundli ke grah-nakshatra behad shubh aur unnati ke yog darsha rahe hain. Aapka bhavishya ujjwal hai!"
+
+        # 4. Units & Measurements (Kilogram, Ton, Kuntal)
+        elif any(w in q for w in ["kg", "kilogram", "ton", "kuntal", "wajan", "weight"]):
+            return "Sneh Sir, vajan ki ikaaiyon ka hisaab yeh hai: 1 Quintal (कंटल) = 100 किलोग्राम (Kg) hota hai, aur 1 Ton = 1000 किलोग्राम (यानि 10 कंटल) hota hai."
+
+        # 5. World Currencies & Money
+        elif w in q and any(sub in q for sub in ["currency", "paisa", "rupaye", "dollar", "money"]):
+            return "Sneh Sir, duniya bhar mein alag-alag currencies chalti hain jaise Bharat mein Indian Rupee (INR), US mein US Dollar (USD), Europe mein Euro, UK mein Pound, aadi. Har desh ki currency ki apni arthik pehchan hoti hai."
+
+        # 6. Indian Democracy & History
+        elif any(w in q for w in ["democracy", "tantra", "itihaas", "history", "yug", "satyug", "dwapar", "treta"]):
+            return "Sneh Sir, Bharatiya itihaas aur purane yugo (Satyug, Treta Yug, Dwapar Yug aur ab Kaliyug) ka gyan hamare grantho mein hai. Vahi Bharat mein 1947 ki azaadi ke baad ek mazboot loktantra (Democracy) sthapit ki gayi hai jisme chunav ke madhyam se sarakar chuni jaati hai."
+
+        # 7. Vedas & Puranas (Chatur Ved, Shiv Puran, Garuda Puran)
+        elif any(w in q for w in ["ved", "veda", "puran", "shiv puran", "garud puran", "gyan"]):
+            return "Sneh Sir, charo ved (Rigveda, Samaveda, Yajurveda, Atharvaveda) aur puran jaise ki Shiv Puran, Garuda Puran aadi mein aatma, moksh, sansaar aur vigyan ka agath gyan samahit hai."
+
+        # 8. Flashlight / Torch Control
+        elif any(w in q for w in ["torch on", "flashlight on", "light jalao", "torch jalao"]):
+            if HARDWARE_AVAILABLE:
+                try:
+                    flashlight.on()
+                    return "Beshak Sneh Sir, flashlight on kar di gayi hai."
+                except Exception:
+                    return "Sneh Sir, flashlight on karne mein takneki dikkat aayi."
+            return "Sneh Sir, hardware module upabdh nahi hai."
+
+        elif any(w in q for w in ["torch off", "flashlight off", "light bujhaao", "torch band"]):
+            if HARDWARE_AVAILABLE:
+                try:
+                    flashlight.off()
+                    return "Beshak Sneh Sir, flashlight off kar di gayi hai."
+                except Exception:
+                    return "Sneh Sir, flashlight off karne mein dikkat aayi."
+            return "Sneh Sir, hardware module upabdh nahi hai."
+
+        # 9. Battery Status Check
         elif any(w in q for w in ["battery", "charge", "power"]):
-            return "Janab, system ki battery status check karne ke liye Android native bridge active kiya ja raha hai."
-        
-        # 4. Flashlight / Torch
-        elif any(w in q for w in ["torch", "flashlight", "light jalao"]):
-            return "Beshak janab, flashlight on karne ka command execute ho raha hai."
-        
-        # 5. Camera & Vision
-        elif any(w in q for w in ["camera", "dekh", "samne", "photo", "video"]):
-            return "Janab, camera module active karke samne ki cheezon ko scan karne ki koshish ki ja rahi hai."
-        
-        # 6. Instagram & Apps
-        elif any(w in q for w in ["instagram", "insta", "whatsapp", "app kholo", "open app"]):
-            return "Janab, aapke kehne par target app ko launch karne aur uske notifications/messages ko track karne ki permission di ja chuki hai."
-        
-        # 7. OTP & Messages
-        elif any(w in q for w in ["otp", "message", "sms", "code"]):
-            return "Janab, jaise hi koi naya OTP ya SMS aayega, main use turant read karke aapko bata dunga."
-        
-        # 8. Voice & Offline Brain
-        elif any(w in q for w in ["voice", "bolo", "suno", "offline"]):
-            return "Janab, speech-to-text aur local AI model ko integrate karne ka framework taiyar hai."
-        
+            if HARDWARE_AVAILABLE:
+                try:
+                    status = battery.status
+                    percentage = status.get('percentage', 'unknown')
+                    return f"Sneh Sir, current battery level {percentage}% hai."
+                except Exception:
+                    return "Sneh Sir, battery status read karne mein asafalta rahi."
+            return "Sneh Sir, battery data upalabdh nahi hai."
+
+        # 10. Camera & Vision Module
+        elif any(w in q for w in ["camera", "dekh", "samne", "photo", "scan"]):
+            return "Sneh Sir, camera module active kiya ja raha hai taaki samne ki sthiti ko scan kiya ja sake."
+
+        # 11. Apps Control (Instagram, WhatsApp, OTP/SMS)
+        elif any(w in q for w in ["instagram", "insta", "whatsapp", "otp", "message", "sms"]):
+            return "Sneh Sir, aapke kehne par target app ya SMS/OTP ko track karne ki permission active kar di gayi hai."
+
         # Default Jarvis Response
         else:
-            return f"Beshak janab, maine aapki baat ' {query} ' gehrai se sun li hai. Hukam kijiye is par kya amal kiya jaye?"
+            return f"Beshak Sneh Sir, maine aapki baat ' {query} ' gehrai se sun li hai. Hukam kijiye is par kya karyavahi ki jaye?"
 
 def auto_repair_and_update():
     time.sleep(10)
@@ -88,8 +125,8 @@ def auto_repair_and_update():
                 if new_code != old_code:
                     with open(local_file, "w", encoding="utf-8") as f:
                         f.write(new_code)
-                    if TTS_AVAILABLE:
-                        Clock.schedule_once(lambda dt: tts.speak("Janab, maine apna code khud update kar liya hai."), 0.1)
+                    if HARDWARE_AVAILABLE:
+                        Clock.schedule_once(lambda dt: tts.speak("Sneh Sir, maine apna code khud update kar liya hai."), 0.1)
         except Exception as e:
             print(f"Update error: {e}")
         time.sleep(300)
@@ -104,7 +141,7 @@ class LoginScreen(BoxLayout):
         self.open_change_pass = open_change_pass
 
         self.add_widget(Label(
-            text="JERRY AI - ULTIMATE SECURE LOGIN",
+            text="JERRY AI - SUPREME MASTER LOGIN",
             font_size=20,
             size_hint_y=None,
             height=50,
@@ -112,7 +149,7 @@ class LoginScreen(BoxLayout):
         ))
 
         self.pass_input = TextInput(
-            hint_text="Enter Password (Janab)...",
+            hint_text="Enter Password, Sneh Sir...",
             password=True,
             size_hint_y=None,
             height=60,
@@ -152,7 +189,7 @@ class LoginScreen(BoxLayout):
         if self.pass_input.text.strip() == current_pass:
             self.switch_callback()
         else:
-            self.msg_label.text = "Galat password janab! Dubara koshish karein."
+            self.msg_label.text = "Galat password Sneh Sir! Dubara koshish karein."
 
 class ChangePasswordScreen(BoxLayout):
     def __init__(self, back_to_login, **kwargs):
@@ -224,12 +261,12 @@ class ChangePasswordScreen(BoxLayout):
             if new_p != "":
                 save_new_password(new_p)
                 self.msg_label.color = (0.1, 0.6, 0.1, 1)
-                self.msg_label.text = "Password safaltapoorvak badal gaya janab!"
+                self.msg_label.text = "Password safaltapoorvak badal gaya Sneh Sir!"
                 Clock.schedule_once(lambda dt: self.back_to_login(), 1.5)
             else:
-                self.msg_label.text = "Naya password khali nahi ho sakta janab!"
+                self.msg_label.text = "Naya password khali nahi ho sakta Sneh Sir!"
         else:
-            self.msg_label.text = "Purana password galat hai janab!"
+            self.msg_label.text = "Purana password galat hai Sneh Sir!"
 
 class JerryUI(BoxLayout):
     def __init__(self, **kwargs):
@@ -239,7 +276,7 @@ class JerryUI(BoxLayout):
         self.spacing = 20
 
         self.add_widget(Label(
-            text="JARVIS - JERRY AI (FULL SYSTEM ACCESS)",
+            text="JARVIS - JERRY AI (SUPREME SYSTEM CONTROL)",
             font_size=18,
             size_hint_y=None,
             height=50,
@@ -247,7 +284,7 @@ class JerryUI(BoxLayout):
         ))
 
         self.response_label = Label(
-            text="Adab janab! Main aapka Jerry hoon. Battery, Torch, Camera, Apps, aur OTP—sab par meri nazar hai. Hukam kijiye.",
+            text="Adab Sneh Sir! Main Sneh Ringe Sir ka personal AI assistant Jerry hoon. Sabhi system controls aur gyan database load ho chuke hain. Hukam kijiye.",
             font_size=16,
             color=(0.2, 0.2, 0.2, 1),
             halign='center',
@@ -257,7 +294,7 @@ class JerryUI(BoxLayout):
         self.add_widget(self.response_label)
 
         self.user_input = TextInput(
-            hint_text="Yahan likhiye janab (jaise: camera, otp, instagram)...",
+            hint_text="Yahan likhiye Sneh Sir (jaise: kundli, ved, currency, torch)...",
             size_hint_y=None,
             height=60,
             multiline=False
@@ -281,7 +318,7 @@ class JerryUI(BoxLayout):
             reply = JerryJarvisBrain.get_response(text)
             self.response_label.text = reply
             
-            if TTS_AVAILABLE:
+            if HARDWARE_AVAILABLE:
                 try:
                     Clock.schedule_once(lambda dt: tts.speak(reply), 0.1)
                 except Exception as e:
