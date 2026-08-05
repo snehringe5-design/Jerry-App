@@ -1,12 +1,14 @@
-name: Build APK
+name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -25,27 +27,24 @@ jobs:
     - name: Cache Buildozer global directory
       uses: actions/cache@v4
       with:
-        path: |
-          .buildozer
-          /home/runner/.buildozer
-        key: buildozer-${{ hashFiles('buildozer.spec') }}-${{ github.run_id }}
+        path: ~/.buildozer
+        key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          buildozer-${{ hashFiles('buildozer.spec') }}-
-          buildozer-
+          ${{ runner.os }}-buildozer-
 
     - name: Install Buildozer and Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
-        pip3 install --upgrade pip
-        pip3 install buildozer cython==0.29.36
+        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+        pip install --upgrade pip
+        pip install --user --upgrade buildozer cython==0.29.36
 
     - name: Build with Buildozer
       run: |
         buildozer -v android debug
 
     - name: Upload APK Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/save-artifact@v4
       with:
         name: package
         path: bin/*.apk
