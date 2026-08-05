@@ -9,49 +9,36 @@ package.name = jerryai
 # (str) Package domain (needed for android packaging)
 package.domain = org.jerry
 
-# (str) Application versioning (method 1)
-version = 0.1
-
-# (list) Source files to include (let it empty to include all files)
+# (list) Source files to include (let it match your python files)
 source.dir = .
-
-# (list) Source files to exclude (let it empty to avoid exclusion)
-source.exclude_exts = spec
-
-# (list) List of inclusions using pattern matching
-source.include_patterns = assets/*,images/*.png
+source.exts = py,png,jpg,kv,atlas
 
 # (list) Application requirements
-requirements = python3,kivy,plyer,requests,urllib3,idna,certifi,charset_normalizer
+# Add your dependencies here (e.g., kivy)
+requirements = python3,kivy
 
 # (str) Supported orientations
 orientation = portrait
 
-[buildozer]
-
-# (int) Log level (0 = error only, 1 = info, 2 = debug with command output)
-log_level = 1
-
-# (str) Path to build artifact, storage, etc.
-bin_dir = ./bin
-
-# -----------------------------------------------------------------------------
-# Android specific
-
-# (list) Permissions
-android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
-
-# (str) Android NDK version to use
-android.ndk = 25b
+# (list) List of permissions
+android.permissions = INTERNET
 
 # (int) Target Android API, should be as high as possible.
 android.api = 33
 
 # (int) Minimum API your APK will support.
-android.min_api = 21
-
-# (bool) Use --private data storage (True) or --public (False)
-android.private_storage = True
+android.minapi = 24
 
 # (list) The android archs to build for, supported: arm64-v8a, armeabi-v7a, x86
 android.archs = arm64-v8a
+
+# (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
+log_level = 1
+
+[buildozer]
+
+# (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
+log_level = 1
+
+# (int) Display warning if buildozer is run as root (0 = False, 1 = True)
+warn_on_root = 1
