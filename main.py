@@ -22,16 +22,6 @@ try:
 except Exception:
     pass
 
-# Android Speech Recognition (Android Native Intent via Pyjnius)
-is_android = False
-try:
-    from jnius import autoclass
-    from android.runnable import run_on_ui_thread
-    is_android = True
-except Exception:
-    is_android = False
-
-# Apni API Key yahan daalein taaki Jerry khud soch sake
 API_KEY = "YOUR_API_KEY_HERE"
 
 class JerryBrain:
@@ -39,7 +29,6 @@ class JerryBrain:
     def get_response(query):
         q = query.lower()
         
-        # Local Smart Shortcuts
         if any(w in q for w in ["kisne banaya", "who made you", "kaun banaya", "tum kon ho", "tum kaun ho"]):
             return "Sneh Sir, main Jerry hoon, aapka personal AI assistant, jise aap hi ke creator Sneh Ringe ne banaya hai."
         
@@ -49,7 +38,6 @@ class JerryBrain:
         elif any(w in q for w in ["kundli", "grah", "nakshatra", "astrology"]):
             return "Sneh Sir, 21 May 2006 aur Indore janm sthan ke adhar par aapki kundli ke grah-nakshatra behad shubh hain."
 
-        # Online AI Brain (Khud se sochne ke liye)
         else:
             if API_KEY != "YOUR_API_KEY_HERE":
                 try:
@@ -72,8 +60,7 @@ class JerryBrain:
                 except Exception as e:
                     print(f"API Error: {e}")
             
-            # Agar API key nahi dali hai ya internet nahi hai toh smart fallback
-            return f"Sneh Sir, apne AI brain se soch raha hoon... Aapne pucha hai: '{query}'. Iske baare mein puri jaankari jald hi update hogi!"
+            return f"Sneh Sir, aapne pucha hai: '{query}'. Iske baare mein jald hi aur behtar jaankari di jayegi!"
 
 class JerryUI(BoxLayout):
     def __init__(self, **kwargs):
@@ -109,7 +96,7 @@ class JerryUI(BoxLayout):
             size_hint_x=0.18,
             background_color=(0.8, 0.2, 0.2, 1)
         )
-        self.mic_btn.bind(on_press=self.start_listening)
+        self.mic_btn.bind(on_press=self.simulate_listening)
         input_box.add_widget(self.mic_btn)
 
         self.user_input = TextInput(
@@ -154,32 +141,8 @@ class JerryUI(BoxLayout):
             except Exception:
                 pass
 
-    def start_listening(self, instance):
-        if is_android:
-            try:
-                self.open_android_mic()
-            except Exception:
-                self.user_input.hint_text = "Mic start nahi ho paya!"
-        else:
-            self.user_input.hint_text = "Voice sirf Android par chalegi!"
-
-    def open_android_mic(self):
-        if is_android:
-            try:
-                from jnius import autoclass
-                PythonActivity = autoclass('org.kivy.android.PythonActivity')
-                Intent = autoclass('android.content.Intent')
-                RecognizerIntent = autoclass('android.speech.RecognizerIntent')
-                
-                intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "hi-IN")
-                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Sneh Sir, boliye...")
-                
-                currentActivity = PythonActivity.mActivity
-                currentActivity.startActivityForResult(intent, 1010)
-            except Exception as e:
-                print(f"Mic Intent Error: {e}")
+    def simulate_listening(self, instance):
+        self.user_input.hint_text = "Sun raha hoon Sneh Sir, type karein..."
 
     def on_send(self, instance):
         text = self.user_input.text.strip()
