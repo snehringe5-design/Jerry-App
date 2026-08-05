@@ -1,6 +1,5 @@
 import os
 import threading
-import requests
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scrollview import ScrollView
@@ -22,45 +21,33 @@ try:
 except Exception:
     pass
 
-API_KEY = "YOUR_API_KEY_HERE"
-
 class JerryBrain:
     @staticmethod
     def get_response(query):
         q = query.lower()
         
+        # Identity & Creator
         if any(w in q for w in ["kisne banaya", "who made you", "kaun banaya", "tum kon ho", "tum kaun ho"]):
             return "Sneh Sir, main Jerry hoon, aapka personal AI assistant, jise aap hi ke creator Sneh Ringe ne banaya hai."
         
-        elif any(w in q for w in ["meri details", "mera profile", "job", "salary", "duty", "zomato", "patel motors", "gori nagar"]):
-            return "Sneh Sir, aap Patel Motors par Service Advisor hain. Duty subah 9:30 se shaam 7:00 baje tak hai, salary 12000 hai. Extra income ke liye Zomato par kaam karna chahte hain. Aap Gori Nagar, Indore mein rehte hain aur aapka janm 21 May 2006 ko hua hai."
+        # Personal Details & Profile
+        elif any(w in q for w in ["meri details", "mera profile", "job", "salary", "duty", "zomato", "patel motors", "gori nagar", "sneh ringe"]):
+            return "Sneh Sir, aap Patel Motors par Service Advisor hain. Duty subah 9:30 se shaam 7:00 baje tak hai, salary 12000 hai. Extra income ke liye Zomato par kaam karna chahte hain. Aap Gori Nagar, Indore mein rehte hain aur aapka janm 21 May 2006 ko subah 7:00 baje hua hai."
 
+        # Astrology & Kundli
         elif any(w in q for w in ["kundli", "grah", "nakshatra", "astrology"]):
-            return "Sneh Sir, 21 May 2006 aur Indore janm sthan ke adhar par aapki kundli ke grah-nakshatra behad shubh hain."
+            return "Sneh Sir, 21 May 2006 (subah 7:00 baje) aur Indore janm sthan ke adhar par aapki kundli ke grah-nakshatra behad shubh hain."
 
+        # General Greetings & Conversation
+        elif any(w in q for w in ["hello", "hi", "hey", "namaste"]):
+            return "Namaste Sneh Sir! Boliye, aaj main aapki kya madad karoon?"
+
+        elif any(w in q for w in ["kaise ho", "kya haal hai"]):
+            return "Main ekdum theek hoon Sneh Sir! Aap bataiye, aap kaise hain aur aaj duty par sab kaisa chal raha hai?"
+
+        # Default Intelligent Fallback for other queries
         else:
-            if API_KEY != "YOUR_API_KEY_HERE":
-                try:
-                    headers = {
-                        "Authorization": f"Bearer {API_KEY}",
-                        "Content-Type": "application/json"
-                    }
-                    data = {
-                        "model": "gpt-3.5-turbo",
-                        "messages": [
-                            {"role": "system", "content": "You are Jerry, a helpful personal AI assistant built for Sneh Ringe. Always address him strictly as Sneh Sir and speak in clear, simple Hindi."},
-                            {"role": "user", "content": query}
-                        ]
-                    }
-                    response = requests.post("https://api.openai.com/v1/chat/completions", json=data, headers=headers, timeout=12)
-                    if response.status_code == 200:
-                        res_json = response.json()
-                        ai_reply = res_json['choices'][0]['message']['content']
-                        return f"Sneh Sir, {ai_reply}"
-                except Exception as e:
-                    print(f"API Error: {e}")
-            
-            return f"Sneh Sir, aapne pucha hai: '{query}'. Iske baare mein jald hi aur behtar jaankari di jayegi!"
+            return f"Sneh Sir, aapne pucha hai: '{query}'. Is vishay par poori jaankari jald hi update ki jayegi!"
 
 class JerryUI(BoxLayout):
     def __init__(self, **kwargs):
