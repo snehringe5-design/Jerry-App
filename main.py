@@ -15,35 +15,46 @@ try:
 except Exception:
     TTS_AVAILABLE = False
 
-# Self-Repairing Engine (ऑटो-अपडेट और सेल्फ-रिपेयर फीचर)
+# Jerry का असली दिमागी लॉजिक (यहाँ सारे जवाब तय होंगे)
+class JerryBrain:
+    @staticmethod
+    def get_response(query):
+        q = query.lower()
+        if "tum kon ho" in q or "who are you" in q:
+            return "Sir, I am Jerry, your personal 24/7 active AI assistant."
+        elif "kaise ho" in q or "how are you" in q:
+            return "I am fully active and ready to help you, Sir!"
+        elif "zomato" in q:
+            return "Sir, working on Zomato is a great choice for extra income."
+        elif "patel motors" in q or "job" in q:
+            return "Sir, I am always here to assist you with your work and daily tasks."
+        else:
+            return f"Sir, I processed your query: '{q}'. Everything is running smoothly!"
+
+# सेल्फ-रिपेयर इंजन
 def auto_repair_and_update():
-    time.sleep(15)  # ऐप चालू होने के 15 सेकंड बाद बैकग्राउंड में चेक करना शुरू करेगा
+    time.sleep(15)
     while True:
         try:
-            # यहाँ अपनी गिटहब की raw फाइल का लिंक डालें जहाँ आपका लेटेस्ट लॉजिक हो
             url = "https://raw.githubusercontent.com/snehringe5-design/Jerry-App/main/latest_logic.py"
             response = requests.get(url, timeout=10)
             if response.status_code == 200:
                 new_code = response.text
                 local_file = "current_logic.py"
-                
                 if os.path.exists(local_file):
                     with open(local_file, "r", encoding="utf-8") as f:
                         old_code = f.read()
                 else:
                     old_code = ""
 
-                # अगर गिटहब पर कोड बदला हुआ मिला, तो यह खुद को अपडेट कर लेगा
                 if new_code != old_code:
                     with open(local_file, "w", encoding="utf-8") as f:
                         f.write(new_code)
-                    print("Jerry: Code successfully repaired/updated from cloud!")
                     if TTS_AVAILABLE:
                         Clock.schedule_once(lambda dt: tts.speak("सर, मैंने अपना कोड खुद अपडेट कर लिया है।"), 0.1)
         except Exception as e:
-            print(f"Repair check failed: {e}")
-        
-        time.sleep(300)  # हर 5 मिनट में अपडेट चेक करता रहेगा
+            print(f"Repair error: {e}")
+        time.sleep(300)
 
 class JerryRoot(BoxLayout):
     def __init__(self, **kwargs):
@@ -54,16 +65,16 @@ class JerryRoot(BoxLayout):
 
         # टाइटल
         self.add_widget(Label(
-            text="JERRY AI (SELF-REPAIRING)",
+            text="JERRY AI (SMART BRAIN)",
             font_size=20,
             size_hint_y=None,
             height=50,
             color=(0, 0, 0, 1)
         ))
 
-        # जवाब दिखाने के लिए साफ़ लेबल
+        # जवाब दिखाने के लिए लेबल
         self.response_label = Label(
-            text="Hello Sir! I am online with self-repair engine.",
+            text="Hello Sir! Ask me anything.",
             font_size=18,
             color=(0.2, 0.2, 0.2, 1),
             halign='center',
@@ -91,13 +102,13 @@ class JerryRoot(BoxLayout):
         self.send_btn.bind(on_press=self.on_send_click)
         self.add_widget(self.send_btn)
 
-        # बैकग्राउंड में सेल्फ-रिपेयर थ्रेड शुरू करना
+        # बैकग्राउंड थ्रेड्स
         threading.Thread(target=auto_repair_and_update, daemon=True).start()
 
     def on_send_click(self, instance):
         text = self.user_input.text.strip()
         if text != "":
-            reply = f"Sir, I received: '{text}'. Self-repair is active!"
+            reply = JerryBrain.get_response(text)
             self.response_label.text = reply
             
             # बोलकर जवाब देना
@@ -117,4 +128,4 @@ class JerryApp(App):
 
 if __name__ == '__main__':
     JerryApp().run()
-                    
+                                        
