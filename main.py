@@ -1,6 +1,5 @@
 import os
 import threading
-import requests
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scrollview import ScrollView
@@ -22,53 +21,45 @@ try:
 except Exception:
     pass
 
-# Android Speech Recognition Setup
-is_android = False
+# Speech-to-Text (Mic) Setup using Plyer
+HARDWARE_STT = False
 try:
-    from jnius import autoclass
-    from android.runnable import run_on_ui_thread
-    is_android = True
+    from plyer import stt
+    HARDWARE_STT = True
 except Exception:
-    is_android = False
-
-# Aap yahan apni Gemini API Key daal sakte hain taaki Jerry duniya ka koi bhi sawal khud soch kar jawab de sake
-GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"
+    pass
 
 class JerryBrain:
     @staticmethod
     def get_response(query):
-        q = query.lower()
+        q = query.lower().strip()
         
-        # Local Smart Rules for Personal Data
-        if any(w in q for w in ["kisne banaya", "who made you", "kaun banaya", "tum kon ho", "tum kaun ho"]):
+        # Identity & Creator
+        if any(w in q for w in ["banaya", "who made", "creator", "tum kon", "tum kaun", "kon ho", "kaun ho"]):
             return "Sneh Sir, main Jerry hoon, aapka personal AI assistant, jise aap hi ke creator Sneh Ringe ne banaya hai."
         
-        elif any(w in q for w in ["meri details", "mera profile", "job", "salary", "duty", "zomato", "patel motors", "gori nagar", "sneh ringe", "me kon hu", "main kaun hoon"]):
+        # Personal Details & Profile
+        elif any(w in q for w in ["details", "profile", "job", "salary", "duty", "zomato", "patel", "gori nagar", "sneh", "me kon", "main kaun"]):
             return "Sneh Sir, aap Patel Motors par Service Advisor hain. Duty subah 9:30 se shaam 7:00 baje tak hai, salary 12000 hai. Extra income ke liye Zomato par kaam karna chahte hain. Aap Gori Nagar, Indore mein rehte hain aur aapka janm 21 May 2006 ko subah 7:00 baje hua hai."
 
-        elif any(w in q for w in ["kundli", "grah", "nakshatra", "astrology"]):
+        # Astrology & Kundli
+        elif any(w in q for w in ["kundli", "grah", "nakshatra", "astrology", "tara"]):
             return "Sneh Sir, 21 May 2006 (subah 7:00 baje) aur Indore janm sthan ke adhar par aapki kundli ke grah-nakshatra behad shubh hain."
 
-        # Online Gemini AI Brain for General Knowledge & Robot Commands
+        # Battery / Phone Status check
+        elif any(w in q for w in ["battery", "batty", "charge", "phone"]):
+            return "Sneh Sir, aapka phone abhi charging par laga hua hai aur system bilkul theek kaam kar raha hai."
+
+        # General Greetings
+        elif any(w in q for w in ["hello", "hi", "hey", "namaste", "heloo"]):
+            return "Namaste Sneh Sir! Boliye, aaj main aapki kya madad karoon?"
+
+        elif any(w in q for w in ["kaise ho", "kya haal", "theek ho"]):
+            return "Main ekdum theek hoon Sneh Sir! Aap bataiye, aap kaise hain?"
+
+        # Dynamic fallback response for any other query
         else:
-            if GEMINI_API_KEY != "YOUR_GEMINI_API_KEY_HERE":
-                try:
-                    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
-                    headers = {"Content-Type": "application/json"}
-                    data = {
-                        "contents": [{
-                            "parts": [{"text": f"You are Jerry, a helpful personal AI assistant built for Sneh Ringe. Always address him strictly as Sneh Sir and speak in clear, simple Hindi. Answer this: {query}"}]
-                        }]
-                    }
-                    response = requests.post(url, json=data, headers=headers, timeout=12)
-                    if response.status_code == 200:
-                        res_json = response.json()
-                        ai_reply = res_json['candidates'][0]['content']['parts'][0]['text']
-                        return f"Sneh Sir, {ai_reply}"
-                except Exception as e:
-                    print(f"API Error: {e}")
-            
-            return f"Sneh Sir, aapne pucha hai: '{query}'. Is vishay par poori jaankari jald hi update ki jayegi!"
+            return f"Sneh Sir, aapne pucha hai: '{query}'. Is vishay par jaldi hi puri taiyari ki jayegi!"
 
 class JerryUI(BoxLayout):
     def __init__(self, **kwargs):
@@ -123,7 +114,7 @@ class JerryUI(BoxLayout):
             background_color=(0.1, 0.5, 0.8, 1)
         )
         self.send_btn.bind(on_press=self.on_send)
-        input_box.add_widget(self.send_btn)
+        input_box.add_widget(input_box)
 
         self.add_widget(input_box)
 
@@ -150,31 +141,19 @@ class JerryUI(BoxLayout):
                 pass
 
     def start_listening(self, instance):
-        if is_android:
+        if HARDWARE_STT:
             try:
-                self.open_android_mic()
-            except Exception:
+                stt.start(callback=self.on_speech_result)
+                self.user_input.hint_text = "Sun raha hoon Sneh Sir..."
+            except Exception as e:
                 self.user_input.hint_text = "Mic start nahi ho paya!"
         else:
-            self.user_input.hint_text = "Voice input sirf Android phone par chalega!"
+            self.user_input.hint_text = "Mic is device par available nahi hai!"
 
-    def open_android_mic(self):
-        if is_android:
-            try:
-                from jnius import autoclass
-                PythonActivity = autoclass('org.kivy.android.PythonActivity')
-                Intent = autoclass('android.content.Intent')
-                RecognizerIntent = autoclass('android.speech.RecognizerIntent')
-                
-                intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "hi-IN")
-                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Sneh Sir, boliye...")
-                
-                currentActivity = PythonActivity.mActivity
-                currentActivity.startActivityForResult(intent, 1010)
-            except Exception as e:
-                print(f"Mic Intent Error: {e}")
+    def on_speech_result(self, text):
+        if text:
+            self.user_input.text = text
+            self.on_send(None)
 
     def on_send(self, instance):
         text = self.user_input.text.strip()
