@@ -1,20 +1,24 @@
 import requests
 import json
 from kivy.app import App
+from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.scrollview import ScrollView
 
-GEMINI_API_KEY = "AQ.Ab8RN6IcAGQyGp4C_V1XR-eB1CJ9aW5OsshdsEArdMbigMc-Lg"
+# Keyboard adjustment setting for Android
+Window.softinput_mode = 'below_target'
+
+GEMINI_API_KEY = "AQ.Ab8RN6Je9glsfcASJfxjrsQNKo6gH8F2jKylRS0IToSXNVZVWA"
 GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
 
 class JerryBrain:
     def __init__(self):
         self.local_responses = {
             "hello": "Hello Sir! Main Jerry hoon, aapka personal assistant. Kaise madad karoon?",
-            "kaun ho tum": "Main Jerry hoon, aapka personal AI assistant, jise aap hi ke creator ne banaya hai.",
+            "kaun ho tum": "Main Jerry hoon, aapka personal AI assistant, jise aap hi ke creator Sneh Ringe ne banaya hai.",
             "light on": "ESP32_CMD:LIGHT_ON",
             "light off": "ESP32_CMD:LIGHT_OFF",
             "move forward": "ESP32_CMD:FORWARD"
@@ -22,7 +26,7 @@ class JerryBrain:
 
     def process_query(self, user_text):
         if not user_text:
-            return "Pehle kuch type ya bol toh lijiye Sir!"
+            return "Pehle kuch type toh kijiye Sir!"
             
         query = user_text.lower().strip()
         
@@ -31,7 +35,7 @@ class JerryBrain:
             if key in query:
                 return self.local_responses[key]
         
-        # Gemini AI fallback with detailed context
+        # Gemini AI fallback with full context
         return self.query_gemini_ai(user_text)
 
     def query_gemini_ai(self, prompt):
@@ -58,7 +62,7 @@ class JerryBrain:
             else:
                 return f"Sir, server error code {response.status_code} aa raha hai."
         except Exception as e:
-            return "Sir, internet connection ya request timeout ki dikkat hai."
+            return "Sir, internet connection check karein."
 
 class JerryApp(App):
     def build(self):
@@ -136,4 +140,4 @@ class JerryApp(App):
 
 if __name__ == "__main__":
     JerryApp().run()
-            
+        
