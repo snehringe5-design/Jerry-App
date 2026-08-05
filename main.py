@@ -31,6 +31,7 @@ try:
 except Exception:
     is_android = False
 
+# Apni API Key yahan daalein taaki Jerry khud soch sake
 API_KEY = "YOUR_API_KEY_HERE"
 
 class JerryBrain:
@@ -38,21 +39,20 @@ class JerryBrain:
     def get_response(query):
         q = query.lower()
         
-        if any(w in q for w in ["kisne banaya", "who made you", "kaun banaya", "tum kon ho", "tum kaun ho", "tum kya ho"]):
+        # Local Smart Shortcuts
+        if any(w in q for w in ["kisne banaya", "who made you", "kaun banaya", "tum kon ho", "tum kaun ho"]):
             return "Sneh Sir, main Jerry hoon, aapka personal AI assistant, jise aap hi ke creator Sneh Ringe ne banaya hai."
         
-        elif any(w in q for w in ["kya kar sakte ho", "tum kya kar sakte ho", "kya kar skhte ho", "features"]):
-            return "Sneh Sir, main aapki daily details yaad rakh sakta hoon, kundli aur astrology par baat kar sakta hoon, aur aapke sawaalon ke turant jawaab de sakta hoon."
-
         elif any(w in q for w in ["meri details", "mera profile", "job", "salary", "duty", "zomato", "patel motors", "gori nagar"]):
             return "Sneh Sir, aap Patel Motors par Service Advisor hain. Duty subah 9:30 se shaam 7:00 baje tak hai, salary 12000 hai. Extra income ke liye Zomato par kaam karna chahte hain. Aap Gori Nagar, Indore mein rehte hain aur aapka janm 21 May 2006 ko hua hai."
 
         elif any(w in q for w in ["kundli", "grah", "nakshatra", "astrology"]):
             return "Sneh Sir, 21 May 2006 aur Indore janm sthan ke adhar par aapki kundli ke grah-nakshatra behad shubh hain."
 
+        # Online AI Brain (Khud se sochne ke liye)
         else:
-            try:
-                if API_KEY != "YOUR_API_KEY_HERE":
+            if API_KEY != "YOUR_API_KEY_HERE":
+                try:
                     headers = {
                         "Authorization": f"Bearer {API_KEY}",
                         "Content-Type": "application/json"
@@ -64,15 +64,16 @@ class JerryBrain:
                             {"role": "user", "content": query}
                         ]
                     }
-                    response = requests.post("https://api.openai.com/v1/chat/completions", json=data, headers=headers, timeout=10)
+                    response = requests.post("https://api.openai.com/v1/chat/completions", json=data, headers=headers, timeout=12)
                     if response.status_code == 200:
                         res_json = response.json()
                         ai_reply = res_json['choices'][0]['message']['content']
                         return f"Sneh Sir, {ai_reply}"
-            except Exception as e:
-                print(f"API Error: {e}")
+                except Exception as e:
+                    print(f"API Error: {e}")
             
-            return f"Sneh Sir, maine aapki baat sun li hai. Bataiye is par kya karna hai?"
+            # Agar API key nahi dali hai ya internet nahi hai toh smart fallback
+            return f"Sneh Sir, apne AI brain se soch raha hoon... Aapne pucha hai: '{query}'. Iske baare mein puri jaankari jald hi update hogi!"
 
 class JerryUI(BoxLayout):
     def __init__(self, **kwargs):
@@ -160,7 +161,7 @@ class JerryUI(BoxLayout):
             except Exception:
                 self.user_input.hint_text = "Mic start nahi ho paya!"
         else:
-                self.user_input.hint_text = "Voice sirf Android par chalegi!"
+            self.user_input.hint_text = "Voice sirf Android par chalegi!"
 
     def open_android_mic(self):
         if is_android:
@@ -203,4 +204,4 @@ class JerryApp(App):
 
 if __name__ == '__main__':
     JerryApp().run()
-            
+        
