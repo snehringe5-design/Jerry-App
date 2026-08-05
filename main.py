@@ -1,6 +1,7 @@
 import threading
 import requests
 import json
+import base64
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
@@ -22,9 +23,10 @@ if platform == 'android':
     except Exception as e:
         tts = None
 
+# Keyboard ke screen ko theek rakhne ke liye mode
 Window.softinput_mode = 'below_target'
 
-GEMINI_API_KEY = "AQ.Ab8RN6Je9glsfcASJfxjrsQNKo6gH8F2jKylRS0IToSXNVZVWA"
+GEMINI_API_KEY = "YAHAN_APNI_API_KEY_DAALEIN"
 GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
 
 class JerryBrain:
@@ -42,32 +44,46 @@ class JerryBrain:
             return "Pehle kuch type toh kijiye Sir!"
             
         query = user_text.lower().strip()
-        
         for key in self.local_responses:
             if key in query:
                 return self.local_responses[key]
         
         return self.query_gemini_ai(user_text)
 
-    def query_gemini_ai(self, prompt):
+    def query_gemini_ai(self, prompt, image_path=None):
         headers = {'Content-Type': 'application/json'}
         system_instruction = (
             "You are Jerry, a smart, polite, and witty AI assistant created by Sneh Ringe. "
             "You know that Sneh Ringe lives in Gori Nagar, Indore, works as a Service Advisor at Patel Motors, "
             "has a salary of 12000, wants to do Zomato for extra income, and was born on 21 May 2006 at 7:00 AM. "
             "IMPORTANT: The user may type with spelling mistakes, broken words, slang, or casual/broken Hinglish. "
-            "Always intelligently understand the user's core intent despite any typos, grammatical errors, or informal phrasing. "
+            "Always intelligently understand the user's core intent despite any typos or informal phrasing. "
             "Always reply respectfully as 'Sir' in Hindi/Hinglish in a helpful tone."
         )
         
+        parts_list = [{"text": f"{system_instruction}\n\nUser Query: {prompt}"}]
+        
+        if image_path:
+            try:
+                with open(image_path, "rb") as image_file:
+                    encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+                    parts_list.append({
+                        "inline_data": {
+                            "mime_type": "image/jpeg",
+                            "data": encoded_string
+                        }
+                    })
+            except Exception as e:
+                pass
+
         payload = {
             "contents": [{
-                "parts": [{"text": f"{system_instruction}\n\nUser Query: {prompt}"}]
+                "parts": parts_list
             }]
         }
         
         try:
-            response = requests.post(GEMINI_URL, headers=headers, json=payload, timeout=15)
+            response = requests.post(GEMINI_URL, headers=headers, json=payload, timeout=20)
             if response.status_code == 200:
                 data = response.json()
                 reply = data['candidates'][0]['content']['parts'][0]['text']
@@ -75,12 +91,13 @@ class JerryBrain:
             else:
                 return f"Sir, server error code {response.status_code} aa raha hai."
         except Exception as e:
-            return "Sir, internet connection ya API key check karein."
+            return "Sir, internet connection check karein."
 
 class JerryApp(App):
     def build(self):
         self.brain = JerryBrain()
         self.tts_instance = None
+        self.selected_image = None
         
         if platform == 'android':
             try:
@@ -90,20 +107,20 @@ class JerryApp(App):
             except Exception as e:
                 pass
 
-        root_layout = BoxLayout(orientation='vertical', padding=10, spacing=8)
+        root_layout = BoxLayout(orientation='vertical', padding=8, spacing=5)
         
         title_label = Label(
-            text="JERRY AI CHAT & ROBOT CONTROL",
-            font_size='15sp',
-            size_hint=(1, 0.08),
+            text="JERRY AI CHAT & VISION",
+            font_size='14sp',
+            size_hint=(1, 0.07),
             bold=True
         )
         root_layout.add_widget(title_label)
         
-        scroll = ScrollView(size_hint=(1, 0.72))
+        scroll = ScrollView(size_hint=(1, 0.75))
         self.chat_display = Label(
             text="Jerry: Namaste Sneh Sir! Main Jerry hoon. Boliye, kya madad karoon?",
-            font_size='16sp',
+            font_size='15sp',
             halign='left',
             valign='top',
             text_size=(350, None)
@@ -112,11 +129,11 @@ class JerryApp(App):
         scroll.add_widget(self.chat_display)
         root_layout.add_widget(scroll)
         
-        input_layout = BoxLayout(size_hint=(1, 0.15), spacing=5)
+        input_layout = BoxLayout(size_hint=(1, 0.15), spacing=4)
         
         mic_btn = Button(
             text='🎤', 
-            size_hint=(0.18, 1),
+            size_hint=(0.15, 1),
             background_color=(0.4, 0.1, 0.1, 1)
         )
         mic_btn.bind(on_press=self.on_mic_click)
@@ -126,7 +143,7 @@ class JerryApp(App):
             text='',
             hint_text='Yahan type karein Sir...',
             multiline=False,
-            size_hint=(0.62, 1)
+            size_hint=(0.65, 1)
         )
         input_layout.add_widget(self.user_input)
         
@@ -148,7 +165,7 @@ class JerryApp(App):
     def speak_welcome(self, dt):
         if self.tts_instance:
             try:
-                self.tts_instance.speak("Namaste Sneh Sir! Main Jerry hoon. Boliye, kya madad karoon?", 0, None, None)
+                self.tts_instance.speak("Namaste Sneh Sir! Main Jerry hoon.", 0, None, None)
             except Exception:
                 pass
 
@@ -163,27 +180,29 @@ class JerryApp(App):
         instance.text_size = (value[0], None)
 
     def on_mic_click(self, instance):
-        self.user_input.text = "Mic start nahi ho paya!"
+        self.user_input.text = "Voice typing ke liye keyboard ka mic icon use karein Sir!"
 
     def send_message(self, instance):
         user_text = self.user_input.text.strip()
-        if not user_text:
+        if not user_text and not self.selected_image:
             return
             
-        self.chat_display.text = f"Sir: {user_text}\n\nJerry: Soch raha hoon Sir..."
+        display_text = user_text if user_text else "[Photo bheji gayi hai]"
+        self.chat_display.text = f"Sir: {display_text}\n\nJerry: Soch raha hoon Sir..."
         self.user_input.text = ''
         
-        # Background thread mein query process karna taaki app hang na ho
-        threading.Thread(target=self.fetch_ai_response, args=(user_text,)).start()
+        threading.Thread(target=self.fetch_ai_response, args=(user_text, self.selected_image)).start()
+        self.selected_image = None
 
-    def fetch_ai_response(self, user_text):
-        response = self.brain.process_query(user_text)
-        # UI update ko main thread par schedule karna
+    def fetch_ai_response(self, user_text, img_path):
+        response = self.brain.query_gemini_ai(user_text if user_text else "Is photo mein kya hai?", img_path)
         Clock.schedule_once(lambda dt: self.update_chat(user_text, response))
 
     def update_chat(self, user_text, response):
-        self.chat_display.text = f"Sir: {user_text}\n\nJerry: {response}"
+        display_text = user_text if user_text else "Photo"
+        self.chat_display.text = f"Sir: {display_text}\n\nJerry: {response}"
         self.speak_text(response)
 
 if __name__ == "__main__":
     JerryApp().run()
+        
