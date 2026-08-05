@@ -4,8 +4,9 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
+from kivy.uix.textinput import TextInput
+from kivy.uix.scrollview import ScrollView
 
-# Direct API Key integration for mobile app runtime
 GEMINI_API_KEY = "AQ.Ab8RN6InM-cWWHZIR5qJcw_dY9x2Ir5dDB2aWqb-bGS3-wCF1Q"
 GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
 
@@ -21,9 +22,12 @@ class JerryBrain:
         }
 
     def process_query(self, user_text):
+        if not user_text:
+            return "Pehle kuch type toh kijiye Sir!"
+            
         query = user_text.lower().strip()
         
-        # Local hardcoded check
+        # Local command check
         for key in self.local_responses:
             if key in query:
                 return self.local_responses[key]
@@ -55,31 +59,75 @@ class JerryBrain:
 class JerryApp(App):
     def build(self):
         self.brain = JerryBrain()
-        layout = BoxLayout(orientation='vertical', padding=20, spacing=10)
         
-        self.status_label = Label(
-            text="Jerry Online Hai, Sir!\nKuch bhi poochhiye...", 
-            font_size='18sp',
-            halign='center'
+        # Main Layout
+        root_layout = BoxLayout(orientation='vertical', padding=15, spacing=10)
+        
+        # Title Label
+        title_label = Label(
+            text="JERRY AI CHAT & ROBOT CONTROL",
+            font_size='16sp',
+            size_hint=(1, 0.1),
+            bold=True
         )
-        layout.add_widget(self.status_label)
+        root_layout.add_widget(title_label)
         
-        test_btn = Button(
-            text="Test Jerry", 
-            size_hint=(1, 0.2),
-            background_color=(0.2, 0.6, 1, 1)
+        # Scrollable Chat Display Area
+        scroll = ScrollView(size_hint=(1, 0.7))
+        self.chat_display = Label(
+            text="Jerry: Namaste Sir! Main Jerry hoon. Aap kuch bhi pooch sakte hain.",
+            font_size='16sp',
+            halign='left',
+            valign='top',
+            text_size=(350, None)
         )
-        test_btn.bind(on_press=self.on_test_click)
-        layout.add_widget(test_btn)
+        self.chat_display.bind(size=self._update_text_size)
+        scroll.add_widget(self.chat_display)
+        root_layout.add_widget(scroll)
         
-        return layout
+        # Bottom Input Layout (Text Input + Bhejo Button)
+        input_layout = BoxLayout(size_hint=(1, 0.15), spacing=10)
+        
+        self.user_input = TextInput(
+            text='',
+            hint_text='Yahan type karein Sir...',
+            multiline=False,
+            size_hint=(0.75, 1)
+        )
+        input_layout.add_widget(self.user_input)
+        
+        send_btn = Button(
+            text='BHEJO',
+            size_hint=(0.25, 1),
+            background_color=(0.1, 0.3, 0.5, 1)
+        )
+        send_btn.bind(on_press=self.send_message)
+        input_layout.add_widget(send_btn)
+        
+        root_layout.add_widget(input_layout)
+        
+        return root_layout
 
-    def on_test_click(self, instance):
-        sample_query = "Aaj ka mausam kaisa hai?"
-        self.status_label.text = f"Poochha: {sample_query}\n\nSoch raha hoon..."
-        response = self.brain.process_query(sample_query)
-        self.status_label.text = f"Jerry: {response}"
+    def _update_text_size(self, instance, value):
+        instance.text_size = (value[0], None)
+
+    def send_message(self, instance):
+        user_text = self.user_input.text.strip()
+        if not user_text:
+            return
+            
+        # Display User & Loading status
+        self.chat_display.text = f"Aap: {user_text}\n\nJerry: Soch raha hoon Sir..."
+        
+        # Process through Brain
+        response = self.brain.process_query(user_text)
+        
+        # Update Chat Display with final answer
+        self.chat_display.text = f"Aap: {user_text}\n\nJerry: {response}"
+        
+        # Clear Input Box
+        self.user_input.text = ''
 
 if __name__ == "__main__":
     JerryApp().run()
-                
+        
