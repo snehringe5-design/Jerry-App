@@ -14,15 +14,22 @@ from kivy.metrics import dp, sp
 
 Window.softinput_mode = "below_target"
 
+# Text-to-Speech Setup
 HARDWARE_TTS = False
-HARDWARE_STT = False
-
 try:
-    from plyer import tts, stt
+    from plyer import tts
     HARDWARE_TTS = True
-    HARDWARE_STT = True
 except Exception:
     pass
+
+# Android Speech Recognition (Android Native Intent via Pyjnius)
+is_android = False
+try:
+    from jnius import autoclass
+    from android.runnable import run_on_ui_thread
+    is_android = True
+except Exception:
+    is_android = False
 
 API_KEY = "YOUR_API_KEY_HERE"
 
@@ -31,10 +38,13 @@ class JerryBrain:
     def get_response(query):
         q = query.lower()
         
-        if any(w in q for w in ["kisne banaya", "who made you", "kaun banaya"]):
-            return "Sneh Sir, mujhe aap hi ke creator Sneh Ringe ne banaya hai."
+        if any(w in q for w in ["kisne banaya", "who made you", "kaun banaya", "tum kon ho", "tum kaun ho", "tum kya ho"]):
+            return "Sneh Sir, main Jerry hoon, aapka personal AI assistant, jise aap hi ke creator Sneh Ringe ne banaya hai."
         
-        elif any(w in q for w in ["meri details", "mera profile", "job", "salary", "duty", "zomato", "patel motors"]):
+        elif any(w in q for w in ["kya kar sakte ho", "tum kya kar sakte ho", "kya kar skhte ho", "features"]):
+            return "Sneh Sir, main aapki daily details yaad rakh sakta hoon, kundli aur astrology par baat kar sakta hoon, aur aapke sawaalon ke turant jawaab de sakta hoon."
+
+        elif any(w in q for w in ["meri details", "mera profile", "job", "salary", "duty", "zomato", "patel motors", "gori nagar"]):
             return "Sneh Sir, aap Patel Motors par Service Advisor hain. Duty subah 9:30 se shaam 7:00 baje tak hai, salary 12000 hai. Extra income ke liye Zomato par kaam karna chahte hain. Aap Gori Nagar, Indore mein rehte hain aur aapka janm 21 May 2006 ko hua hai."
 
         elif any(w in q for w in ["kundli", "grah", "nakshatra", "astrology"]):
@@ -62,7 +72,7 @@ class JerryBrain:
             except Exception as e:
                 print(f"API Error: {e}")
             
-            return f"Sneh Sir, maine aapka sawal sun liya hai: '{query}'. Bataiye is par kya karna hai?"
+            return f"Sneh Sir, maine aapki baat sun li hai. Bataiye is par kya karna hai?"
 
 class JerryUI(BoxLayout):
     def __init__(self, **kwargs):
@@ -98,7 +108,7 @@ class JerryUI(BoxLayout):
             size_hint_x=0.18,
             background_color=(0.8, 0.2, 0.2, 1)
         )
-        self.mic_btn.bind(on_press=self.listen_voice)
+        self.mic_btn.bind(on_press=self.start_listening)
         input_box.add_widget(self.mic_btn)
 
         self.user_input = TextInput(
@@ -143,14 +153,32 @@ class JerryUI(BoxLayout):
             except Exception:
                 pass
 
-    def listen_voice(self, instance):
-        if HARDWARE_STT:
+    def start_listening(self, instance):
+        if is_android:
             try:
-                stt.start()
+                self.open_android_mic()
             except Exception:
-                self.user_input.hint_text = "Mic error! Type karein..."
+                self.user_input.hint_text = "Mic start nahi ho paya!"
         else:
-            self.user_input.hint_text = "Mic available nahi hai, type karein..."
+                self.user_input.hint_text = "Voice sirf Android par chalegi!"
+
+    def open_android_mic(self):
+        if is_android:
+            try:
+                from jnius import autoclass
+                PythonActivity = autoclass('org.kivy.android.PythonActivity')
+                Intent = autoclass('android.content.Intent')
+                RecognizerIntent = autoclass('android.speech.RecognizerIntent')
+                
+                intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "hi-IN")
+                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Sneh Sir, boliye...")
+                
+                currentActivity = PythonActivity.mActivity
+                currentActivity.startActivityForResult(intent, 1010)
+            except Exception as e:
+                print(f"Mic Intent Error: {e}")
 
     def on_send(self, instance):
         text = self.user_input.text.strip()
@@ -175,4 +203,4 @@ class JerryApp(App):
 
 if __name__ == '__main__':
     JerryApp().run()
-    
+            
