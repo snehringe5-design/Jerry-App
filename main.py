@@ -7,12 +7,19 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.scrollview import ScrollView
+from kivy.utils import platform
 
-# Keyboard adjustment setting for Android
+# Android ke liye Text-to-Speech import
+if platform == 'android':
+    from jnius import autoclass
+    PythonActivity = autoclass('org.kivy.android.PythonActivity')
+    Locale = autoclass('java.util.Locale')
+    TextToSpeech = autoclass('android.speech.tts.TextToSpeech')
+
 Window.softinput_mode = 'below_target'
 
 GEMINI_API_KEY = "AQ.Ab8RN6Je9glsfcASJfxjrsQNKo6gH8F2jKylRS0IToSXNVZVWA"
-GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
 
 class JerryBrain:
     def __init__(self):
@@ -30,20 +37,22 @@ class JerryBrain:
             
         query = user_text.lower().strip()
         
-        # Local command check
         for key in self.local_responses:
             if key in query:
                 return self.local_responses[key]
         
-        # Gemini AI fallback with full context
         return self.query_gemini_ai(user_text)
 
     def query_gemini_ai(self, prompt):
         headers = {'Content-Type': 'application/json'}
+        
+        # Yahan system instruction ko aisi power di hai ki wo spelling mistakes aur tuti-futi bhasha ko aasaani se samajh jaye
         system_instruction = (
             "You are Jerry, a smart, polite, and witty AI assistant created by Sneh Ringe. "
             "You know that Sneh Ringe lives in Gori Nagar, Indore, works as a Service Advisor at Patel Motors, "
             "has a salary of 12000, wants to do Zomato for extra income, and was born on 21 May 2006 at 7:00 AM. "
+            "IMPORTANT: The user may type with spelling mistakes, broken words, or casual/broken Hinglish. "
+            "Always intelligently understand the user's core intent despite any typos, grammatical errors, or informal phrasing. "
             "Always reply respectfully as 'Sir' in Hindi/Hinglish in a helpful tone."
         )
         
@@ -67,20 +76,29 @@ class JerryBrain:
 class JerryApp(App):
     def build(self):
         self.brain = JerryBrain()
+        self.tts = None
         
-        root_layout = BoxLayout(orientation='vertical', padding=15, spacing=10)
+        if platform == 'android':
+            try:
+                activity = PythonActivity.mActivity
+                self.tts = TextToSpeech(activity, None)
+                self.tts.setLanguage(Locale("hi", "IN"))
+            except Exception as e:
+                pass
+
+        root_layout = BoxLayout(orientation='vertical', padding=10, spacing=8)
         
         title_label = Label(
             text="JERRY AI CHAT & ROBOT CONTROL",
-            font_size='16sp',
-            size_hint=(1, 0.1),
+            font_size='15sp',
+            size_hint=(1, 0.08),
             bold=True
         )
         root_layout.add_widget(title_label)
         
-        scroll = ScrollView(size_hint=(1, 0.7))
+        scroll = ScrollView(size_hint=(1, 0.72))
         self.chat_display = Label(
-            text="Jerry: Namaste Sir! Main Jerry hoon. Aap kuch bhi pooch sakte hain.",
+            text="Jerry: Namaste Sneh Sir! Main Jerry hoon. Boliye, kya madad karoon?",
             font_size='16sp',
             halign='left',
             valign='top',
@@ -94,7 +112,7 @@ class JerryApp(App):
         
         mic_btn = Button(
             text='🎤', 
-            size_hint=(0.2, 1),
+            size_hint=(0.18, 1),
             background_color=(0.4, 0.1, 0.1, 1)
         )
         mic_btn.bind(on_press=self.on_mic_click)
@@ -104,7 +122,7 @@ class JerryApp(App):
             text='',
             hint_text='Yahan type karein Sir...',
             multiline=False,
-            size_hint=(0.6, 1)
+            size_hint=(0.62, 1)
         )
         input_layout.add_widget(self.user_input)
         
@@ -118,13 +136,25 @@ class JerryApp(App):
         
         root_layout.add_widget(input_layout)
         
+        if platform == 'android':
+            from kivy.clock import Clock
+            Clock.schedule_once(self.speak_welcome, 1)
+            
         return root_layout
+
+    def speak_welcome(self, dt):
+        if self.tts:
+            self.tts.speak("Namaste Sneh Sir! Main Jerry hoon. Boliye, kya madad karoon?", 0, None, None)
+
+    def speak_text(self, text):
+        if self.tts and text:
+            self.tts.speak(text, 0, None, None)
 
     def _update_text_size(self, instance, value):
         instance.text_size = (value[0], None)
 
     def on_mic_click(self, instance):
-        self.user_input.text = "Mic integration pending hai, type karke bhejein Sir!"
+        self.user_input.text = "Mic start nahi ho paya!"
 
     def send_message(self, instance):
         user_text = self.user_input.text.strip()
@@ -137,7 +167,8 @@ class JerryApp(App):
         
         self.chat_display.text = f"Sir: {user_text}\n\nJerry: {response}"
         self.user_input.text = ''
+        
+        self.speak_text(response)
 
 if __name__ == "__main__":
     JerryApp().run()
-        
