@@ -30,18 +30,20 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Buildozer dependencies
+      - name: Install System Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
               git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config \
-              zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
+              zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev \
+              build-essential ccache libltdl-dev
 
-      - name: Install Buildozer and Cython
+      - name: Upgrade Pip, Setuptools and Install Buildozer
         run: |
-          pip install --upgrade pip
-          pip install --upgrade cython==0.29.36
-          pip install buildozer
+          python3 -m pip install --upgrade pip setuptools wheel
+          python3 -m pip install --upgrade cython==0.29.36
+          python3 -m pip install --upgrade buildozer
+          python3 -m pip install --upgrade python-for-android
 
       - name: Prepare SDK, NDK and Accept Licenses
         run: |
