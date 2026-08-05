@@ -1,4 +1,4 @@
-name: CI
+name: Build APK
 
 on:
   push:
@@ -28,9 +28,9 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
+        key: ${{ runner.os }}-buildozer-v2-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          ${{ runner.os }}-buildozer-
+          ${{ runner.os }}-buildozer-v2-
 
     - name: Install Buildozer and Dependencies
       run: |
@@ -44,7 +44,7 @@ jobs:
         buildozer -v android debug
 
     - name: Upload APK Artifact
-      uses: actions/save-artifact@v4
+      uses: actions/upload-artifact@v4
       with:
         name: package
         path: bin/*.apk
