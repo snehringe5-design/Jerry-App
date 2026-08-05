@@ -70,9 +70,8 @@ jobs:
           echo -e "\n24333f8a63b6825ea9c5514f83c2829b004d1fb8" >> licenses/android-sdk-license
           echo -e "\nd56f5187479451eabf01fb78af6dfcb131a648db" >> licenses/android-sdk-license
 
-          # 3. NDK r25b को सीधे डाउनलोड और एक्सट्रैक्ट करना ताकि बिल्डोजर भटके नहीं
+          # 3. NDK r25b डाउनलोड करना
           cd "$PLATFORM_DIR"
-          echo "Downloading Android NDK r25b..."
           curl -o android-ndk-r25b-linux.zip https://dl.google.com/android/repository/android-ndk-r25b-linux.zip
           unzip -q android-ndk-r25b-linux.zip
           rm android-ndk-r25b-linux.zip
@@ -80,7 +79,7 @@ jobs:
           # 4. आवश्यक SDK पैकेजेस इंस्टॉल करना
           export PATH=$PATH:$SDK_DIR/cmdline-tools/latest/bin
           yes | sdkmanager --licenses || true
-          sdkmanager "platform-tools" "platforms;android-31" "build-tools;33.0.2"
+          sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
 
       - name: Build APK with Buildozer
         run: |
