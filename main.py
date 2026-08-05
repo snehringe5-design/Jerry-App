@@ -1,3 +1,4 @@
+import threading
 import requests
 import json
 from kivy.app import App
@@ -8,13 +9,18 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.scrollview import ScrollView
 from kivy.utils import platform
+from kivy.clock import Clock
 
-# Android ke liye Text-to-Speech import
+# Safe Android TTS import
+tts = None
 if platform == 'android':
-    from jnius import autoclass
-    PythonActivity = autoclass('org.kivy.android.PythonActivity')
-    Locale = autoclass('java.util.Locale')
-    TextToSpeech = autoclass('android.speech.tts.TextToSpeech')
+    try:
+        from jnius import autoclass
+        PythonActivity = autoclass('org.kivy.android.PythonActivity')
+        Locale = autoclass('java.util.Locale')
+        TextToSpeech = autoclass('android.speech.tts.TextToSpeech')
+    except Exception as e:
+        tts = None
 
 Window.softinput_mode = 'below_target'
 
@@ -45,13 +51,11 @@ class JerryBrain:
 
     def query_gemini_ai(self, prompt):
         headers = {'Content-Type': 'application/json'}
-        
-        # Yahan system instruction ko aisi power di hai ki wo spelling mistakes aur tuti-futi bhasha ko aasaani se samajh jaye
         system_instruction = (
             "You are Jerry, a smart, polite, and witty AI assistant created by Sneh Ringe. "
             "You know that Sneh Ringe lives in Gori Nagar, Indore, works as a Service Advisor at Patel Motors, "
             "has a salary of 12000, wants to do Zomato for extra income, and was born on 21 May 2006 at 7:00 AM. "
-            "IMPORTANT: The user may type with spelling mistakes, broken words, or casual/broken Hinglish. "
+            "IMPORTANT: The user may type with spelling mistakes, broken words, slang, or casual/broken Hinglish. "
             "Always intelligently understand the user's core intent despite any typos, grammatical errors, or informal phrasing. "
             "Always reply respectfully as 'Sir' in Hindi/Hinglish in a helpful tone."
         )
@@ -63,7 +67,7 @@ class JerryBrain:
         }
         
         try:
-            response = requests.post(GEMINI_URL, headers=headers, json=payload, timeout=10)
+            response = requests.post(GEMINI_URL, headers=headers, json=payload, timeout=15)
             if response.status_code == 200:
                 data = response.json()
                 reply = data['candidates'][0]['content']['parts'][0]['text']
@@ -71,18 +75,18 @@ class JerryBrain:
             else:
                 return f"Sir, server error code {response.status_code} aa raha hai."
         except Exception as e:
-            return "Sir, internet connection check karein."
+            return "Sir, internet connection ya API key check karein."
 
 class JerryApp(App):
     def build(self):
         self.brain = JerryBrain()
-        self.tts = None
+        self.tts_instance = None
         
         if platform == 'android':
             try:
                 activity = PythonActivity.mActivity
-                self.tts = TextToSpeech(activity, None)
-                self.tts.setLanguage(Locale("hi", "IN"))
+                self.tts_instance = TextToSpeech(activity, None)
+                self.tts_instance.setLanguage(Locale("hi", "IN"))
             except Exception as e:
                 pass
 
@@ -137,18 +141,23 @@ class JerryApp(App):
         root_layout.add_widget(input_layout)
         
         if platform == 'android':
-            from kivy.clock import Clock
-            Clock.schedule_once(self.speak_welcome, 1)
+            Clock.schedule_once(self.speak_welcome, 1.5)
             
         return root_layout
 
     def speak_welcome(self, dt):
-        if self.tts:
-            self.tts.speak("Namaste Sneh Sir! Main Jerry hoon. Boliye, kya madad karoon?", 0, None, None)
+        if self.tts_instance:
+            try:
+                self.tts_instance.speak("Namaste Sneh Sir! Main Jerry hoon. Boliye, kya madad karoon?", 0, None, None)
+            except Exception:
+                pass
 
     def speak_text(self, text):
-        if self.tts and text:
-            self.tts.speak(text, 0, None, None)
+        if self.tts_instance and text:
+            try:
+                self.tts_instance.speak(text, 0, None, None)
+            except Exception:
+                pass
 
     def _update_text_size(self, instance, value):
         instance.text_size = (value[0], None)
@@ -162,12 +171,18 @@ class JerryApp(App):
             return
             
         self.chat_display.text = f"Sir: {user_text}\n\nJerry: Soch raha hoon Sir..."
-        
-        response = self.brain.process_query(user_text)
-        
-        self.chat_display.text = f"Sir: {user_text}\n\nJerry: {response}"
         self.user_input.text = ''
         
+        # Background thread mein query process karna taaki app hang na ho
+        threading.Thread(target=self.fetch_ai_response, args=(user_text,)).start()
+
+    def fetch_ai_response(self, user_text):
+        response = self.brain.process_query(user_text)
+        # UI update ko main thread par schedule karna
+        Clock.schedule_once(lambda dt: self.update_chat(user_text, response))
+
+    def update_chat(self, user_text, response):
+        self.chat_display.text = f"Sir: {user_text}\n\nJerry: {response}"
         self.speak_text(response)
 
 if __name__ == "__main__":
