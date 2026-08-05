@@ -22,6 +22,17 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
+    - name: Cache Buildozer global directory
+      uses: actions/cache@v4
+      with:
+        path: |
+          .buildozer
+          /home/runner/.buildozer
+        key: buildozer-${{ hashFiles('buildozer.spec') }}-${{ github.run_id }}
+        restore-keys: |
+          buildozer-${{ hashFiles('buildozer.spec') }}-
+          buildozer-
+
     - name: Install Buildozer and Dependencies
       run: |
         sudo apt-get update
@@ -31,7 +42,7 @@ jobs:
 
     - name: Build with Buildozer
       run: |
-        buildozer -d android debug
+        buildozer -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
