@@ -44,23 +44,27 @@ class JerryJarvisBrain:
         
         # 3. Battery Status Check
         elif any(w in q for w in ["battery", "charge", "power"]):
-            return "Janab, system ki battery level aur power status fetch karne ke liye Android native bridge active kar diya gaya hai."
+            return "Janab, system ki battery status check karne ke liye Android native bridge active kiya ja raha hai."
         
         # 4. Flashlight / Torch
         elif any(w in q for w in ["torch", "flashlight", "light jalao"]):
-            return "Beshak janab, phone ki flashlight on/off karne ki darkhwast execute kar di gayi hai."
+            return "Beshak janab, flashlight on karne ka command execute ho raha hai."
         
-        # 5. Instagram & App Management
-        elif any(w in q for w in ["instagram", "insta", "app kholo", "open app", "whatsapp"]):
-            return "Janab, Instagram ya koi bhi app launch karne aur background permissions control karne ki salahiyat active hai."
+        # 5. Camera & Vision
+        elif any(w in q for w in ["camera", "dekh", "samne", "photo", "video"]):
+            return "Janab, camera module active karke samne ki cheezon ko scan karne ki koshish ki ja rahi hai."
         
-        # 6. OTP & SMS Notification
-        elif any(w in q for w in ["otp", "message", "sms", "code", "notification"]):
-            return "Janab, aane wale har naye SMS, OTP ya notification ko read karke aapko turant inform kar diya jayega."
-
-        # 7. Voice Commands & Offline AI Simulation
-        elif any(w in q for w in ["bolo", "voice", "sun rahe ho"]):
-            return "Ji janab, main aapki har aawaz aur offline commands ko sun aur samajh raha hoon."
+        # 6. Instagram & Apps
+        elif any(w in q for w in ["instagram", "insta", "whatsapp", "app kholo", "open app"]):
+            return "Janab, aapke kehne par target app ko launch karne aur uske notifications/messages ko track karne ki permission di ja chuki hai."
+        
+        # 7. OTP & Messages
+        elif any(w in q for w in ["otp", "message", "sms", "code"]):
+            return "Janab, jaise hi koi naya OTP ya SMS aayega, main use turant read karke aapko bata dunga."
+        
+        # 8. Voice & Offline Brain
+        elif any(w in q for w in ["voice", "bolo", "suno", "offline"]):
+            return "Janab, speech-to-text aur local AI model ko integrate karne ka framework taiyar hai."
         
         # Default Jarvis Response
         else:
@@ -100,7 +104,7 @@ class LoginScreen(BoxLayout):
         self.open_change_pass = open_change_pass
 
         self.add_widget(Label(
-            text="JERRY AI - FULL CONTROL LOGIN",
+            text="JERRY AI - ULTIMATE SECURE LOGIN",
             font_size=20,
             size_hint_y=None,
             height=50,
@@ -235,7 +239,7 @@ class JerryUI(BoxLayout):
         self.spacing = 20
 
         self.add_widget(Label(
-            text="JARVIS - JERRY AI (ULTIMATE MASTER)",
+            text="JARVIS - JERRY AI (FULL SYSTEM ACCESS)",
             font_size=18,
             size_hint_y=None,
             height=50,
@@ -243,7 +247,7 @@ class JerryUI(BoxLayout):
         ))
 
         self.response_label = Label(
-            text="Adab janab! Main aapka Jerry hoon. Battery, Torch, Apps, OTP aur Voice Control—sab taiyar hain. Hukam kijiye.",
+            text="Adab janab! Main aapka Jerry hoon. Battery, Torch, Camera, Apps, aur OTP—sab par meri nazar hai. Hukam kijiye.",
             font_size=16,
             color=(0.2, 0.2, 0.2, 1),
             halign='center',
@@ -253,7 +257,7 @@ class JerryUI(BoxLayout):
         self.add_widget(self.response_label)
 
         self.user_input = TextInput(
-            hint_text="Yahan likhiye ya command dijiye janab...",
+            hint_text="Yahan likhiye janab (jaise: camera, otp, instagram)...",
             size_hint_y=None,
             height=60,
             multiline=False
