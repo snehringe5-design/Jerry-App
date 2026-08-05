@@ -41,6 +41,9 @@ bin_dir = ./bin
 # (list) Permissions
 android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
 
+# (str) Android NDK version to use
+android.ndk = 25b
+
 # (int) Target Android API, should be as high as possible.
 android.api = 33
 
