@@ -10,24 +10,21 @@ from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.clock import Clock
 from kivy.core.window import Window
+from kivy.metrics import dp, sp
 
-# Android par keyboard aane par screen adjust karne ke liye
 Window.softinput_mode = "below_target"
 
-PASSWORD_FILE = "jerry_pass.txt"
+HARDWARE_TTS = False
+HARDWARE_STT = False
+
+try:
+    from plyer import tts, stt
+    HARDWARE_TTS = True
+    HARDWARE_STT = True
+except Exception:
+    pass
+
 API_KEY = "YOUR_API_KEY_HERE"
-
-def get_saved_password():
-    if os.path.exists(PASSWORD_FILE):
-        with open(PASSWORD_FILE, "r", encoding="utf-8") as f:
-            p = f.read().strip()
-            if p:
-                return p
-    return "6263"
-
-def save_new_password(new_p):
-    with open(PASSWORD_FILE, "w", encoding="utf-8") as f:
-        f.write(new_p)
 
 class JerryBrain:
     @staticmethod
@@ -53,7 +50,7 @@ class JerryBrain:
                     data = {
                         "model": "gpt-3.5-turbo",
                         "messages": [
-                            {"role": "system", "content": "You are Jerry, a personal AI assistant built exclusively for Sneh Ringe (address them strictly as Sneh Sir)."},
+                            {"role": "system", "content": "You are Jerry, a helpful personal AI assistant built for Sneh Ringe. Always address him strictly as Sneh Sir and speak in clear, simple Hindi."},
                             {"role": "user", "content": query}
                         ]
                     }
@@ -65,149 +62,56 @@ class JerryBrain:
             except Exception as e:
                 print(f"API Error: {e}")
             
-            return f"Beshak Sneh Sir, maine aapki baat '{query}' sun li hai. Hukam kijiye is par kya karyavahi ki jaye?"
-
-class LoginScreen(BoxLayout):
-    def __init__(self, switch_callback, open_change_pass, **kwargs):
-        super(LoginScreen, self).__init__(**kwargs)
-        self.orientation = 'vertical'
-        self.padding = 40
-        self.spacing = 20
-        self.switch_callback = switch_callback
-        self.open_change_pass = open_change_pass
-
-        self.add_widget(Label(
-            text="JERRY AI - LOGIN",
-            font_size=24,
-            bold=True,
-            size_hint_y=None,
-            height=60,
-            color=(0.1, 0.1, 0.1, 1)
-        ))
-
-        self.pass_input = TextInput(
-            hint_text="Enter Password, Sneh Sir...",
-            password=True,
-            font_size=18,
-            size_hint_y=None,
-            height=60,
-            multiline=False
-        )
-        self.add_widget(self.pass_input)
-
-        self.login_btn = Button(
-            text="UNLOCK",
-            font_size=18,
-            bold=True,
-            size_hint_y=None,
-            height=60,
-            background_color=(0.1, 0.5, 0.8, 1)
-        )
-        self.login_btn.bind(on_press=self.verify_password)
-        self.add_widget(self.login_btn)
-
-        self.change_btn = Button(
-            text="Change Password",
-            font_size=16,
-            size_hint_y=None,
-            height=50,
-            background_color=(0.4, 0.4, 0.4, 1)
-        )
-        self.change_btn.bind(on_press=lambda x: self.open_change_pass())
-        self.add_widget(self.change_btn)
-
-        self.msg_label = Label(text="", font_size=16, color=(0.8, 0.1, 0.1, 1), size_hint_y=None, height=40)
-        self.add_widget(self.msg_label)
-
-    def verify_password(self, instance):
-        if self.pass_input.text.strip() == get_saved_password():
-            self.switch_callback()
-        else:
-            self.msg_label.text = "Galat password Sneh Sir!"
-
-class ChangePasswordScreen(BoxLayout):
-    def __init__(self, back_to_login, **kwargs):
-        super(ChangePasswordScreen, self).__init__(**kwargs)
-        self.orientation = 'vertical'
-        self.padding = 40
-        self.spacing = 20
-        self.back_to_login = back_to_login
-
-        self.add_widget(Label(
-            text="CHANGE PASSWORD",
-            font_size=24,
-            bold=True,
-            size_hint_y=None,
-            height=60,
-            color=(0.1, 0.1, 0.1, 1)
-        ))
-
-        self.old_input = TextInput(hint_text="Purana Password...", password=True, font_size=18, size_hint_y=None, height=60, multiline=False)
-        self.add_widget(self.old_input)
-
-        self.new_input = TextInput(hint_text="Naya Password...", password=True, font_size=18, size_hint_y=None, height=60, multiline=False)
-        self.add_widget(self.new_input)
-
-        self.save_btn = Button(text="SAVE", font_size=18, bold=True, size_hint_y=None, height=60, background_color=(0.1, 0.7, 0.3, 1))
-        self.save_btn.bind(on_press=self.update_password)
-        self.add_widget(self.save_btn)
-
-        self.back_btn = Button(text="Back", font_size=16, size_hint_y=None, height=50, background_color=(0.4, 0.4, 0.4, 1))
-        self.back_btn.bind(on_press=lambda x: self.back_to_login())
-        self.add_widget(self.back_btn)
-
-        self.msg_label = Label(text="", font_size=16, color=(0.8, 0.1, 0.1, 1), size_hint_y=None, height=40)
-        self.add_widget(self.msg_label)
-
-    def update_password(self, instance):
-        if self.old_input.text.strip() == get_saved_password():
-            if self.new_input.text.strip() != "":
-                save_new_password(self.new_input.text.strip())
-                self.msg_label.color = (0.1, 0.6, 0.1, 1)
-                self.msg_label.text = "Password badal gaya Sneh Sir!"
-                Clock.schedule_once(lambda dt: self.back_to_login(), 1.5)
-            else:
-                self.msg_label.text = "Naya password khali nahi ho sakta!"
-        else:
-            self.msg_label.text = "Purana password galat hai!"
+            return f"Sneh Sir, maine aapka sawal sun liya hai: '{query}'. Bataiye is par kya karna hai?"
 
 class JerryUI(BoxLayout):
     def __init__(self, **kwargs):
         super(JerryUI, self).__init__(**kwargs)
         self.orientation = 'vertical'
-        self.padding = 10
-        self.spacing = 10
+        self.padding = dp(15)
+        self.spacing = dp(12)
 
         self.add_widget(Label(
             text="JERRY AI CHAT",
-            font_size=18,
+            font_size=sp(22),
             bold=True,
             size_hint_y=None,
-            height=35,
-            color=(0.1, 0.3, 0.5, 1)
+            height=dp(45),
+            color=(0.1, 0.3, 0.6, 1)
         ))
 
         self.scroll = ScrollView(size_hint=(1, 1))
-        self.chat_layout = GridLayout(cols=1, spacing=15, size_hint_y=None)
+        self.chat_layout = GridLayout(cols=1, spacing=dp(18), size_hint_y=None)
         self.chat_layout.bind(minimum_height=self.chat_layout.setter('height'))
         self.scroll.add_widget(self.chat_layout)
         self.add_widget(self.scroll)
 
-        self.add_bubble("Jerry: Adab Sneh Sir! Hukam kijiye.", is_user=False)
+        initial_msg = "Namaste Sneh Sir! Main Jerry hoon. Boliye, kya madad karoon?"
+        self.add_bubble(f"Jerry: {initial_msg}", is_user=False)
+        self.speak_text(initial_msg)
 
-        input_box = BoxLayout(orientation='horizontal', size_hint_y=None, height=60, spacing=10)
+        input_box = BoxLayout(orientation='horizontal', size_hint_y=None, height=dp(65), spacing=dp(8))
         
+        self.mic_btn = Button(
+            text="🎤",
+            font_size=sp(24),
+            size_hint_x=0.18,
+            background_color=(0.8, 0.2, 0.2, 1)
+        )
+        self.mic_btn.bind(on_press=self.listen_voice)
+        input_box.add_widget(self.mic_btn)
+
         self.user_input = TextInput(
             hint_text="Yahan likhiye Sneh Sir...",
-            font_size=16,
+            font_size=sp(20),
             multiline=False,
-            size_hint_x=0.75
+            size_hint_x=0.57
         )
         input_box.add_widget(self.user_input)
 
         self.send_btn = Button(
-            text="SEND",
-            font_size=16,
+            text="BHEJO",
+            font_size=sp(18),
             bold=True,
             size_hint_x=0.25,
             background_color=(0.1, 0.5, 0.8, 1)
@@ -220,16 +124,33 @@ class JerryUI(BoxLayout):
     def add_bubble(self, text, is_user=False):
         lbl = Label(
             text=text,
-            font_size=16,
-            color=(1, 1, 1, 1) if is_user else (0.1, 0.1, 0.1, 1),
+            font_size=sp(20),
+            bold=True,
+            color=(0.0, 0.3, 0.8, 1) if is_user else (0.1, 0.1, 0.1, 1),
             size_hint_y=None,
-            text_size=(320, None),
+            text_size=(Window.width * 0.85, None),
             halign='right' if is_user else 'left',
             valign='middle'
         )
-        lbl.bind(texture_size=lambda s, w: setattr(s, 'height', max(50, w[1] + 20)))
+        lbl.bind(texture_size=lambda s, w: setattr(s, 'height', max(dp(50), w[1] + dp(20))))
         self.chat_layout.add_widget(lbl)
         self.scroll.scroll_y = 0
+
+    def speak_text(self, text):
+        if HARDWARE_TTS:
+            try:
+                tts.speak(text)
+            except Exception:
+                pass
+
+    def listen_voice(self, instance):
+        if HARDWARE_STT:
+            try:
+                stt.start()
+            except Exception:
+                self.user_input.hint_text = "Mic error! Type karein..."
+        else:
+            self.user_input.hint_text = "Mic available nahi hai, type karein..."
 
     def on_send(self, instance):
         text = self.user_input.text.strip()
@@ -239,28 +160,19 @@ class JerryUI(BoxLayout):
             
             def background_process():
                 reply = JerryBrain.get_response(text)
-                Clock.schedule_once(lambda dt: self.add_bubble(f"Jerry: {reply}", is_user=False), 0.1)
+                Clock.schedule_once(lambda dt: self.display_and_speak(reply), 0.1)
 
             threading.Thread(target=background_process, daemon=True).start()
+
+    def display_and_speak(self, reply):
+        self.add_bubble(f"Jerry: {reply}", is_user=False)
+        self.speak_text(reply)
 
 class JerryApp(App):
     def build(self):
         Window.clearcolor = (0.95, 0.95, 0.95, 1)
-        self.root_layout = BoxLayout(orientation='vertical')
-        self.show_login()
-        return self.root_layout
-
-    def show_login(self):
-        self.root_layout.clear_widgets()
-        self.root_layout.add_widget(LoginScreen(self.show_main, self.show_pass_change))
-
-    def show_pass_change(self):
-        self.root_layout.clear_widgets()
-        self.root_layout.add_widget(ChangePasswordScreen(self.show_login))
-
-    def show_main(self):
-        self.root_layout.clear_widgets()
-        self.root_layout.add_widget(JerryUI())
+        return JerryUI()
 
 if __name__ == '__main__':
     JerryApp().run()
+    
