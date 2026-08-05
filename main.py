@@ -7,7 +7,8 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.scrollview import ScrollView
 
-GEMINI_API_KEY = "AQ.Ab8RN6InM-cWWHZIR5qJcw_dY9x2Ir5dDB2aWqb-bGS3-wCF1Q"
+# Nayi API Key integrated successfully
+GEMINI_API_KEY = "AQ.Ab8RN6IcAGQyGp4C_V1XR-eB1CJ9aW5OsshdsEArdMbigMc-Lg"
 GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
 
 class JerryBrain:
@@ -75,7 +76,7 @@ class JerryApp(App):
         # Scrollable Chat Display Area
         scroll = ScrollView(size_hint=(1, 0.7))
         self.chat_display = Label(
-            text="Jerry: Namaste Sir! Main Jerry hoon. Aap kuch bhi pooch sakte hain.",
+            text="Jerry: Namaste Sir! Main Jerry hoon. Aap kisi bhi bhasha mein bol sakte hain.",
             font_size='16sp',
             halign='left',
             valign='top',
@@ -85,21 +86,32 @@ class JerryApp(App):
         scroll.add_widget(self.chat_display)
         root_layout.add_widget(scroll)
         
-        # Bottom Input Layout (Text Input + Bhejo Button)
-        input_layout = BoxLayout(size_hint=(1, 0.15), spacing=10)
+        # Bottom Input Layout (Mic + Text Input + Bhejo Button)
+        input_layout = BoxLayout(size_hint=(1, 0.15), spacing=5)
         
+        # Mic Button (Red)
+        mic_btn = Button(
+            text='🎤', 
+            size_hint=(0.2, 1),
+            background_color=(0.4, 0.1, 0.1, 1)
+        )
+        mic_btn.bind(on_press=self.on_mic_click)
+        input_layout.add_widget(mic_btn)
+        
+        # Text Input Box
         self.user_input = TextInput(
             text='',
             hint_text='Yahan type karein Sir...',
             multiline=False,
-            size_hint=(0.75, 1)
+            size_hint=(0.6, 1)
         )
         input_layout.add_widget(self.user_input)
         
+        # Send Button (Blue)
         send_btn = Button(
             text='BHEJO',
-            size_hint=(0.25, 1),
-            background_color=(0.1, 0.3, 0.5, 1)
+            size_hint=(0.2, 1),
+            background_color=(0.1, 0.25, 0.4, 1)
         )
         send_btn.bind(on_press=self.send_message)
         input_layout.add_widget(send_btn)
@@ -110,6 +122,9 @@ class JerryApp(App):
 
     def _update_text_size(self, instance, value):
         instance.text_size = (value[0], None)
+
+    def on_mic_click(self, instance):
+        self.user_input.text = "Mic start nahi ho paya!"
 
     def send_message(self, instance):
         user_text = self.user_input.text.strip()
