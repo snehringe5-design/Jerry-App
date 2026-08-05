@@ -1,4 +1,3 @@
-import os
 import requests
 import json
 from kivy.app import App
@@ -6,8 +5,8 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 
-# Environment Variable se secure API Key load hogi
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+# Direct API Key integration for mobile app runtime
+GEMINI_API_KEY = "AQ.Ab8RN6InM-cWWHZIR5qJcw_dY9x2Ir5dDB2aWqb-bGS3-wCF1Q"
 GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
 
 class JerryBrain:
@@ -24,18 +23,15 @@ class JerryBrain:
     def process_query(self, user_text):
         query = user_text.lower().strip()
         
-        # Local hardcoded command check
+        # Local hardcoded check
         for key in self.local_responses:
             if key in query:
                 return self.local_responses[key]
         
-        # Cloud Gemini AI Fallback
+        # Gemini AI fallback
         return self.query_gemini_ai(user_text)
 
     def query_gemini_ai(self, prompt):
-        if not GEMINI_API_KEY:
-            return "Sir, GEMINI_API_KEY set nahi hai."
-
         headers = {'Content-Type': 'application/json'}
         payload = {
             "contents": [{
@@ -86,4 +82,4 @@ class JerryApp(App):
 
 if __name__ == "__main__":
     JerryApp().run()
-            
+                
