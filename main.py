@@ -3,6 +3,8 @@ import threading
 import requests
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
@@ -15,7 +17,7 @@ except Exception:
     HARDWARE_AVAILABLE = False
 
 PASSWORD_FILE = "jerry_pass.txt"
-# Yahan apni OpenAI ya Gemini ki API key daal sakte hain Sneh Sir
+# Sneh Sir, yahan apni real OpenAI ya Gemini API key daalein
 API_KEY = "YOUR_API_KEY_HERE"
 
 def get_saved_password():
@@ -35,7 +37,7 @@ class JerryJarvisBrain:
     def get_response(query):
         q = query.lower()
         
-        # 1. Personal & Hardcoded Rules (Sabse pehle priority)
+        # 1. Personal & Hardcoded Rules
         if any(w in q for w in ["kisne banaya", "who made you", "who created you", "kaun banaya"]):
             return "Sneh Sir, mujhe aap hi ke creator Sneh Ringe ne banaya hai. Main Sneh Ringe Sir ka personal AI assistant hoon."
         
@@ -74,10 +76,9 @@ class JerryJarvisBrain:
                     pass
             return "Sneh Sir, battery status check kar liya gaya hai."
 
-        # 3. Online AI Integration (Agar koi naya sawal ho toh internet se jawab layega)
+        # 3. Online API Integration
         else:
             try:
-                # Agar API key dali ho toh OpenAI/Gemini ko request jayegi
                 if API_KEY != "YOUR_API_KEY_HERE":
                     headers = {
                         "Authorization": f"Bearer {API_KEY}",
@@ -86,11 +87,11 @@ class JerryJarvisBrain:
                     data = {
                         "model": "gpt-3.5-turbo",
                         "messages": [
-                            {"role": "system", "content": "You are Jerry, a personal AI assistant built exclusively for Sneh Ringe (address them strictly as Sneh Sir). Answer all queries accurately and formally."},
+                            {"role": "system", "content": "You are Jerry, a personal AI assistant built exclusively for Sneh Ringe (address them strictly as Sneh Sir). Answer all queries accurately, detailed, and formally."},
                             {"role": "user", "content": query}
                         ]
                     }
-                    response = requests.post("https://api.openai.com/v1/chat/completions", json=data, headers=headers, timeout=10)
+                    response = requests.post("https://api.openai.com/v1/chat/completions", json=data, headers=headers, timeout=12)
                     if response.status_code == 200:
                         res_json = response.json()
                         ai_reply = res_json['choices'][0]['message']['content']
@@ -98,7 +99,7 @@ class JerryJarvisBrain:
             except Exception as e:
                 print(f"API Error: {e}")
             
-            return f"Beshak Sneh Sir, maine aapki baat '{query}' sun li hai. Hukam kijiye is par kya karyavahi ki jaye?"
+            return f"Beshak Sneh Sir, maine aapki baat sun li hai. (Note: API Key configure nahi hai, isliye online AI active nahi hai). Hukam kijiye is par kya karyavahi ki jaye?"
 
 class LoginScreen(BoxLayout):
     def __init__(self, switch_callback, open_change_pass, **kwargs):
@@ -110,16 +111,18 @@ class LoginScreen(BoxLayout):
         self.open_change_pass = open_change_pass
 
         self.add_widget(Label(
-            text="JERRY AI - ONLINE API MASTER LOGIN",
-            font_size=18,
+            text="JERRY AI - SECURE LOGIN",
+            font_size=22,
+            bold=True,
             size_hint_y=None,
-            height=50,
-            color=(0, 0, 0, 1)
+            height=60,
+            color=(0.1, 0.1, 0.1, 1)
         ))
 
         self.pass_input = TextInput(
             hint_text="Enter Password, Sneh Sir...",
             password=True,
+            font_size=18,
             size_hint_y=None,
             height=60,
             multiline=False
@@ -128,6 +131,8 @@ class LoginScreen(BoxLayout):
 
         self.login_btn = Button(
             text="UNLOCK JERRY",
+            font_size=18,
+            bold=True,
             size_hint_y=None,
             height=60,
             background_color=(0.1, 0.5, 0.8, 1)
@@ -137,9 +142,10 @@ class LoginScreen(BoxLayout):
 
         self.change_btn = Button(
             text="Change Password",
+            font_size=16,
             size_hint_y=None,
             height=50,
-            background_color=(0.5, 0.5, 0.5, 1)
+            background_color=(0.4, 0.4, 0.4, 1)
         )
         self.change_btn.bind(on_press=lambda x: self.open_change_pass())
         self.add_widget(self.change_btn)
@@ -171,14 +177,16 @@ class ChangePasswordScreen(BoxLayout):
         self.add_widget(Label(
             text="CHANGE PASSWORD",
             font_size=22,
+            bold=True,
             size_hint_y=None,
-            height=50,
-            color=(0, 0, 0, 1)
+            height=60,
+            color=(0.1, 0.1, 0.1, 1)
         ))
 
         self.old_input = TextInput(
-            hint_text="Purana Password Daaliye...",
+            hint_text="Purana Password...",
             password=True,
+            font_size=18,
             size_hint_y=None,
             height=60,
             multiline=False
@@ -186,8 +194,9 @@ class ChangePasswordScreen(BoxLayout):
         self.add_widget(self.old_input)
 
         self.new_input = TextInput(
-            hint_text="Naya Password Daaliye...",
+            hint_text="Naya Password...",
             password=True,
+            font_size=18,
             size_hint_y=None,
             height=60,
             multiline=False
@@ -195,7 +204,9 @@ class ChangePasswordScreen(BoxLayout):
         self.add_widget(self.new_input)
 
         self.save_btn = Button(
-            text="SAVE NEW PASSWORD",
+            text="SAVE PASSWORD",
+            font_size=18,
+            bold=True,
             size_hint_y=None,
             height=60,
             background_color=(0.1, 0.7, 0.3, 1)
@@ -205,9 +216,10 @@ class ChangePasswordScreen(BoxLayout):
 
         self.back_btn = Button(
             text="Back to Login",
+            font_size=16,
             size_hint_y=None,
             height=50,
-            background_color=(0.5, 0.5, 0.5, 1)
+            background_color=(0.4, 0.4, 0.4, 1)
         )
         self.back_btn.bind(on_press=lambda x: self.back_to_login())
         self.add_widget(self.back_btn)
@@ -233,7 +245,7 @@ class ChangePasswordScreen(BoxLayout):
                 self.msg_label.text = "Password safaltapoorvak badal gaya Sneh Sir!"
                 Clock.schedule_once(lambda dt: self.back_to_login(), 1.5)
             else:
-                self.msg_label.text = "Naya password khali nahi ho sakta Sneh Sir!"
+                self.msg_label.text = "Naya password khali nahi ho sakta!"
         else:
             self.msg_label.text = "Purana password galat hai Sneh Sir!"
 
@@ -241,59 +253,81 @@ class JerryUI(BoxLayout):
     def __init__(self, **kwargs):
         super(JerryUI, self).__init__(**kwargs)
         self.orientation = 'vertical'
-        self.padding = 30
-        self.spacing = 20
+        self.padding = 20
+        self.spacing = 15
 
+        # Header Title
         self.add_widget(Label(
-            text="JARVIS - JERRY AI (ONLINE API CONNECTED)",
-            font_size=16,
+            text="JARVIS - JERRY AI (ONLINE CONNECTED)",
+            font_size=18,
+            bold=True,
             size_hint_y=None,
             height=40,
-            color=(0, 0, 0, 1)
+            color=(0.1, 0.3, 0.5, 1)
         ))
 
-        self.response_label = Label(
-            text="Adab Sneh Sir! Main Sneh Ringe Sir ka personal AI assistant Jerry hoon. Online brain active hai. Hukam kijiye.",
-            font_size=16,
-            color=(0.2, 0.2, 0.2, 1),
-            halign='center',
-            valign='middle'
-        )
-        self.response_label.bind(size=lambda s, w: setattr(s, 'text_size', (w[0] - 20, None)))
-        self.add_widget(self.response_label)
+        # Chat History Scroll View
+        self.scroll = ScrollView(size_hint=(1, 1))
+        self.chat_layout = GridLayout(cols=1, spacing=10, size_hint_y=None)
+        self.chat_layout.bind(minimum_height=self.chat_layout.setter('height'))
+        
+        self.scroll.add_widget(self.chat_layout)
+        self.add_widget(self.scroll)
 
+        # Initial greeting message in chat
+        self.add_chat_bubble("Jerry: Adab Sneh Sir! Main Sneh Ringe Sir ka personal AI assistant hoon. Hukam kijiye.", is_user=False)
+
+        # Bottom Input Layout
+        input_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height=65, spacing=10)
+        
         self.user_input = TextInput(
-            hint_text="Yahan koi bhi naya sawal likhiye Sneh Sir...",
-            size_hint_y=None,
-            height=60,
-            multiline=False
+            hint_text="Yahan likhiye Sneh Sir...",
+            font_size=16,
+            multiline=False,
+            size_hint_x=0.75
         )
-        self.add_widget(self.user_input)
+        input_layout.add_widget(self.user_input)
 
         self.send_btn = Button(
-            text="HUKAM DIJIYE (SEND)",
-            size_hint_y=None,
-            height=60,
+            text="SEND",
+            font_size=16,
+            bold=True,
+            size_hint_x=0.25,
             background_color=(0.1, 0.5, 0.8, 1)
         )
         self.send_btn.bind(on_press=self.on_send_click)
-        self.add_widget(self.send_btn)
+        input_layout.add_widget(self.send_btn)
+
+        self.add_widget(input_layout)
+
+    def add_chat_bubble(self, text, is_user=False):
+        lbl = Label(
+            text=text,
+            font_size=16,
+            color=(1, 1, 1, 1) if is_user else (0.1, 0.1, 0.1, 1),
+            size_hint_y=None,
+            text_size=(320, None),
+            halign='right' if is_user else 'left',
+            valign='middle'
+        )
+        lbl.bind(texture_size=lambda s, w: setattr(s, 'height', max(50, w[1] + 20)))
+        self.chat_layout.add_widget(lbl)
+        self.scroll.scroll_y = 0
 
     def on_send_click(self, instance):
         text = self.user_input.text.strip()
         if text != "":
-            self.response_label.text = "Sneh Sir, vichaar kiya ja raha hai..."
+            self.add_chat_bubble(f"Sneh Sir: {text}", is_user=True)
+            self.user_input.text = ""
             
-            # Background thread me API call karenge taaki app hang na ho
             def process_query():
                 reply = JerryJarvisBrain.get_response(text)
                 Clock.schedule_once(lambda dt: self.update_ui(reply), 0.1)
 
             threading.Thread(target=process_query, daemon=True).start()
-            self.user_input.text = ""
 
     def update_ui(self, reply):
-        self.response_label.text = reply
+        self.add_chat_bubble(f"Jerry: {reply}", is_user=False)
         if HARDWARE_AVAILABLE:
             try:
                 tts.speak(reply)
@@ -323,4 +357,4 @@ class JerryApp(App):
 
 if __name__ == '__main__':
     JerryApp().run()
-                                  
+                    
