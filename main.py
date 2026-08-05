@@ -1,6 +1,7 @@
 import os
 import threading
 import requests
+import re
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scrollview import ScrollView
@@ -11,10 +12,10 @@ from kivy.uix.textinput import TextInput
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.metrics import dp, sp
+from kivy.utils import platform
 
 Window.softinput_mode = "below_target"
 
-# ESP32 / ESP8266 Robot IP Address (Future hardware connectivity ke liye)
 ROBOT_IP = "http://192.168.4.1" 
 
 # Text-to-Speech Setup
@@ -25,7 +26,7 @@ try:
 except Exception:
     pass
 
-# Speech-to-Text (Mic) Setup
+# Speech-to-Text Setup
 HARDWARE_STT = False
 try:
     from plyer import stt
@@ -36,65 +37,104 @@ except Exception:
 class RobotController:
     @staticmethod
     def send_command(command_path):
-        """ESP32/ESP8266 ko background thread mein command bhejta hai."""
         def send_request():
             try:
                 url = f"{ROBOT_IP}/{command_path}"
                 requests.get(url, timeout=2)
             except Exception:
-                pass  # Abhi hardware connect nahi hai toh app crash nahi hoga
+                pass
 
         threading.Thread(target=send_request, daemon=True).start()
 
 class JerryBrain:
     @staticmethod
     def get_response(query):
+        # Text cleaning for broken/tooti-phooti language tolerance
         q = query.lower().strip()
+        clean_q = re.sub(r'[^a-zA-Z0-0\s]', '', q)
         
-        # 1. Identity & Creator
-        if any(w in q for w in ["banaya", "creator", "tum kon", "tum kaun", "kon ho", "kaun ho", "who are you"]):
-            return "Sneh Sir, main Jerry hoon, aapka personal AI assistant, jise aap hi ke creator Sneh Ringe ne banaya hai."
+        # Keywords dictionary across Hindi, Hinglish, English, broken spellings
+        intent_keywords = {
+            "identity": [
+                "banaya", "creator", "tum kon", "tum kaun", "kon ho", "kaun ho", 
+                "who are you", "who r u", "kone ho", "koun ho", "maker", "owner"
+            ],
+            "profile": [
+                "details", "profile", "job", "salary", "duty", "zomato", "patel", 
+                "gori nagar", "sneh", "me kon", "main kaun", "malum", "mlum", "jaante", 
+                "kya jante", "kya pata", "info", "aale baare", "mara baare", "mere baare"
+            ],
+            "kundli": [
+                "kundli", "grah", "nakshatra", "astrology", "tara", "horoscope", "future", "rashifal"
+            ],
+            "forward": [
+                "aage chalo", "forward", "aage badho", "aage bado", "aage", "go front", "agga", "age"
+            ],
+            "backward": [
+                "peeche", "back", "piche", "piche chalo", "go back", "piche bado"
+            ],
+            "stop": [
+                "ruk jao", "stop", "rok do", "ruk", "roko", "thamo", "stop it"
+            ],
+            "light": [
+                "light", "batti", "torch", "led", "ujala", "light on"
+            ],
+            "motor": [
+                "motor", "engine", "chalao", "start", "chalo"
+            ],
+            "greeting": [
+                "hello", "hi", "hey", "namaste", "heloo", "kaise ho", "kya haal", "kem cho", "kaisa ho"
+            ]
+        }
+
+        # Intent Matching System
+        def match(keywords):
+            return any(w in clean_q or w in q for w in keywords)
+
+        # 1. Identity
+        if match(intent_keywords["identity"]):
+            return "Sir, main Jerry hoon, aapka personal AI assistant, jise aap hi ke creator Sneh Ringe ne banaya hai."
         
-        # 2. Personal Details & Profile
-        elif any(w in q for w in ["details", "profile", "job", "salary", "duty", "zomato", "patel", "gori nagar", "sneh", "me kon", "main kaun"]):
-            return "Sneh Sir, aap Patel Motors par Service Advisor hain. Duty subah 9:30 se shaam 7:00 baje tak hai, salary 12000 hai. Extra income ke liye Zomato par kaam karna chahte hain. Aap Gori Nagar, Indore mein rehte hain aur aapka janm 21 May 2006 ko subah 7:00 baje hua hai."
+        # 2. Personal Details / Profile
+        elif match(intent_keywords["profile"]):
+            return "Sir, aap Patel Motors par Service Advisor hain. Duty subah 9:30 se shaam 7:00 baje tak hai, salary 12000 hai. Extra income ke liye Zomato par kaam karna chahte hain. Aap Gori Nagar, Indore mein rehte hain aur aapka janm 21 May 2006 ko subah 7:00 baje hua hai."
 
-        # 3. Astrology & Kundli
-        elif any(w in q for w in ["kundli", "grah", "nakshatra", "astrology", "tara"]):
-            return "Sneh Sir, 21 May 2006 (subah 7:00 baje) aur Indore janm sthan ke adhar par aapki kundli ke grah-nakshatra behad shubh hain."
+        # 3. Astrology / Kundli
+        elif match(intent_keywords["kundli"]):
+            return "Sir, 21 May 2006 (subah 7:00 baje) aur Indore janm sthan ke adhar par aapki kundli ke grah-nakshatra behad shubh hain."
 
-        # 4. Robot & Hardware Control Commands
-        elif any(w in q for w in ["aage chalo", "forward", "aage badho"]):
+        # 4. Robot Control - Forward
+        elif match(intent_keywords["forward"]):
             RobotController.send_command("forward")
-            return "Sneh Sir, robot ko aage chalane ka command bhej diya gaya hai! (Moving Forward)"
+            return "Sir, robot ko aage chalane ka command bhej diya gaya hai! (Moving Forward)"
 
-        elif any(w in q for w in ["peeche", "back", "piche"]):
+        # Robot Control - Backward
+        elif match(intent_keywords["backward"]):
             RobotController.send_command("backward")
-            return "Sneh Sir, robot ko peeche lene ka command bhej diya gaya hai! (Moving Backward)"
+            return "Sir, robot ko peeche lene ka command bhej diya gaya hai! (Moving Backward)"
 
-        elif any(w in q for w in ["ruk jao", "stop", "rok do"]):
+        # Robot Control - Stop
+        elif match(intent_keywords["stop"]):
             RobotController.send_command("stop")
-            return "Sneh Sir, robot ko rok diya gaya hai! (Robot Stopped)"
+            return "Sir, robot ko rok diya gaya hai! (Robot Stopped)"
 
-        elif any(w in q for w in ["light", "batti", "torch", "led"]):
+        # Robot Control - Light
+        elif match(intent_keywords["light"]):
             RobotController.send_command("toggle_light")
-            return "Sneh Sir, robot ki light on/off karne ka command execute ho gaya hai!"
+            return "Sir, robot ki light on/off karne ka command execute ho gaya hai!"
 
-        elif any(w in q for w in ["motor", "engine", "chalao"]):
+        # Robot Control - Motor
+        elif match(intent_keywords["motor"]):
             RobotController.send_command("start_motor")
-            return "Sneh Sir, robot ki motor start kar di gayi hai!"
+            return "Sir, robot ki motor start kar di gayi hai!"
 
-        # 5. Phone / Battery Status
-        elif any(w in q for w in ["battery", "batty", "charge"]):
-            return "Sneh Sir, aapka phone system bilkul fit kaam kar raha hai."
+        # Greetings
+        elif match(intent_keywords["greeting"]):
+            return "Namaste Sir! Main ekdum badhiya hoon. Boliye, robot ke liye ya kis cheez mein madad karun?"
 
-        # 6. General Greetings
-        elif any(w in q for w in ["hello", "hi", "hey", "namaste", "heloo", "kaise ho", "kya haal"]):
-            return "Namaste Sneh Sir! Main ekdum badhiya hoon. Boliye, robot ke liye ya kis cheez mein madad karun?"
-
-        # 7. Smart Fallback
+        # Smart Fallback for any other language/broken input
         else:
-            return f"Sneh Sir, aapne kaha: '{query}'. Main ise samajh raha hoon aur jaldi hi is par action lunga!"
+            return f"Sir, aapne kaha: '{query}'. Main har bhasha aur tooti-phooti words ko samajhne ki koshish kar raha hoon, jald hi is command par action lunga!"
 
 class JerryUI(BoxLayout):
     def __init__(self, **kwargs):
@@ -118,7 +158,7 @@ class JerryUI(BoxLayout):
         self.scroll.add_widget(self.chat_layout)
         self.add_widget(self.scroll)
 
-        initial_msg = "Namaste Sneh Sir! Main Jerry hoon. Boliye, kya madad karoon?"
+        initial_msg = "Namaste Sir! Main Jerry hoon. Aap kisi bhi bhasha mein bol sakte hain."
         self.add_bubble(f"Jerry: {initial_msg}", is_user=False)
         self.speak_text(initial_msg)
 
@@ -134,7 +174,7 @@ class JerryUI(BoxLayout):
         input_box.add_widget(self.mic_btn)
 
         self.user_input = TextInput(
-            hint_text="Yahan likhiye Sneh Sir...",
+            hint_text="Yahan likhiye Sir...",
             font_size=sp(20),
             multiline=False,
             size_hint_x=0.57
@@ -176,14 +216,34 @@ class JerryUI(BoxLayout):
                 pass
 
     def start_listening(self, instance):
+        if platform == 'android':
+            try:
+                from android.runnable import run_on_ui_thread
+                from jnius import autoclass, cast
+
+                PythonActivity = autoclass('org.kivy.android.PythonActivity')
+                Intent = autoclass('android.content.Intent')
+                RecognizerIntent = autoclass('android.speech.RecognizerIntent')
+
+                intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Boliye Sir...")
+
+                currentActivity = cast('android.app.Activity', PythonActivity.mActivity)
+                currentActivity.startActivityForResult(intent, 5555)
+                self.user_input.hint_text = "Sun raha hoon Sir..."
+                return
+            except Exception:
+                pass
+
         if HARDWARE_STT:
             try:
                 stt.start(callback=self.on_speech_result)
-                self.user_input.hint_text = "Sun raha hoon Sneh Sir..."
+                self.user_input.hint_text = "Sun raha hoon Sir..."
             except Exception:
                 self.user_input.hint_text = "Mic start nahi ho paya!"
         else:
-            self.user_input.hint_text = "Type karke bhejein Sneh Sir!"
+            self.user_input.hint_text = "Type karke bhejein Sir!"
 
     def on_speech_result(self, text):
         if text:
@@ -193,7 +253,7 @@ class JerryUI(BoxLayout):
     def on_send(self, instance):
         text = self.user_input.text.strip()
         if text != "":
-            self.add_bubble(f"Sneh Sir: {text}", is_user=True)
+            self.add_bubble(f"Sir: {text}", is_user=True)
             self.user_input.text = ""
             
             def background_process():
@@ -213,4 +273,4 @@ class JerryApp(App):
 
 if __name__ == '__main__':
     JerryApp().run()
-                                  
+        
