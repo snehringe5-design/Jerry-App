@@ -1,50 +1,58 @@
 [app]
 
 # (str) Title of your application
-title = Jerry AI
+title = Jerry AI Assistant
 
 # (str) Package name
 package.name = jerryai
 
 # (str) Package domain (needed for android packaging)
-package.domain = org.sneh
+package.domain = org.jerry
 
-# (str) Source code where the main.py is located
+# (list) Source files to include (let it empty to include all files)
 source.dir = .
 
-# (list) Source files to include (let it include python files and assets)
-source.include_exts = py,png,jpg,kv,atlas
+# (list) Source files to exclude (let it empty to avoid exclusion)
+source.exclude_exts = spec
 
-# (str) Application versioning (Needed by buildozer)
-version = 0.1
+# (list) List of inclusions using pattern matching
+source.include_patterns = assets/*,images/*.png
 
 # (list) Application requirements
+# Add your requirements here
 requirements = python3,kivy,plyer,requests,urllib3,idna,certifi,charset_normalizer
 
 # (str) Supported orientations
 orientation = portrait
 
+# (list) List of service to declare
+#services = 
+
+[buildozer]
+
+# (int) Log level (0 = error only, 1 = info, 2 = debug with command output)
+log_level = 2
+
+# (str) Path to build artifact, storage, etc.
+bin_dir = ./bin
+
+# -----------------------------------------------------------------------------
+# Android specific
+
 # (list) Permissions
 android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
 
 # (int) Target Android API, should be as high as possible.
-android.api = 31
+android.api = 33
 
-# (int) Minimum API your APK will support
-android.minapi = 21
-
-# (str) Android SDK version to use
-android.sdk = 31
+# (int) Minimum API your APK will support.
+android.min_api = 21
 
 # (str) Android NDK version to use
-android.ndk = 25b
+# android.ndk = 25b
 
-# (str) Custom Android SDK build-tools version
-android.build_tools_version = 31.0.0
+# (bool) Use --private data storage (True) or --public (False)
+android.private_storage = True
 
-# (str) Supported architectures
+# (list) The android archs to build for,, supported: arm64-v8a, armeabi-v7a, x86
 android.archs = arm64-v8a
-
-[buildozer]
-log_level = 2
-warn_on_root = 1
