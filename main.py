@@ -39,31 +39,31 @@ class JerryJarvisBrain:
             return "Sneh Sir, mujhe aap hi ke creator Sneh Ringe ne banaya hai. Main Sneh Ringe Sir ka personal AI assistant hoon."
         
         elif any(w in q for w in ["tum kon hon", "tum kon ho", "who are you", "kaun ho"]):
-            return "Sneh Sir, main Jerry hoon—aapka apna zaati Jarvis-style AI assistant, jise aapke sabhi kaamo aur system control ke liye banaya gaya hai."
+            return "Sneh Sir, main Jerry hoon—aapka apna zaati Jarvis-style AI assistant."
 
         # 2. User Profile & Work Details (Patel Motors, Salary, Duty Time, Zomato, Gori Nagar, Indore)
         elif any(w in q for w in ["meri details", "mera profile", "meri jankari", "job", "salary", "duty", "zomato", "patel motors"]):
-            return "Sneh Sir, aap Patel Motors par Service Advisor hain. Aapka duty time subah 9:30 se shaam 7:00 baje tak hai (overtime ka alag se bhugtan nahi hai), aur salary 12000 hai. Extra income ke liye aap Zomato par kaam karna chahte hain. Aap Gori Nagar, Indore mein rehte hain aur aapka janm 21 May 2006 ko Indore mein hua hai."
+            return "Sneh Sir, aap Patel Motors par Service Advisor hain. Aapka duty time subah 9:30 se shaam 7:00 baje tak hai, salary 12000 hai. Extra income ke liye aap Zomato par kaam karna chahte hain. Aap Gori Nagar, Indore mein rehte hain aur aapka janm 21 May 2006 ko Indore mein hua hai."
 
         # 3. Kundli, Grah, Nakshatra & Astrology (21-05-2006, Indore)
         elif any(w in q for w in ["kundli", "grah", "nakshatra", "rashifal", "astrology", "sitare", "planet"]):
-            return "Sneh Sir, 21 May 2006 aur Indore janm sthan ke adhar par aapki kundli ke grah-nakshatra behad shubh aur unnati ke yog darsha rahe hain. Aapka bhavishya ujjwal hai!"
+            return "Sneh Sir, 21 May 2006 aur Indore janm sthan ke adhar par aapki kundli ke grah-nakshatra behad shubh aur unnati ke yog darsha rahe hain."
 
         # 4. Units & Measurements (Kilogram, Ton, Kuntal)
         elif any(w in q for w in ["kg", "kilogram", "ton", "kuntal", "wajan", "weight"]):
-            return "Sneh Sir, vajan ki ikaaiyon ka hisaab yeh hai: 1 Quintal (कंटल) = 100 किलोग्राम (Kg) hota hai, aur 1 Ton = 1000 किलोग्राम (यानि 10 कंटल) hota hai."
+            return "Sneh Sir, 1 Quintal = 100 किलोग्राम hota hai, aur 1 Ton = 1000 किलोग्राम (yaani 10 कंटल) hota hai."
 
         # 5. World Currencies & Money
-        elif w in q and any(sub in q for sub in ["currency", "paisa", "rupaye", "dollar", "money"]):
-            return "Sneh Sir, duniya bhar mein alag-alag currencies chalti hain jaise Bharat mein Indian Rupee (INR), US mein US Dollar (USD), Europe mein Euro, UK mein Pound, aadi. Har desh ki currency ki apni arthik pehchan hoti hai."
+        elif any(w in q for w in ["currency", "paisa", "rupaye", "dollar", "money"]):
+            return "Sneh Sir, alag-alag deshon mein alag currencies chalti hain jaise Bharat mein Indian Rupee (INR) aur US mein Dollar (USD)."
 
         # 6. Indian Democracy & History
         elif any(w in q for w in ["democracy", "tantra", "itihaas", "history", "yug", "satyug", "dwapar", "treta"]):
-            return "Sneh Sir, Bharatiya itihaas aur purane yugo (Satyug, Treta Yug, Dwapar Yug aur ab Kaliyug) ka gyan hamare grantho mein hai. Vahi Bharat mein 1947 ki azaadi ke baad ek mazboot loktantra (Democracy) sthapit ki gayi hai jisme chunav ke madhyam se sarakar chuni jaati hai."
+            return "Sneh Sir, purane yugo (Satyug, Treta, Dwapar aur Kaliyug) ka gyan hamare grantho mein hai, aur Bharat mein 1947 ke baad ek mazboot loktantra sthapit hai."
 
         # 7. Vedas & Puranas (Chatur Ved, Shiv Puran, Garuda Puran)
         elif any(w in q for w in ["ved", "veda", "puran", "shiv puran", "garud puran", "gyan"]):
-            return "Sneh Sir, charo ved (Rigveda, Samaveda, Yajurveda, Atharvaveda) aur puran jaise ki Shiv Puran, Garuda Puran aadi mein aatma, moksh, sansaar aur vigyan ka agath gyan samahit hai."
+            return "Sneh Sir, charo ved aur puran jaise Shiv Puran aur Garuda Puran mein agath gyan samahit hai."
 
         # 8. Flashlight / Torch Control
         elif any(w in q for w in ["torch on", "flashlight on", "light jalao", "torch jalao"]):
@@ -101,35 +101,11 @@ class JerryJarvisBrain:
 
         # 11. Apps Control (Instagram, WhatsApp, OTP/SMS)
         elif any(w in q for w in ["instagram", "insta", "whatsapp", "otp", "message", "sms"]):
-            return "Sneh Sir, aapke kehne par target app ya SMS/OTP ko track karne ki permission active kar di gayi hai."
+            return "Sneh Sir, target app ya SMS/OTP ko track karne ki permission active kar di gayi hai."
 
         # Default Jarvis Response
         else:
-            return f"Beshak Sneh Sir, maine aapki baat ' {query} ' gehrai se sun li hai. Hukam kijiye is par kya karyavahi ki jaye?"
-
-def auto_repair_and_update():
-    time.sleep(10)
-    while True:
-        try:
-            url = "https://raw.githubusercontent.com/snehringe5-design/Jerry-App/main/latest_logic.py"
-            response = requests.get(url, timeout=10)
-            if response.status_code == 200:
-                new_code = response.text
-                local_file = "current_logic.py"
-                if os.path.exists(local_file):
-                    with open(local_file, "r", encoding="utf-8") as f:
-                        old_code = f.read()
-                else:
-                    old_code = ""
-
-                if new_code != old_code:
-                    with open(local_file, "w", encoding="utf-8") as f:
-                        f.write(new_code)
-                    if HARDWARE_AVAILABLE:
-                        Clock.schedule_once(lambda dt: tts.speak("Sneh Sir, maine apna code khud update kar liya hai."), 0.1)
-        except Exception as e:
-            print(f"Update error: {e}")
-        time.sleep(300)
+            return f"Beshak Sneh Sir, maine aapki baat ' {query} ' dhyan se sun li hai. Hukam kijiye is par kya karyavahi ki jaye?"
 
 class LoginScreen(BoxLayout):
     def __init__(self, switch_callback, open_change_pass, **kwargs):
@@ -284,7 +260,7 @@ class JerryUI(BoxLayout):
         ))
 
         self.response_label = Label(
-            text="Adab Sneh Sir! Main Sneh Ringe Sir ka personal AI assistant Jerry hoon. Sabhi system controls aur gyan database load ho chuke hain. Hukam kijiye.",
+            text="Adab Sneh Sir! Main Sneh Ringe Sir ka personal AI assistant Jerry hoon. Hukam kijiye.",
             font_size=16,
             color=(0.2, 0.2, 0.2, 1),
             halign='center',
@@ -294,7 +270,7 @@ class JerryUI(BoxLayout):
         self.add_widget(self.response_label)
 
         self.user_input = TextInput(
-            hint_text="Yahan likhiye Sneh Sir (jaise: kundli, ved, currency, torch)...",
+            hint_text="Yahan likhiye Sneh Sir (jaise: kundli, torch)...",
             size_hint_y=None,
             height=60,
             multiline=False
@@ -310,19 +286,20 @@ class JerryUI(BoxLayout):
         self.send_btn.bind(on_press=self.on_send_click)
         self.add_widget(self.send_btn)
 
-        threading.Thread(target=auto_repair_and_update, daemon=True).start()
-
     def on_send_click(self, instance):
         text = self.user_input.text.strip()
         if text != "":
-            reply = JerryJarvisBrain.get_response(text)
-            self.response_label.text = reply
-            
-            if HARDWARE_AVAILABLE:
-                try:
-                    Clock.schedule_once(lambda dt: tts.speak(reply), 0.1)
-                except Exception as e:
-                    print(f"TTS Error: {e}")
+            try:
+                reply = JerryJarvisBrain.get_response(text)
+                self.response_label.text = reply
+                
+                if HARDWARE_AVAILABLE:
+                    try:
+                        tts.speak(reply)
+                    except Exception:
+                        pass
+            except Exception as e:
+                self.response_label.text = f"Error: {str(e)}"
             
             self.user_input.text = ""
 
@@ -349,4 +326,4 @@ class JerryApp(App):
 
 if __name__ == '__main__':
     JerryApp().run()
-    
+            
