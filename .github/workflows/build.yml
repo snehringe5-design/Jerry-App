@@ -15,7 +15,6 @@ jobs:
       ANDROID_NDK_HOME: /home/runner/.buildozer/android/platform/android-ndk-r25b
       ANDROIDNDK: /home/runner/.buildozer/android/platform/android-ndk-r25b
       ANDROIDSDK: /home/runner/.buildozer/android/platform/android-sdk
-      PATH: /home/runner/.buildozer/android/platform/android-ndk-r25b/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
 
     steps:
       - name: Checkout code
@@ -36,7 +35,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-              git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config \
+              git tar gzip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config \
               zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev \
               build-essential ccache libltdl-dev
 
