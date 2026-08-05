@@ -15,6 +15,7 @@ jobs:
       ANDROID_NDK_HOME: /home/runner/.buildozer/android/platform/android-ndk-r25b
       ANDROIDNDK: /home/runner/.buildozer/android/platform/android-ndk-r25b
       ANDROIDSDK: /home/runner/.buildozer/android/platform/android-sdk
+      PATH: /home/runner/.buildozer/android/platform/android-ndk-r25b/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
 
     steps:
       - name: Checkout code
