@@ -47,7 +47,10 @@ jobs:
 
       - name: Prepare SDK, NDK and Accept Licenses
         run: |
+          # गिटहब रनर के फालतू और पुराने एनडीके को पूरी तरह डिलीट करना ताकि r25b ही चले
+          rm -rf /usr/local/lib/android/sdk/ndk/*
           rm -rf ~/.buildozer
+          
           SDK_DIR="$HOME/.buildozer/android/platform/android-sdk"
           PLATFORM_DIR="$HOME/.buildozer/android/platform"
           
