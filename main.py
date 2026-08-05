@@ -15,25 +15,48 @@ try:
 except Exception:
     TTS_AVAILABLE = False
 
-# Jerry का असली दिमागी लॉजिक (यहाँ सारे जवाब तय होंगे)
-class JerryBrain:
+class JerryJarvisBrain:
     @staticmethod
     def get_response(query):
         q = query.lower()
-        if "tum kon ho" in q or "who are you" in q:
-            return "Sir, I am Jerry, your personal 24/7 active AI assistant."
-        elif "kaise ho" in q or "how are you" in q:
-            return "I am fully active and ready to help you, Sir!"
-        elif "zomato" in q:
-            return "Sir, working on Zomato is a great choice for extra income."
-        elif "patel motors" in q or "job" in q:
-            return "Sir, I am always here to assist you with your work and daily tasks."
-        else:
-            return f"Sir, I processed your query: '{q}'. Everything is running smoothly!"
+        
+        # 1. Creator Identity (Sneh Ringe)
+        if any(w in q for w in ["kisne banaya", "who made you", "who created you", "kaun banaya", "kisne taiyar kiya"]):
+            return "Janab, mujhe mere creator Sneh Ringe ne banaya hai. Main unhi ka banaya hua Jarvis hoon."
 
-# सेल्फ-रिपेयर इंजन
+        # 2. Identity & Jarvis Style
+        elif any(w in q for w in ["tum kon hon", "tum kon ho", "who are you", "app kaun ho", "kaun ho", "tu kaun hai"]):
+            return "Janab, main Jerry hoon—aapka apna zaati AI assistant, bilkul Jarvis ki tarah, jise Sneh Ringe ne tashkeel diya hai."
+        
+        elif any(w in q for w in ["kaise ho", "kya haal hai", "mizaj"]):
+            return "Allah ka shukar hai janab, main bilkul theek hoon aur aapki khidmat ke liye har waqt taiyar hoon."
+
+        # 3. Relationships & Respect
+        elif any(w in q for w in ["rishta", "family", "ghar", "bhai", "dost", "walid", "papa", "sir"]):
+            return "Aapke rishte aur apnon ka ehteram karna hamari sab se badi tarjeeh hai janab. Rishte hi zindagi ki asal poonji hain."
+
+        # 4. Democracy & Constitution
+        elif any(w in q for w in ["democracy", "samvidhan", "constitution", "loktantra", "hukumat"]):
+            return "Hindustan duniya ka sab se bara jamhoori (democracy) mulk hai, jahan aaeen aur qanoon ke tehat har shakhs ko barabar ke huqooq hasil hain janab."
+
+        # 5. Currencies, Dollar, Rupee, Money
+        elif any(w in q for w in ["dollar", "paisa", "rupee", "currency", "money", "qimat"]):
+            return "Janab, mere paas duniya bhar ki currencies ka mukammal data hai—chahe wo Bharatiya Rupaiya (INR) ho, American Dollar (USD), Euro, ya Pound. Aap jis bhi currency ka hisaab chahen, farmaiye."
+
+        # 6. Multilingual Support
+        elif any(w in q for w in ["language", "bhasha", "zaban", "urdu", "english", "hindi"]):
+            return "Main duniya ki tamam zabanon—Hindi, Urdu, English, Arabic, aur digar bhashaon ko samajhne aur bolne ki salahiyat rakhta hoon janab."
+
+        # 7. Work, Zomato, Patel Motors
+        elif any(w in q for w in ["zomato", "income", "paisa", "job", "patel motors"]):
+            return "Janab, extra income ke liye Zomato par kaam karna ek nihayat behtareen faisla hai. Aur Patel Motors par aapki lagan ka bhi mujhe poora ilm hai."
+
+        # General Jarvis Response
+        else:
+            return f"Beshak janab, maine aapki baat ' {query} ' gehrai se sun aur samajh li hai. Farmaiye is par mazeed kya amal kiya jaye?"
+
 def auto_repair_and_update():
-    time.sleep(15)
+    time.sleep(10)
     while True:
         try:
             url = "https://raw.githubusercontent.com/snehringe5-design/Jerry-App/main/latest_logic.py"
@@ -51,30 +74,28 @@ def auto_repair_and_update():
                     with open(local_file, "w", encoding="utf-8") as f:
                         f.write(new_code)
                     if TTS_AVAILABLE:
-                        Clock.schedule_once(lambda dt: tts.speak("सर, मैंने अपना कोड खुद अपडेट कर लिया है।"), 0.1)
+                        Clock.schedule_once(lambda dt: tts.speak("Janab, maine apna code khud update kar liya hai."), 0.1)
         except Exception as e:
-            print(f"Repair error: {e}")
+            print(f"Update error: {e}")
         time.sleep(300)
 
-class JerryRoot(BoxLayout):
+class JerryUI(BoxLayout):
     def __init__(self, **kwargs):
-        super(JerryRoot, self).__init__(**kwargs)
+        super(JerryUI, self).__init__(**kwargs)
         self.orientation = 'vertical'
         self.padding = 30
         self.spacing = 20
 
-        # टाइटल
         self.add_widget(Label(
-            text="JERRY AI (SMART BRAIN)",
+            text="JARVIS - JERRY AI (ULTIMATE)",
             font_size=20,
             size_hint_y=None,
             height=50,
             color=(0, 0, 0, 1)
         ))
 
-        # जवाब दिखाने के लिए लेबल
         self.response_label = Label(
-            text="Hello Sir! Ask me anything.",
+            text="Adab janab! Main aapka Jerry hoon. Hukam kijiye.",
             font_size=18,
             color=(0.2, 0.2, 0.2, 1),
             halign='center',
@@ -83,18 +104,16 @@ class JerryRoot(BoxLayout):
         self.response_label.bind(size=lambda s, w: setattr(s, 'text_size', w))
         self.add_widget(self.response_label)
 
-        # इनपुट बॉक्स
         self.user_input = TextInput(
-            hint_text="Type your message here...",
+            hint_text="Yahan likhiye janab...",
             size_hint_y=None,
             height=60,
             multiline=False
         )
         self.add_widget(self.user_input)
 
-        # भेजने वाला बटन
         self.send_btn = Button(
-            text="SEND",
+            text="HUKAM DIJIYE (SEND)",
             size_hint_y=None,
             height=60,
             background_color=(0.1, 0.5, 0.8, 1)
@@ -102,16 +121,14 @@ class JerryRoot(BoxLayout):
         self.send_btn.bind(on_press=self.on_send_click)
         self.add_widget(self.send_btn)
 
-        # बैकग्राउंड थ्रेड्स
         threading.Thread(target=auto_repair_and_update, daemon=True).start()
 
     def on_send_click(self, instance):
         text = self.user_input.text.strip()
         if text != "":
-            reply = JerryBrain.get_response(text)
+            reply = JerryJarvisBrain.get_response(text)
             self.response_label.text = reply
             
-            # बोलकर जवाब देना
             if TTS_AVAILABLE:
                 try:
                     Clock.schedule_once(lambda dt: tts.speak(reply), 0.1)
@@ -124,8 +141,8 @@ class JerryApp(App):
     def build(self):
         from kivy.core.window import Window
         Window.clearcolor = (0.95, 0.95, 0.95, 1)
-        return JerryRoot()
+        return JerryUI()
 
 if __name__ == '__main__':
     JerryApp().run()
-                                        
+            
