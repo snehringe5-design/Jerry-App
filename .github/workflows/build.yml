@@ -82,14 +82,14 @@ jobs:
           unzip -q android-ndk-r25b-linux.zip
           rm android-ndk-r25b-linux.zip
 
-          # 4. आवश्यक SDK पैकेजेस इंस्टॉल करना
-          export PATH=$PATH:$SDK_DIR/cmdline-tools/latest/bin
+          # 4. केवल सटीक API 33 और Build-Tools 33.0.2 इंस्टॉल करना (बिना किसी लेटेस्ट वर्ज़न के)
+          export PATH=$PATH:$SDK_DIR/cmdline-tools/latest/bin:$SDK_DIR/tools/bin
           yes | sdkmanager --licenses || true
-          sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+          sdkmanager --sdk_root="$SDK_DIR" "platform-tools" "platforms;android-33" "build-tools;33.0.2"
 
       - name: Build APK with Buildozer
         run: |
-          buildozer --debug android debug
+          buildozer -v android debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
