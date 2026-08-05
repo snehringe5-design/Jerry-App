@@ -42,6 +42,9 @@ android.api = 33
 # (int) Minimum API your APK will support
 android.minapi = 21
 
+# (str) Supported architectures (Sirf arm64-v8a rakhne se build fast ho jata hai)
+android.archs = arm64-v8a
+
 # (str) The format used to pack the app for release
 android.format = apk
 
