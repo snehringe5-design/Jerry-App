@@ -9,6 +9,9 @@ package.name = jerryai
 # (str) Package domain (needed for android packaging)
 package.domain = org.jerry
 
+# (str) Source directory where your app lives
+source.dir = .
+
 # (list) Source files to include (let it empty to include all files)
 source.include_exts = py,png,jpg,kv,atlas
 
