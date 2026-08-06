@@ -26,7 +26,19 @@ jobs:
         pip3 install --upgrade pip
         pip3 install --upgrade buildozer cython==0.29.33 python-for-android
 
+    - name: Cache Buildozer global directory
+      uses: actions/cache@v4
+      id: cache-buildozer
+      with:
+        path: |
+          ~/.buildozer
+          .buildozer
+        key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
+        restore-keys: |
+          ${{ runner.os }}-buildozer-
+
     - name: Manual SDK & NDK r28c Setup
+      if: steps.cache-buildozer.outputs.cache-hit != 'true'
       run: |
         mkdir -p $HOME/.buildozer/android/platform
         
