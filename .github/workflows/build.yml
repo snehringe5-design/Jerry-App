@@ -28,7 +28,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-python310-v11
+        key: ${{ runner.os }}-buildozer-python310-v12
         restore-keys: |
           ${{ runner.os }}-buildozer-python310-
 
@@ -39,18 +39,11 @@ jobs:
         pip install --upgrade pip
         pip install --user --upgrade buildozer cython==0.29.36
 
-    - name: Purge and Lock GoogleTest to Prevent Compilation
+    - name: Disable Cmake Tests Globally
       run: |
-        # Background daemon jo continuously googletest ko delete karke wahan empty file ya block laga dega
-        (
-          while true; do
-            find ~/.buildozer -type d -name "*googletest*" 2>/dev/null | while read dir; do
-              rm -rf "$dir" && touch "$dir" && chmod 000 "$dir" 2>/dev/null || true
-            done
-            sleep 1
-          done
-        ) &
-        echo "GoogleTest blocker daemon started."
+        # Yeh step CMake ke default behavior ko rokti hai jisse test targets build mein include na ho
+        echo "set(BUILD_TESTING OFF CACHE BOOL \"\" FORCE)" | sudo tee -a /usr/share/cmake-*/Modules/CMakeLists.txt 2>/dev/null || true
+        mkdir -p ~/.gradle
 
     - name: Build with Buildozer
       run: |
