@@ -26,7 +26,7 @@ jobs:
         pip3 install --upgrade pip
         pip3 install --user buildozer cython==0.29.33
 
-    - name: Set up Android SDK & Auto-License Wrapper
+    - name: Set up Android SDK & Pre-install Tools
       run: |
         export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
         mkdir -p $ANDROID_HOME/tools
@@ -35,24 +35,20 @@ jobs:
         cp -r temp_tools/cmdline-tools/* $ANDROID_HOME/tools/
         rm -rf cmdline-tools.zip temp_tools
 
-        # Create a smart wrapper for sdkmanager that auto-accepts all future licenses
-        mkdir -p $HOME/bin
-        cat << 'EOF' > $HOME/bin/sdkmanager
-        #!/bin/bash
-        yes | $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager "$@"
-        EOF
-        chmod +x $HOME/bin/sdkmanager
-
-        # Pre-populate base licenses
+        # Setup paths and accept licenses in advance
+        export PATH=$PATH:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
         mkdir -p $ANDROID_HOME/licenses
         echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > $ANDROID_HOME/licenses/android-sdk-license
         echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> $ANDROID_HOME/licenses/android-sdk-license
         echo -e "\nd56f5187479451eabf01fb78af6dfcb139a648b0" >> $ANDROID_HOME/licenses/android-sdk-license
 
+        # Pre-install exact required build-tools and platform
+        yes | sdkmanager --licenses || true
+        yes | sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools" || true
+
     - name: Build with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
-        export PATH=$HOME/bin:$PATH
         export PATH=$PATH:$HOME/.buildozer/android/platform/android-sdk/tools/bin
         export PATH=$PATH:$HOME/.buildozer/android/platform/android-sdk/platform-tools
         buildozer -v android debug
