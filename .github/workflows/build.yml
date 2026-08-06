@@ -26,7 +26,7 @@ jobs:
         pip3 install --upgrade pip
         pip3 install --user buildozer cython==0.29.33
 
-    - name: Setup Exact Buildozer SDK Path
+    - name: Set up Android SDK & Pre-accept Build-Tools 37 License
       run: |
         ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
         mkdir -p $ANDROID_HOME/tools
@@ -34,21 +34,19 @@ jobs:
         # Download stable command-line tools
         wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
         unzip -q cmdline-tools.zip -d temp_tools
-        
-        # Place tools directly where Buildozer looks: ~/.buildozer/android/platform/android-sdk/tools/
         cp -r temp_tools/cmdline-tools/* $ANDROID_HOME/tools/
         rm -rf cmdline-tools.zip temp_tools
 
-        # Setup licenses to avoid any prompt block
+        # Setup paths and write standard SDK licenses
+        export PATH=$PATH:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
         mkdir -p $ANDROID_HOME/licenses
         echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > $ANDROID_HOME/licenses/android-sdk-license
         echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> $ANDROID_HOME/licenses/android-sdk-license
         echo -e "\nd56f5187479451eabf01fb78af6dfcb139a648b0" >> $ANDROID_HOME/licenses/android-sdk-license
 
-        # Pre-install required components using the exact path
-        export PATH=$PATH:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
+        # Forcefully accept all licenses and pre-install build-tools 37 so Buildozer never has to ask
         yes | sdkmanager --licenses || true
-        yes | sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools" || true
+        yes | sdkmanager "platforms;android-33" "build-tools;37.0.0" "platform-tools"
 
     - name: Build with Buildozer
       run: |
