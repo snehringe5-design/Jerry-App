@@ -24,12 +24,11 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    # Naya cache key taaki purana kharab cache use na ho
     - name: Cache Buildozer global directory
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-python310-v3
+        key: ${{ runner.os }}-buildozer-python310-v4
         restore-keys: |
           ${{ runner.os }}-buildozer-python310-
 
@@ -40,13 +39,19 @@ jobs:
         pip install --upgrade pip
         pip install --user --upgrade buildozer cython==0.29.36
 
-    - name: Clean previous builds
-      run: |
-        buildozer clean || true
-
     - name: Build with Buildozer
       run: |
-        buildozer -v android debug
+        export PATH=$PATH:~/.local/bin
+        buildozer -v android debug || {
+          echo "=== BUILD FAILED, SEARCHING AND PRINTING LOGS ==="
+          find /home/runner/.buildozer -name "*.txt" -o -name "*.log" | while read logfile; do
+            echo "=========================================="
+            echo "FILE: $logfile"
+            echo "=========================================="
+            tail -n 120 "$logfile"
+          done
+          exit 1
+        }
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
