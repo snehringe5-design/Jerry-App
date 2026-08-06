@@ -26,29 +26,41 @@ jobs:
         pip3 install --upgrade pip
         pip3 install --user buildozer cython==0.29.33
 
+    - name: Cache Buildozer Global Directory
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.buildozer
+          ~/.local/share/buildozer
+        key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
+        restore-keys: |
+          ${{ runner.os }}-buildozer-
+
     - name: Set up Android SDK & Bridge Buildozer Paths
       run: |
         ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
         
-        # 1. Place in cmdline-tools/latest (Required by modern sdkmanager)
-        mkdir -p $ANDROID_HOME/cmdline-tools/latest
-        wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
-        unzip -q cmdline-tools.zip -d temp_tools
-        cp -r temp_tools/cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/
-        rm -rf cmdline-tools.zip temp_tools
+        # Check if SDK tools already exist via cache to save time
+        if [ ! -d "$ANDROID_HOME/cmdline-tools/latest" ]; then
+          mkdir -p $ANDROID_HOME/cmdline-tools/latest
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+          unzip -q cmdline-tools.zip -d temp_tools
+          cp -r temp_tools/cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/
+          rm -rf cmdline-tools.zip temp_tools
+        fi
 
-        # 2. Symlink bin and lib to tools/ so Buildozer finds it where it expects
+        # Ensure symlinks and licenses are in place
         mkdir -p $ANDROID_HOME/tools
-        ln -s $ANDROID_HOME/cmdline-tools/latest/bin $ANDROID_HOME/tools/bin
-        ln -s $ANDROID_HOME/cmdline-tools/latest/lib $ANDROID_HOME/tools/lib
+        if [ ! -L "$ANDROID_HOME/tools/bin" ]; then
+          ln -s $ANDROID_HOME/cmdline-tools/latest/bin $ANDROID_HOME/tools/bin
+          ln -s $ANDROID_HOME/cmdline-tools/latest/lib $ANDROID_HOME/tools/lib
+        fi
 
-        # 3. Setup standard licenses
         mkdir -p $ANDROID_HOME/licenses
         echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > $ANDROID_HOME/licenses/android-sdk-license
         echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> $ANDROID_HOME/licenses/android-sdk-license
         echo -e "\nd56f5187479451eabf01fb78af6dfcb139a648b0" >> $ANDROID_HOME/licenses/android-sdk-license
 
-        # 4. Pre-install required packages
         export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
         yes | sdkmanager --licenses || true
         yes | sdkmanager "platforms;android-33" "build-tools;37.0.0" "platform-tools"
