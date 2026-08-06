@@ -28,7 +28,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-python311-v15
+        key: ${{ runner.os }}-buildozer-python311-v16
         restore-keys: |
           ${{ runner.os }}-buildozer-python311-
 
@@ -39,15 +39,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install --user --upgrade buildozer cython==0.29.36
 
-    - name: Clean Conflicting Python Cache
-      run: |
-        rm -rf ~/.buildozer/android/platform/build-arm64-v8a/build/other_builds/python3*
-        rm -rf ~/.buildozer/android/platform/build-arm64-v8a/build/other_builds/kivy*
-
     - name: Build with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
-        buildozer -v android debug || {
+        # 'yes |' automatically accepts Android SDK licenses during build
+        yes | buildozer -v android debug || {
           echo "=== BUILD FAILED, SEARCHING AND PRINTING LOGS ==="
           find /home/runner/.buildozer -name "*.txt" -o -name "*.log" | while read logfile; do
             echo "=========================================="
