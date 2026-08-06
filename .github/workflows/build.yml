@@ -26,32 +26,25 @@ jobs:
         pip3 install --upgrade pip
         pip3 install --user buildozer cython==0.29.33
 
-    - name: Set up Android SDK & Force Install Build-Tools 37
+    - name: Set up Android SDK (Official Action)
+      uses: android-actions/setup-android@v3
+
+    - name: Install Required SDK Packages & Accept Licenses
       run: |
-        export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
-        mkdir -p $ANDROID_HOME/tools
-        
-        wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
-        unzip -q cmdline-tools.zip -d temp_tools
-        cp -r temp_tools/cmdline-tools/* $ANDROID_HOME/tools/
-        rm -rf cmdline-tools.zip temp_tools
-
-        # Setup paths and accept licenses
-        export PATH=$PATH:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
-        mkdir -p $ANDROID_HOME/licenses
-        echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > $ANDROID_HOME/licenses/android-sdk-license
-        echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> $ANDROID_HOME/licenses/android-sdk-license
-        echo -e "\nd56f5187479451eabf01fb78af6dfcb139a648b0" >> $ANDROID_HOME/licenses/android-sdk-license
-
         yes | sdkmanager --licenses || true
-        # Explicitly pre-install version 37 so buildozer finds it instantly
-        yes | sdkmanager "platforms;android-33" "build-tools;37.0.0" "platform-tools" || true
+        sdkmanager "platforms;android-33" "build-tools;37.0.0" "build-tools;33.0.2" "platform-tools"
+
+    - name: Link SDK for Buildozer
+      run: |
+        mkdir -p $HOME/.buildozer/android/platform
+        if [ ! -L "$HOME/.buildozer/android/platform/android-sdk" ]; then
+          rm -rf $HOME/.buildozer/android/platform/android-sdk
+          ln -s $ANDROID_HOME $HOME/.buildozer/android/platform/android-sdk
+        fi
 
     - name: Build with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
-        export PATH=$PATH:$HOME/.buildozer/android/platform/android-sdk/tools/bin
-        export PATH=$PATH:$HOME/.buildozer/android/platform/android-sdk/platform-tools
         buildozer -v android debug
 
     - name: Upload APK Artifact
