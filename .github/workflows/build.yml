@@ -26,17 +26,17 @@ jobs:
         pip3 install --upgrade pip
         pip3 install --upgrade buildozer cython==0.29.33 python-for-android
 
-    - name: Manual SDK & NDK Setup (Bypass all 404 Errors)
+    - name: Manual SDK & NDK r28c Setup
       run: |
         mkdir -p $HOME/.buildozer/android/platform
         
-        # Download and extract NDK r25b manually
-        echo "Downloading NDK r25b..."
-        wget -q https://dl.google.com/android/repository/android-ndk-r25b-linux.zip -O ndk.zip
+        # Download and extract NDK r28c
+        echo "Downloading NDK r28c..."
+        wget -q https://dl.google.com/android/repository/android-ndk-r28c-linux.zip -O ndk.zip
         unzip -q ndk.zip -d $HOME/.buildozer/android/platform/
         rm ndk.zip
 
-        # Setup Android SDK
+        # Setup Android SDK & Tools structure expected by Buildozer
         ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
         mkdir -p $ANDROID_HOME/cmdline-tools/latest
         wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
@@ -44,12 +44,17 @@ jobs:
         cp -r temp_tools/cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/
         rm -rf cmdline-tools.zip temp_tools
 
+        # Create tools/bin structure for Buildozer compatibility
+        mkdir -p $ANDROID_HOME/tools/bin
+        ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
+        ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager $ANDROID_HOME/tools/bin/avdmanager
+
         mkdir -p $ANDROID_HOME/licenses
         echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > $ANDROID_HOME/licenses/android-sdk-license
         echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> $ANDROID_HOME/licenses/android-sdk-license
         echo -e "\nd56f5187479451eabf01fb78af6dfcb139a648b0" >> $ANDROID_HOME/licenses/android-sdk-license
 
-        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
+        export PATH=$PATH:$ANDROID_HOME/tools/bin
         yes | sdkmanager --licenses || true
         yes | sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools"
 
