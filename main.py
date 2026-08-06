@@ -34,7 +34,7 @@ class JerryApp(App):
         layout = BoxLayout(orientation='vertical', padding=15, spacing=15)
         
         self.status_label = Label(
-            text="Hello! I am Jerry AI, created by Sneh Ringe. Ready!", 
+            text="Hello Sir! I am Jerry AI, created by Sneh Ringe. Ready!", 
             font_size='24sp',
             size_hint_y=None, 
             height=90,
@@ -69,20 +69,28 @@ class JerryApp(App):
 
     def on_tts_init(self, status):
         if status == 0:
-            self.tts.setLanguage(Locale.getDefault())
-            self.tts_initialized = True
+            try:
+                self.tts.setLanguage(Locale.getDefault())
+                self.tts_initialized = True
+            except Exception as e:
+                print("TTS Language Error:", e)
 
     def speak(self, text):
         if platform == 'android' and getattr(self, 'tts_initialized', False):
-            self.tts.speak(text, TextToSpeech.QUEUE_FLUSH, None, None)
+            try:
+                self.tts.speak(text, TextToSpeech.QUEUE_FLUSH, None, None)
+            except Exception as e:
+                print("TTS Speak Error:", e)
 
     def capture_and_analyze(self, instance):
         self.status_label.text = "Capturing image..."
         img_path = "captured_image.png"
-        self.cam.export_to_png(img_path)
-        self.status_label.text = "Analyzing with Jerry AI..."
-        
-        Clock.schedule_once(lambda dt: self.send_to_gemini(img_path), 0.5)
+        try:
+            self.cam.export_to_png(img_path)
+            self.status_label.text = "Analyzing with Jerry AI..."
+            Clock.schedule_once(lambda dt: self.send_to_gemini(img_path), 0.5)
+        except Exception as e:
+            self.status_label.text = f"Capture Error: {str(e)}"
 
     def send_to_gemini(self, img_path):
         try:
@@ -124,7 +132,10 @@ class JerryApp(App):
             response = requests.post(url, headers=headers, json=data, timeout=30)
             if response.status_code == 200:
                 res_json = response.json()
-                answer = res_json['candidates'][0]['content']['parts'][0]['text']
+                try:
+                    answer = res_json['candidates'][0]['content']['parts'][0]['text']
+                except (KeyError, IndexError):
+                    answer = "Received response, but structure was unexpected."
                 self.status_label.text = answer[:120] + "..."
                 self.speak(answer)
             else:
@@ -134,3 +145,4 @@ class JerryApp(App):
 
 if __name__ == '__main__':
     JerryApp().run()
+            
