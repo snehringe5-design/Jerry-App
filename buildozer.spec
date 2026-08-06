@@ -9,24 +9,15 @@ package.name = jerryai
 # (str) Package domain (needed for android packaging)
 package.domain = org.jerry
 
-# (str) Source where the app lives
-source.dir = .
-
-# (list) Source files to include
+# (list) Source files to include (let it empty to include all files)
 source.include_exts = py,png,jpg,kv,atlas
 
-# (str) Application versioning
-version = 0.1
-
 # (list) Application requirements
-requirements = python3,kivy,pillow,requests
+# Pyjnius aur requests ke liye yeh zaroori hain
+requirements = python3,kivy,pillow,requests,jnius
 
 # (str) Supported orientations
 orientation = portrait
-
-#
-# Android specific
-#
 
 # (list) Permissions
 android.permissions = INTERNET
@@ -37,14 +28,5 @@ android.api = 33
 # (int) Minimum API your APK will support.
 android.minapi = 21
 
-# (str) Android NDK version to use
-android.ndk = 25b
-
-# 👉 Yeh line sabse important hai: Sirf arm64-v8a rakhne se build fast hogi aur fail nahi hogi
+# (str) Android architectural build to support
 android.archs = arm64-v8a
-
-# (bool) Enable Android auto backup
-android.skip_update = False
-
-# (str) python-for-android branch to use
-p4a.branch = master
