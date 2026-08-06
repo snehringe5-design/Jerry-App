@@ -28,7 +28,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-python310-v6
+        key: ${{ runner.os }}-buildozer-python310-v8
         restore-keys: |
           ${{ runner.os }}-buildozer-python310-
 
@@ -42,8 +42,8 @@ jobs:
     - name: Build with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
-        # NDK version r25c set karne ke liye env variable
-        export BUILDOZER_ANDROID_NDK="r25c"
+        # Stable NDK version r23b force set kar rahe hain taaki compilation error na aaye
+        export BUILDOZER_ANDROID_NDK="r23b"
         buildozer -v android debug || {
           echo "=== BUILD FAILED, SEARCHING AND PRINTING LOGS ==="
           find /home/runner/.buildozer -name "*.txt" -o -name "*.log" | while read logfile; do
