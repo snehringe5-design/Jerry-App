@@ -40,7 +40,7 @@ android.api = 33
 android.minapi = 21
 
 # (str) Android NDK version to use
-android.ndk = 26b
+android.ndk = r26b
 
 [buildozer]
 
