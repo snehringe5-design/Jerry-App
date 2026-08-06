@@ -12,6 +12,9 @@ from kivy.utils import platform
 
 if platform == 'android':
     from jnius import autoclass
+    from android.permissions import request_permissions, Permission
+    request_permissions([Permission.CAMERA, Permission.RECORD_AUDIO, Permission.WRITE_EXTERNAL_STORAGE, Permission.READ_EXTERNAL_STORAGE])
+    
     PythonActivity = autoclass('org.kivy.android.PythonActivity')
     TextToSpeech = autoclass('android.speech.tts.TextToSpeech')
     Locale = autoclass('java.util.Locale')
@@ -20,15 +23,16 @@ class JerryApp(App):
     def build(self):
         self.title = "Jerry AI"
         
-        # Initialize Android TTS with multilingual readiness
         if platform == 'android':
             self.tts_initialized = False
-            activity = PythonActivity.mActivity
-            self.tts = TextToSpeech(activity, TextToSpeech.OnInitListener(self.on_tts_init))
+            try:
+                activity = PythonActivity.mActivity
+                self.tts = TextToSpeech(activity, TextToSpeech.OnInitListener(self.on_tts_init))
+            except Exception as e:
+                print("TTS Init Error:", e)
         
         layout = BoxLayout(orientation='vertical', padding=15, spacing=15)
         
-        # Status and identity label with large text for accessibility
         self.status_label = Label(
             text="Hello! I am Jerry AI, created by Sneh Ringe. Ready!", 
             font_size='24sp',
@@ -40,11 +44,9 @@ class JerryApp(App):
         self.status_label.bind(size=self.status_label.setter('text_size'))
         layout.add_widget(self.status_label)
         
-        # Camera Preview
         self.cam = Camera(play=True, resolution=(640, 480))
         layout.add_widget(self.cam)
         
-        # Prompt Input with large text
         self.prompt_input = TextInput(
             text="What do you see in this image? (Any language / spelling mistake is fine)",
             font_size='22sp',
@@ -54,7 +56,6 @@ class JerryApp(App):
         )
         layout.add_widget(self.prompt_input)
         
-        # Action Button with large text
         btn = Button(
             text="Capture & Analyze",
             font_size='24sp',
@@ -74,9 +75,6 @@ class JerryApp(App):
     def speak(self, text):
         if platform == 'android' and getattr(self, 'tts_initialized', False):
             self.tts.speak(text, TextToSpeech.QUEUE_FLUSH, None, None)
-
-    def capture_and_analyz(self, instance):
-        pass
 
     def capture_and_analyze(self, instance):
         self.status_label.text = "Capturing image..."
@@ -136,4 +134,3 @@ class JerryApp(App):
 
 if __name__ == '__main__':
     JerryApp().run()
-    
