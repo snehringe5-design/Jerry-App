@@ -24,14 +24,13 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    # Static Cache Key taaki baar-baar Python compile na ho aur time bache
     - name: Cache Buildozer global directory
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-fast-cache-v1
+        key: ${{ runner.os }}-buildozer-python310-v1
         restore-keys: |
-          ${{ runner.os }}-buildozer-fast-cache-
+          ${{ runner.os }}-buildozer-python310-
 
     - name: Install Buildozer and Dependencies
       run: |
