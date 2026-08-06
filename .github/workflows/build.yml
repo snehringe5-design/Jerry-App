@@ -44,7 +44,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install --user Cython==0.29.36 buildozer
 
-    - name: Set up Android SDK Tools Path
+    - name: Set up Android SDK Tools and Accept Licenses
       run: |
         mkdir -p ~/.buildozer/android/platform/android-sdk
         cd ~/.buildozer/android/platform/android-sdk
@@ -53,9 +53,11 @@ jobs:
         rm -rf tools
         mv cmdline-tools tools
         rm cmdline-tools.zip
-        mkdir -p licenses
-        echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > licenses/android-sdk-license
-        echo -e "\n24333f8a43b681623c8ab30a19632bcd7101ef0b" >> licenses/android-sdk-license
+        
+        # Accept all SDK licenses automatically using sdkmanager
+        export PATH=$PATH:~/.buildozer/android/platform/android-sdk/tools/bin
+        yes | sdkmanager --licenses || true
+        sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools"
 
     - name: Build with Buildozer
       run: |
