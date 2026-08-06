@@ -17,19 +17,19 @@ from kivy.clock import Clock
 PythonActivity = None
 Locale = None
 TextToSpeech = None
+
 if platform == 'android':
     try:
-        from jnius import autoclass
+        from jnius import autoclass, PythonJavaClass, java_method
         PythonActivity = autoclass('org.kivy.android.PythonActivity')
         Locale = autoclass('java.util.Locale')
         TextToSpeech = autoclass('android.speech.tts.TextToSpeech')
     except Exception as e:
         pass
 
-# Keyboard screen management
 Window.softinput_mode = 'below_target'
 
-GEMINI_API_KEY = "YAHAN_APNI_API_KEY_DAALEIN"
+GEMINI_API_KEY = "AQ.Ab8RN6JIoLFPrVg_8YOs3ecOKM06-xNlbSyfGbPECRCE-EBQsA"
 GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
 
 class JerryBrain:
@@ -96,6 +96,23 @@ class JerryBrain:
         except Exception as e:
             return "Sir, internet connection check karein."
 
+class TTSListener(PythonJavaClass):
+    __javainterfaces__ = ['android/speech/tts/TextToSpeech$OnInitListener']
+    __javapackage__ = 'org/kivy/android/tils'
+
+    def __init__(self, app_instance):
+        super(TTSListener, self).__init__()
+        self.app_instance = app_instance
+
+    @java_method('(I)V')
+    def onInit(self, status):
+        if status == 0:
+            try:
+                tts = self.app_instance.tts_instance
+                tts.setLanguage(Locale("hi", "IN"))
+            except Exception:
+                pass
+
 class JerryApp(App):
     def build(self):
         self.brain = JerryBrain()
@@ -106,8 +123,8 @@ class JerryApp(App):
         if platform == 'android':
             try:
                 activity = PythonActivity.mActivity
-                self.tts_instance = TextToSpeech(activity, None)
-                self.tts_instance.setLanguage(Locale("hi", "IN"))
+                self.listener = TTSListener(self)
+                self.tts_instance = TextToSpeech(activity, self.listener)
             except Exception as e:
                 pass
 
@@ -136,7 +153,6 @@ class JerryApp(App):
         
         input_layout = BoxLayout(size_hint=(1, 0.15), spacing=4)
         
-        # Plus Button for Image/Camera selection
         plus_btn = Button(
             text='+', 
             size_hint=(0.12, 1),
@@ -173,16 +189,12 @@ class JerryApp(App):
         root_layout.add_widget(input_layout)
         
         if platform == 'android':
-            Clock.schedule_once(self.speak_welcome, 1.5)
+            Clock.schedule_once(self.speak_welcome, 2.0)
             
         return root_layout
 
     def speak_welcome(self, dt):
-        if self.tts_instance:
-            try:
-                self.tts_instance.speak("Namaste Sneh Sir! Main Jerry hoon.", 0, None, None)
-            except Exception:
-                pass
+        self.speak_text("Namaste Sneh Sir! Main Jerry hoon.")
 
     def speak_text(self, text):
         if self.tts_instance and text:
@@ -195,8 +207,7 @@ class JerryApp(App):
         instance.text_size = (value[0], None)
 
     def on_plus_click(self, instance):
-        # Image attachment helper or file chooser trigger
-        self.user_input.text = "Photo select karne ke liye file path dalein ya gallery use karein Sir."
+        self.user_input.text = "Photo select karne ke liye gallery use karein Sir."
 
     def on_mic_click(self, instance):
         self.user_input.text = "Voice typing ke liye keyboard ka mic icon use karein Sir!"
@@ -211,7 +222,6 @@ class JerryApp(App):
         self.chat_display.text = self.chat_history
         self.user_input.text = ''
         
-        # Scroll down automatically
         Clock.schedule_once(lambda dt: setattr(self.scroll, 'scroll_y', 0), 0.1)
         
         threading.Thread(target=self.fetch_ai_response, args=(user_text, self.selected_image)).start()
@@ -223,16 +233,13 @@ class JerryApp(App):
         Clock.schedule_once(lambda dt: self.update_chat(user_text, response))
 
     def update_chat(self, user_text, response):
-        display_text = user_text if user_text else "Photo"
-        # Replace the "Soch raha hoon" line with actual response
         self.chat_history = self.chat_history.rsplit("Jerry: Soch raha hoon Sir...", 1)[0]
         self.chat_history += f"Jerry: {response}\n\n"
         self.chat_display.text = self.chat_history
         
-        # Auto scroll to bottom
         Clock.schedule_once(lambda dt: setattr(self.scroll, 'scroll_y', 0), 0.1)
         self.speak_text(response)
 
 if __name__ == "__main__":
     JerryApp().run()
-        
+    
