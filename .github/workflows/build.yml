@@ -28,7 +28,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-python310-v1
+        key: ${{ runner.os }}-buildozer-python310-v2
         restore-keys: |
           ${{ runner.os }}-buildozer-python310-
 
@@ -41,7 +41,7 @@ jobs:
 
     - name: Build with Buildozer
       run: |
-        buildozer -v android debug
+        buildozer -v android debug || (echo "=== BUILD FAILED, SHOWING LOGS ===" && tail -n 200 ~/.buildozer/logs/buildozer.log || true) && exit 1
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
