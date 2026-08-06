@@ -44,17 +44,18 @@ jobs:
         python -m pip install --upgrade pip
         pip install --user Cython==0.29.36 buildozer
 
-    - name: Set up Android SDK Command-line Tools
+    - name: Set up Android SDK Tools Path
       run: |
-        mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools
-        cd ~/.buildozer/android/platform/android-sdk/cmdline-tools
+        mkdir -p ~/.buildozer/android/platform/android-sdk
+        cd ~/.buildozer/android/platform/android-sdk
         curl -o cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
         unzip -o cmdline-tools.zip
-        rm -rf latest
-        mv cmdline-tools latest
-        mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
-        echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-        echo -e "\n24333f8a43b681623c8ab30a19632bcd7101ef0b" >> ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+        rm -rf tools
+        mv cmdline-tools tools
+        rm cmdline-tools.zip
+        mkdir -p licenses
+        echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > licenses/android-sdk-license
+        echo -e "\n24333f8a43b681623c8ab30a19632bcd7101ef0b" >> licenses/android-sdk-license
 
     - name: Build with Buildozer
       run: |
