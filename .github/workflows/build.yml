@@ -40,7 +40,6 @@ jobs:
       run: |
         ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
         
-        # Check if SDK tools already exist via cache to save time
         if [ ! -d "$ANDROID_HOME/cmdline-tools/latest" ]; then
           mkdir -p $ANDROID_HOME/cmdline-tools/latest
           wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
@@ -49,7 +48,6 @@ jobs:
           rm -rf cmdline-tools.zip temp_tools
         fi
 
-        # Ensure symlinks and licenses are in place
         mkdir -p $ANDROID_HOME/tools
         if [ ! -L "$ANDROID_HOME/tools/bin" ]; then
           ln -s $ANDROID_HOME/cmdline-tools/latest/bin $ANDROID_HOME/tools/bin
@@ -68,7 +66,7 @@ jobs:
     - name: Build with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
-        buildozer -v android debug
+        buildozer --debug -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
