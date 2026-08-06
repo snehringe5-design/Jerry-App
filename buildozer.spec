@@ -39,8 +39,12 @@ android.api = 33
 # (int) Minimum API your APK will support
 android.minapi = 21
 
-# (str) Android NDK version to use (Updated to r26b for valid active URL)
-android.ndk = r26b
+# (str) Android NDK version to use
+android.ndk = r25b
+
+# Explicit paths to prevent Buildozer from triggering downloads and 404 errors
+android.sdk_path = /home/runner/.buildozer/android/platform/android-sdk
+android.ndk_path = /home/runner/.buildozer/android/platform/android-ndk-r25b
 
 [buildozer]
 
