@@ -42,7 +42,8 @@ jobs:
     - name: Build with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
-        # 'yes |' yahan automatically SDK licenses ko accept kar lega
+        # Multi-core compilation enable karne ke liye MAKEFLAGS add kiya hai taaki build fast chale
+        export MAKEFLAGS="-j$(nproc)"
         yes | buildozer -v android debug
 
     - name: Upload APK Artifact
