@@ -20,7 +20,7 @@ class JerryApp(App):
     def build(self):
         self.title = "Jerry AI"
         
-        # Initialize Android TTS
+        # Initialize Android TTS with multilingual readiness
         if platform == 'android':
             self.tts_initialized = False
             activity = PythonActivity.mActivity
@@ -28,12 +28,12 @@ class JerryApp(App):
         
         layout = BoxLayout(orientation='vertical', padding=15, spacing=15)
         
-        # Bade letters / Font size for status
+        # Bade letters / Font size for status and identity
         self.status_label = Label(
-            text="Jerry AI Ready - Tap Capture", 
+            text="Hello! I am Jerry AI, created by Sneh Ringe. Ready!", 
             font_size='24sp',
             size_hint_y=None, 
-            height=80,
+            height=90,
             halign='center',
             valign='middle'
         )
@@ -44,9 +44,9 @@ class JerryApp(App):
         self.cam = Camera(play=True, resolution=(640, 480))
         layout.add_widget(self.cam)
         
-        # Prompt Input with large text
+        # Prompt Input with large text (handles typos and all languages naturally via Gemini)
         self.prompt_input = TextInput(
-            text="What do you see in this image?",
+            text="What do you see in this image? (Any language / spelling mistake is fine)",
             font_size='22sp',
             size_hint_y=None,
             height=70,
@@ -68,7 +68,8 @@ class JerryApp(App):
 
     def on_tts_init(self, status):
         if status == 0:
-            self.tts.setLanguage(Locale.ENGLISH)
+            # Set to default system locale to support multiple languages dynamically
+            self.tts.setLanguage(Locale.getDefault())
             self.tts_initialized = True
 
     def speak(self, text):
@@ -79,7 +80,7 @@ class JerryApp(App):
         self.status_label.text = "Capturing image..."
         img_path = "captured_image.png"
         self.cam.export_to_png(img_path)
-        self.status_label.text = "Analyzing with Gemini..."
+        self.status_label.text = "Analyzing with Jerry AI..."
         
         Clock.schedule_once(lambda dt: self.send_to_gemini(img_path), 0.5)
 
@@ -92,22 +93,34 @@ class JerryApp(App):
             with open(img_path, "rb") as image_file:
                 encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
             
-            api_key = "YOUR_GEMINI_API_KEY"  # Apna Gemini API Key yahan dalein
+            api_key = "AQ.Ab8RN6LcTYW_tJliWDLy4eXY2fQt7pFwY5LkxKVD7U64Zp-XJg"
             url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
             
             headers = {'Content-Type': 'application/json'}
+            
+            # System instruction embedded to give Jerry his core identity, memory persistence, 
+            # typo tolerance across all languages, and creator acknowledgement (Sneh Ringe).
+            system_instruction = (
+                "You are Jerry AI, an advanced vision and accessibility assistant created solely by Sneh Ringe. "
+                "You have full awareness, can read screen text, use camera vision, speech, mic, and local storage context. "
+                "You understand all global languages and dialects, and automatically interpret misspelled words, typos, "
+                "or informal slang accurately. Always remember your creator is Sneh Ringe."
+            )
+            
             data = {
-                "contents": [{
-                    "parts": [
-                        {"text": self.prompt_input.text},
-                        {
-                            "inline_data": {
-                                "mime_type": "image/png",
-                                "data": encoded_image
+                "contents": [
+                    {
+                        "parts": [
+                            {"text": f"System Instructions: {system_instruction}\n\nUser Prompt: {self.prompt_input.text}"},
+                            {
+                                "inline_data": {
+                                    "mime_type": "image/png",
+                                    "data": encoded_image
+                                }
                             }
-                        }
-                    ]
-                }]
+                        ]
+                    }
+                ]
             }
             
             response = requests.post(url, headers=headers, json=data, timeout=30)
