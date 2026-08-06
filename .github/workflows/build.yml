@@ -68,6 +68,12 @@ jobs:
         export PATH=$PATH:~/.local/bin
         buildozer --debug -v android debug
 
+    - name: Print Error Log on Failure
+      if: failure()
+      run: |
+        echo "=== SEARCHING FOR BUILD ERROR ==="
+        find ~/.buildozer -name "*.log" -exec tail -n 100 {} \;
+
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
