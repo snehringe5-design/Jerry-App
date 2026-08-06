@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - uses: actions/checkout@v4
@@ -28,9 +28,9 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-v3-${{ hashFiles('buildozer.spec') }}
+        key: ${{ runner.os }}-buildozer-v4-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          ${{ runner.os }}-buildozer-v3-
+          ${{ runner.os }}-buildozer-v4-
 
     - name: Install Buildozer and Dependencies
       run: |
