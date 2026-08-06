@@ -42,9 +42,9 @@ jobs:
         echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> $ANDROID_HOME/licenses/android-sdk-license
         echo -e "\nd56f5187479451eabf01fb78af6dfcb139a648b0" >> $ANDROID_HOME/licenses/android-sdk-license
 
-        # Pre-install exact required build-tools and platform
+        # Pre-install build-tools 37 along with others so license is never missed
         yes | sdkmanager --licenses || true
-        yes | sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools" || true
+        yes | sdkmanager "platforms;android-33" "build-tools;37.0.0" "build-tools;33.0.2" "platform-tools" || true
 
     - name: Build with Buildozer
       run: |
