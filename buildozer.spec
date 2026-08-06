@@ -19,7 +19,7 @@ source.include_exts = py,png,jpg,kv,atlas
 version = 1.0
 
 # (list) Application requirements
-requirements = python3,kivy,pillow,requests,jnius
+requirements = python3,kivy,pillow,requests,pyjnius
 
 # (str) Supported orientations
 orientation = portrait
