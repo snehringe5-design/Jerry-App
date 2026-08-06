@@ -7,15 +7,19 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: kivy/buildozer:latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-    - name: Build with Buildozer Action
-      uses: kivy/buildozer-action@v1
-      with:
-        bundlename: debug
-        update_defaults: true
+    - name: Fix Git Ownership
+      run: |
+        git config --global --add safe.directory '*'
+
+    - name: Build APK with Buildozer
+      run: |
+        buildozer -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
