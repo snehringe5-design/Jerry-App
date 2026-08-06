@@ -1,31 +1,42 @@
 [app]
 
+# (str) Title of your application
 title = Jerry AI
+
+# (str) Package name
 package.name = jerryai
-package.domain = org.sneh
-source.dir = .
+
+# (str) Package domain (needed for android packaging)
+package.domain = org.jerry
+
+# (list) Source files to include (let it match your project files)
 source.include_exts = py,png,jpg,kv,atlas
-source.include_patterns = assets/*,images/*.png
-version = 1.0
 
-# Fix: python3 ke sath version number ==3.10 mat lagayein, sirf python3 likhein
-requirements = python3,kivy,requests,urllib3,idna,certifi,charset-normalizer,pyjnius
+# (list) Application requirements
+# Yahan dhyan rahe ki python3 likha ho, koi specific version (jaise python3.14) na ho.
+requirements = python3,kivy,pillow,requests
 
-android.permissions = INTERNET,CAMERA,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
-android.features = android.hardware.camera,android.hardware.camera.autofocus
-
+# (str) Supported orientations
 orientation = portrait
-fullscreen = 0
 
+#
+# Android specific
+#
+
+# (list) Permissions
+android.permissions = INTERNET
+
+# (int) Target Android API, should be as high as possible.
 android.api = 33
+
+# (int) Minimum API your APK will support.
 android.minapi = 21
-android.sdk = 33
+
+# (str) Android NDK version to use
 android.ndk = 25b
-android.archs = arm64-v8a
 
-android.accept_sdk_license = True
-android.format = apk
+# (bool) Enable Android auto backup
+android.skip_update = False
 
-[buildozer]
-log_level = 2
-warn_root = 1
+# (str) python-for-android branch to use
+p4a.branch = master
