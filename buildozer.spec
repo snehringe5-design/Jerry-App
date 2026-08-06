@@ -16,13 +16,14 @@ android.features = android.hardware.camera,android.hardware.camera.autofocus
 orientation = portrait
 fullscreen = 0
 
-# API aur Build tools ko stable 33 par lock kiya hai
 android.api = 33
 android.minapi = 21
 android.sdk = 33
-
 android.ndk = 25b
 android.archs = arm64-v8a
+
+# SDK licenses ko automatically accept karne ke liye
+android.accept_sdk_license = True
 
 android.format = apk
 
