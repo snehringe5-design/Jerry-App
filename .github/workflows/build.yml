@@ -24,13 +24,14 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
+    # Static Cache Key taaki baar-baar Python compile na ho aur time bache
     - name: Cache Buildozer global directory
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-v5-${{ hashFiles('buildozer.spec') }}
+        key: ${{ runner.os }}-buildozer-fast-cache-v1
         restore-keys: |
-          ${{ runner.os }}-buildozer-v5-
+          ${{ runner.os }}-buildozer-fast-cache-
 
     - name: Install Buildozer and Dependencies
       run: |
@@ -42,12 +43,6 @@ jobs:
     - name: Build with Buildozer
       run: |
         buildozer -v android debug
-
-    - name: Show Buildozer Log on Failure
-      if: failure()
-      run: |
-        echo "=== PRINTING BUILD LOGS FOR DEBUGGING ==="
-        find ~/.buildozer -name "*.log" -exec echo "--- FILE: {} ---" \; -exec tail -n 100 {} \;
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
