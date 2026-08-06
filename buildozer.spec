@@ -12,7 +12,7 @@ package.domain = org.jerry
 # (str) Source directory where the application resides
 source.dir = .
 
-# (list) Source files to include (let it default or specify main.py)
+# (list) Source files to include
 source.include_exts = py,png,jpg,kv,atlas
 
 # (list) List of inclusion patterns
@@ -40,7 +40,7 @@ android.api = 33
 android.minapi = 21
 
 # (str) Android NDK version to use
-android.ndk = r26b
+android.ndk = r25b
 
 [buildozer]
 
