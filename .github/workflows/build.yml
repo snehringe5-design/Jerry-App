@@ -26,25 +26,30 @@ jobs:
         pip3 install --upgrade pip
         pip3 install --user buildozer cython==0.29.33
 
-    - name: Set up Android SDK & Correct Folder Structure
+    - name: Set up Android SDK & Bridge Buildozer Paths
       run: |
         ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
-        # Correct path required by sdkmanager
-        mkdir -p $ANDROID_HOME/cmdline-tools/latest
         
+        # 1. Place in cmdline-tools/latest (Required by modern sdkmanager)
+        mkdir -p $ANDROID_HOME/cmdline-tools/latest
         wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
         unzip -q cmdline-tools.zip -d temp_tools
         cp -r temp_tools/cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/
         rm -rf cmdline-tools.zip temp_tools
 
-        # Setup paths and write standard SDK licenses
-        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+        # 2. Symlink bin and lib to tools/ so Buildozer finds it where it expects
+        mkdir -p $ANDROID_HOME/tools
+        ln -s $ANDROID_HOME/cmdline-tools/latest/bin $ANDROID_HOME/tools/bin
+        ln -s $ANDROID_HOME/cmdline-tools/latest/lib $ANDROID_HOME/tools/lib
+
+        # 3. Setup standard licenses
         mkdir -p $ANDROID_HOME/licenses
         echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > $ANDROID_HOME/licenses/android-sdk-license
         echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> $ANDROID_HOME/licenses/android-sdk-license
         echo -e "\nd56f5187479451eabf01fb78af6dfcb139a648b0" >> $ANDROID_HOME/licenses/android-sdk-license
 
-        # Pre-install packages and accept licenses successfully
+        # 4. Pre-install required packages
+        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
         yes | sdkmanager --licenses || true
         yes | sdkmanager "platforms;android-33" "build-tools;37.0.0" "platform-tools"
 
