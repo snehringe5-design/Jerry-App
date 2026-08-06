@@ -28,7 +28,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-python310-v8
+        key: ${{ runner.os }}-buildozer-python310-v10
         restore-keys: |
           ${{ runner.os }}-buildozer-python310-
 
@@ -39,11 +39,15 @@ jobs:
         pip install --upgrade pip
         pip install --user --upgrade buildozer cython==0.29.36
 
+    - name: Pre-create NDK structure and disable tests
+      run: |
+        mkdir -p ~/.buildozer/android/platform/android-ndk-r25b/sources/third_party/googletest
+        # Ek dummy empty file ya folder rakh denge taaki buildozer test compile na kare
+        touch ~/.buildozer/android/platform/android-ndk-r25b/sources/third_party/googletest/.placeholder
+
     - name: Build with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
-        # Stable NDK version r23b force set kar rahe hain taaki compilation error na aaye
-        export BUILDOZER_ANDROID_NDK="r23b"
         buildozer -v android debug || {
           echo "=== BUILD FAILED, SEARCHING AND PRINTING LOGS ==="
           find /home/runner/.buildozer -name "*.txt" -o -name "*.log" | while read logfile; do
