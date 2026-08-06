@@ -29,8 +29,9 @@ if platform == 'android':
 
 Window.softinput_mode = 'below_target'
 
-GEMINI_API_KEY = "AQ.Ab8RN6JIoLFPrVg_8YOs3ecOKM06-xNlbSyfGbPECRCE-EBQsA"
-GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+# 👇 Yahan apni real Google AI Studio wali API Key daal dein (AIzaSy se shuru hone wali)
+GEMINI_API_KEY = "AIzaSyYourActualKeyHere"
+GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
 
 class JerryBrain:
     def __init__(self):
@@ -91,6 +92,8 @@ class JerryBrain:
                 data = response.json()
                 reply = data['candidates'][0]['content']['parts'][0]['text']
                 return reply.strip()
+            elif response.status_code == 401:
+                return "Sir, API Key galat ya unauthorized hai (Error 401). Apni sahi key check karein."
             else:
                 return f"Sir, server error code {response.status_code} aa raha hai."
         except Exception as e:
