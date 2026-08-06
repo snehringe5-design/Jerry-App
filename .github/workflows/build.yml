@@ -28,7 +28,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-python310-v4
+        key: ${{ runner.os }}-buildozer-python310-v5
         restore-keys: |
           ${{ runner.os }}-buildozer-python310-
 
@@ -38,6 +38,10 @@ jobs:
         sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
         pip install --upgrade pip
         pip install --user --upgrade buildozer cython==0.29.36
+
+    - name: Remove problematic NDK test files
+      run: |
+        rm -rf ~/.buildozer/android/platform/android-ndk-r25b/sources/third_party/googletest || true
 
     - name: Build with Buildozer
       run: |
