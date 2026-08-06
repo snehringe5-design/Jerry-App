@@ -28,7 +28,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-python310-v5
+        key: ${{ runner.os }}-buildozer-python310-v6
         restore-keys: |
           ${{ runner.os }}-buildozer-python310-
 
@@ -39,13 +39,11 @@ jobs:
         pip install --upgrade pip
         pip install --user --upgrade buildozer cython==0.29.36
 
-    - name: Remove problematic NDK test files
-      run: |
-        rm -rf ~/.buildozer/android/platform/android-ndk-r25b/sources/third_party/googletest || true
-
     - name: Build with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
+        # NDK version r25c set karne ke liye env variable
+        export BUILDOZER_ANDROID_NDK="r25c"
         buildozer -v android debug || {
           echo "=== BUILD FAILED, SEARCHING AND PRINTING LOGS ==="
           find /home/runner/.buildozer -name "*.txt" -o -name "*.log" | while read logfile; do
