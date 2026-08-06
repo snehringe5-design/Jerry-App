@@ -70,6 +70,9 @@ android.minapi = 21
 # (str) Android NDK version to use
 android.ndk = 25b
 
+# (str) Android build tools version
+android.build_tools_version = 33.0.2
+
 # (bool) If True, then an aar will be built instead of an apk
 android.archs = arm64-v8a, armeabi-v7a
 
