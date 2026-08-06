@@ -8,8 +8,8 @@ source.include_exts = py,png,jpg,kv,atlas
 source.include_patterns = assets/*,images/*.png
 version = 1.0
 
-# Yahan python3 ki jagah python3==3.10 likh diya hai taaki stable version use ho
-requirements = python3==3.10,kivy,requests,urllib3,idna,certifi,charset-normalizer,pyjnius
+# Fix: python3 ke sath version number ==3.10 mat lagayein, sirf python3 likhein
+requirements = python3,kivy,requests,urllib3,idna,certifi,charset-normalizer,pyjnius
 
 android.permissions = INTERNET,CAMERA,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
 android.features = android.hardware.camera,android.hardware.camera.autofocus
