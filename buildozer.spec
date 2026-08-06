@@ -25,7 +25,7 @@ requirements = python3,kivy,pillow,requests,pyjnius
 orientation = portrait
 
 # (list) Permissions
-android.permissions = INTERNET
+android.permissions = INTERNET, CAMERA
 
 # Stable API versions
 android.api = 33
