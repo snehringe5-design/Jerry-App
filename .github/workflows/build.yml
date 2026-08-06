@@ -28,7 +28,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-python311-v21
+        key: ${{ runner.os }}-buildozer-python311-v22
         restore-keys: |
           ${{ runner.os }}-buildozer-python311-
 
@@ -42,7 +42,6 @@ jobs:
     - name: Build with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
-        # Multi-core compilation enable karne ke liye MAKEFLAGS add kiya hai taaki build fast chale
         export MAKEFLAGS="-j$(nproc)"
         yes | buildozer -v android debug
 
