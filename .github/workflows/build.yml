@@ -26,11 +26,17 @@ jobs:
         pip3 install --upgrade pip
         pip3 install --user buildozer cython==0.29.33
 
-    - name: Accept Android SDK Licenses
+    - name: Set up Android SDK Environment
       run: |
-        mkdir -p ~/.android
-        touch ~/.android/repositories.cfg
         export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
+        mkdir -p $ANDROID_HOME/cmdline-tools
+        wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+        unzip -q cmdline-tools.zip -d temp_tools
+        mkdir -p $ANDROID_HOME/cmdline-tools/latest
+        mv temp_tools/cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/
+        rm -rf cmdline-tools.zip temp_tools
+
+        # Accept licenses
         mkdir -p $ANDROID_HOME/licenses
         echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > $ANDROID_HOME/licenses/android-sdk-license
         echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> $ANDROID_HOME/licenses/android-sdk-license
@@ -39,6 +45,8 @@ jobs:
     - name: Build with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
+        export PATH=$PATH:$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin
+        export PATH=$PATH:$HOME/.buildozer/android/platform/android-sdk/platform-tools
         buildozer -v android debug
 
     - name: Upload APK Artifact
