@@ -28,7 +28,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-python311-v16
+        key: ${{ runner.os }}-buildozer-python311-v17
         restore-keys: |
           ${{ runner.os }}-buildozer-python311-
 
@@ -39,11 +39,21 @@ jobs:
         python -m pip install --upgrade pip
         pip install --user --upgrade buildozer cython==0.29.36
 
+    - name: Accept Android SDK Licenses Safely
+      run: |
+        mkdir -p ~/.android
+        touch ~/.android/repositories.cfg
+        # Yeh command Android SDK ke saare licenses ko bina kisi global 'yes' ke accept kar leti hai
+        export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
+        mkdir -p $ANDROID_HOME/licenses
+        echo "24333f1a4326f6ad852b66fe46a58ed77332048d" > $ANDROID_HOME/licenses/android-sdk-license
+        echo "84831b9409646a918e30573bab4c9c91346d8abd" >> $ANDROID_HOME/licenses/android-sdk-license
+        echo "d56f5187479451eabf01fb78af6dfcb139a648b0" >> $ANDROID_HOME/licenses/android-sdk-license
+
     - name: Build with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
-        # 'yes |' automatically accepts Android SDK licenses during build
-        yes | buildozer -v android debug || {
+        buildozer -v android debug || {
           echo "=== BUILD FAILED, SEARCHING AND PRINTING LOGS ==="
           find /home/runner/.buildozer -name "*.txt" -o -name "*.log" | while read logfile; do
             echo "=========================================="
