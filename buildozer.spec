@@ -9,11 +9,17 @@ package.name = jerryai
 # (str) Package domain (needed for android packaging)
 package.domain = org.jerry
 
+# (str) Source directory where the application resides
+source.dir = .
+
 # (list) Source files to include (let it default or specify main.py)
 source.include_exts = py,png,jpg,kv,atlas
 
 # (list) List of inclusion patterns
 source.include_patterns = assets/*,images/*
+
+# (str) Application versioning
+version = 0.1
 
 # (list) Application requirements
 requirements = python3,kivy,requests,urllib3,certifi,idna,charset-normalizer,pyjnius,android
