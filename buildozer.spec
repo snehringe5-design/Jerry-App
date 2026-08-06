@@ -12,7 +12,7 @@ package.domain = org.jerry
 # (str) Source where the app lives
 source.dir = .
 
-# (list) Source files to include (let it match your project files)
+# (list) Source files to include
 source.include_exts = py,png,jpg,kv,atlas
 
 # (str) Application versioning
@@ -39,6 +39,9 @@ android.minapi = 21
 
 # (str) Android NDK version to use
 android.ndk = 25b
+
+# 👉 Yeh line sabse important hai: Sirf arm64-v8a rakhne se build fast hogi aur fail nahi hogi
+android.archs = arm64-v8a
 
 # (bool) Enable Android auto backup
 android.skip_update = False
