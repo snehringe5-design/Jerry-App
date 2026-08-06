@@ -2,6 +2,7 @@ import threading
 import requests
 import json
 import base64
+import os
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
@@ -12,8 +13,10 @@ from kivy.uix.scrollview import ScrollView
 from kivy.utils import platform
 from kivy.clock import Clock
 
-# Safe Android TTS import
-tts = None
+# Safe Android imports
+PythonActivity = None
+Locale = None
+TextToSpeech = None
 if platform == 'android':
     try:
         from jnius import autoclass
@@ -21,9 +24,9 @@ if platform == 'android':
         Locale = autoclass('java.util.Locale')
         TextToSpeech = autoclass('android.speech.tts.TextToSpeech')
     except Exception as e:
-        tts = None
+        pass
 
-# Keyboard ke screen ko theek rakhne ke liye mode
+# Keyboard screen management
 Window.softinput_mode = 'below_target'
 
 GEMINI_API_KEY = "YAHAN_APNI_API_KEY_DAALEIN"
@@ -63,7 +66,7 @@ class JerryBrain:
         
         parts_list = [{"text": f"{system_instruction}\n\nUser Query: {prompt}"}]
         
-        if image_path:
+        if image_path and os.path.exists(image_path):
             try:
                 with open(image_path, "rb") as image_file:
                     encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
@@ -83,7 +86,7 @@ class JerryBrain:
         }
         
         try:
-            response = requests.post(GEMINI_URL, headers=headers, json=payload, timeout=20)
+            response = requests.post(GEMINI_URL, headers=headers, json=payload, timeout=25)
             if response.status_code == 200:
                 data = response.json()
                 reply = data['candidates'][0]['content']['parts'][0]['text']
@@ -98,6 +101,7 @@ class JerryApp(App):
         self.brain = JerryBrain()
         self.tts_instance = None
         self.selected_image = None
+        self.chat_history = "Jerry: Namaste Sneh Sir! Main Jerry hoon. Boliye, kya madad karoon?\n\n"
         
         if platform == 'android':
             try:
@@ -117,23 +121,34 @@ class JerryApp(App):
         )
         root_layout.add_widget(title_label)
         
-        scroll = ScrollView(size_hint=(1, 0.75))
+        self.scroll = ScrollView(size_hint=(1, 0.75))
         self.chat_display = Label(
-            text="Jerry: Namaste Sneh Sir! Main Jerry hoon. Boliye, kya madad karoon?",
+            text=self.chat_history,
             font_size='15sp',
             halign='left',
             valign='top',
-            text_size=(350, None)
+            text_size=(350, None),
+            markup=True
         )
         self.chat_display.bind(size=self._update_text_size)
-        scroll.add_widget(self.chat_display)
-        root_layout.add_widget(scroll)
+        self.scroll.add_widget(self.chat_display)
+        root_layout.add_widget(self.scroll)
         
         input_layout = BoxLayout(size_hint=(1, 0.15), spacing=4)
         
+        # Plus Button for Image/Camera selection
+        plus_btn = Button(
+            text='+', 
+            size_hint=(0.12, 1),
+            font_size='20sp',
+            background_color=(0.2, 0.4, 0.2, 1)
+        )
+        plus_btn.bind(on_press=self.on_plus_click)
+        input_layout.add_widget(plus_btn)
+        
         mic_btn = Button(
             text='🎤', 
-            size_hint=(0.15, 1),
+            size_hint=(0.12, 1),
             background_color=(0.4, 0.1, 0.1, 1)
         )
         mic_btn.bind(on_press=self.on_mic_click)
@@ -143,7 +158,7 @@ class JerryApp(App):
             text='',
             hint_text='Yahan type karein Sir...',
             multiline=False,
-            size_hint=(0.65, 1)
+            size_hint=(0.56, 1)
         )
         input_layout.add_widget(self.user_input)
         
@@ -179,6 +194,10 @@ class JerryApp(App):
     def _update_text_size(self, instance, value):
         instance.text_size = (value[0], None)
 
+    def on_plus_click(self, instance):
+        # Image attachment helper or file chooser trigger
+        self.user_input.text = "Photo select karne ke liye file path dalein ya gallery use karein Sir."
+
     def on_mic_click(self, instance):
         self.user_input.text = "Voice typing ke liye keyboard ka mic icon use karein Sir!"
 
@@ -188,19 +207,30 @@ class JerryApp(App):
             return
             
         display_text = user_text if user_text else "[Photo bheji gayi hai]"
-        self.chat_display.text = f"Sir: {display_text}\n\nJerry: Soch raha hoon Sir..."
+        self.chat_history += f"Sir: {display_text}\n\nJerry: Soch raha hoon Sir...\n\n"
+        self.chat_display.text = self.chat_history
         self.user_input.text = ''
+        
+        # Scroll down automatically
+        Clock.schedule_once(lambda dt: setattr(self.scroll, 'scroll_y', 0), 0.1)
         
         threading.Thread(target=self.fetch_ai_response, args=(user_text, self.selected_image)).start()
         self.selected_image = None
 
     def fetch_ai_response(self, user_text, img_path):
-        response = self.brain.query_gemini_ai(user_text if user_text else "Is photo mein kya hai?", img_path)
+        prompt_text = user_text if user_text else "Is photo mein kya hai?"
+        response = self.brain.query_gemini_ai(prompt_text, img_path)
         Clock.schedule_once(lambda dt: self.update_chat(user_text, response))
 
     def update_chat(self, user_text, response):
         display_text = user_text if user_text else "Photo"
-        self.chat_display.text = f"Sir: {display_text}\n\nJerry: {response}"
+        # Replace the "Soch raha hoon" line with actual response
+        self.chat_history = self.chat_history.rsplit("Jerry: Soch raha hoon Sir...", 1)[0]
+        self.chat_history += f"Jerry: {response}\n\n"
+        self.chat_display.text = self.chat_history
+        
+        # Auto scroll to bottom
+        Clock.schedule_once(lambda dt: setattr(self.scroll, 'scroll_y', 0), 0.1)
         self.speak_text(response)
 
 if __name__ == "__main__":
