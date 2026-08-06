@@ -28,9 +28,9 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-v4-${{ hashFiles('buildozer.spec') }}
+        key: ${{ runner.os }}-buildozer-v5-${{ hashFiles('buildozer.spec') }}
         restore-keys: |
-          ${{ runner.os }}-buildozer-v4-
+          ${{ runner.os }}-buildozer-v5-
 
     - name: Install Buildozer and Dependencies
       run: |
@@ -42,6 +42,12 @@ jobs:
     - name: Build with Buildozer
       run: |
         buildozer -v android debug
+
+    - name: Show Buildozer Log on Failure
+      if: failure()
+      run: |
+        echo "=== PRINTING BUILD LOGS FOR DEBUGGING ==="
+        find ~/.buildozer -name "*.log" -exec echo "--- FILE: {} ---" \; -exec tail -n 100 {} \;
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
