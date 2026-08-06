@@ -21,10 +21,10 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev lld autoconf-archive libltdl-dev gettext
 
-    - name: Install Buildozer and Cython
+    - name: Install Buildozer, Cython, and p4a
       run: |
         pip3 install --upgrade pip
-        pip3 install --user buildozer cython==0.29.33
+        pip3 install --user --upgrade buildozer cython==0.29.33 python-for-android
 
     - name: Cache Buildozer Global Directory
       uses: actions/cache@v4
@@ -61,7 +61,7 @@ jobs:
 
         export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
         yes | sdkmanager --licenses || true
-        yes | sdkmanager "platforms;android-33" "build-tools;37.0.0" "platform-tools"
+        yes | sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools"
 
     - name: Build with Buildozer
       run: |
