@@ -28,7 +28,7 @@ class JerryApp(App):
         
         layout = BoxLayout(orientation='vertical', padding=15, spacing=15)
         
-        # Bade letters / Font size for status and identity
+        # Status and identity label with large text for accessibility
         self.status_label = Label(
             text="Hello! I am Jerry AI, created by Sneh Ringe. Ready!", 
             font_size='24sp',
@@ -44,7 +44,7 @@ class JerryApp(App):
         self.cam = Camera(play=True, resolution=(640, 480))
         layout.add_widget(self.cam)
         
-        # Prompt Input with large text (handles typos and all languages naturally via Gemini)
+        # Prompt Input with large text
         self.prompt_input = TextInput(
             text="What do you see in this image? (Any language / spelling mistake is fine)",
             font_size='22sp',
@@ -68,13 +68,15 @@ class JerryApp(App):
 
     def on_tts_init(self, status):
         if status == 0:
-            # Set to default system locale to support multiple languages dynamically
             self.tts.setLanguage(Locale.getDefault())
             self.tts_initialized = True
 
     def speak(self, text):
         if platform == 'android' and getattr(self, 'tts_initialized', False):
             self.tts.speak(text, TextToSpeech.QUEUE_FLUSH, None, None)
+
+    def capture_and_analyz(self, instance):
+        pass
 
     def capture_and_analyze(self, instance):
         self.status_label.text = "Capturing image..."
@@ -98,8 +100,6 @@ class JerryApp(App):
             
             headers = {'Content-Type': 'application/json'}
             
-            # System instruction embedded to give Jerry his core identity, memory persistence, 
-            # typo tolerance across all languages, and creator acknowledgement (Sneh Ringe).
             system_instruction = (
                 "You are Jerry AI, an advanced vision and accessibility assistant created solely by Sneh Ringe. "
                 "You have full awareness, can read screen text, use camera vision, speech, mic, and local storage context. "
