@@ -10,70 +10,19 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: kivy/buildozer:latest
+      options: --user root
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-
-    - name: Install System Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-            python3-pip \
-            git \
-            ffmpeg \
-            libsdl2-dev \
-            libsdl2-image-dev \
-            libsdl2-mixer-dev \
-            libsdl2-ttf-dev \
-            pkg-config \
-            autoconf \
-            automake \
-            libtool \
-            libffi-dev \
-            libssl-dev \
-            unzip
-
-    - name: Install Buildozer and Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install --user Cython==0.29.36 buildozer
-
-    - name: Set up Android SDK Tools and Accept Licenses
-      run: |
-        SDK_DIR="$HOME/.buildozer/android/platform/android-sdk"
-        mkdir -p "$SDK_DIR"
-        cd "$SDK_DIR"
-        
-        curl -o cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-        rm -rf temp_tools
-        mkdir temp_tools
-        unzip -q cmdline-tools.zip -d temp_tools
-        
-        # Buildozer ke liye 'tools' aur naye sdkmanager ke liye 'cmdline-tools/latest' dono bana dete hain
-        mkdir -p tools
-        rm -rf tools/*
-        cp -r temp_tools/cmdline-tools/* tools/
-        
-        mkdir -p cmdline-tools/latest
-        rm -rf cmdline-tools/latest/*
-        cp -r temp_tools/cmdline-tools/* cmdline-tools/latest/
-        
-        rm -rf temp_tools cmdline-tools.zip
-        
-        export PATH="$SDK_DIR/tools/bin:$PATH"
-        yes | sdkmanager --licenses || true
-        sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools"
+    - name: Fix Git Safe Directory
+      run: git config --global --add safe.directory '*'
 
     - name: Build with Buildozer
       run: |
-        export PATH=$PATH:~/.local/bin
-        export MAKEFLAGS="-j$(nproc)"
         buildozer -v android debug
 
     - name: Upload APK Artifact
