@@ -28,8 +28,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        # Cache key ko v20 kar diya hai taaki purana kharab cache hat kar naya SDK download ho
-        key: ${{ runner.os }}-buildozer-python311-v20
+        key: ${{ runner.os }}-buildozer-python311-v21
         restore-keys: |
           ${{ runner.os }}-buildozer-python311-
 
@@ -43,16 +42,8 @@ jobs:
     - name: Build with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
-        buildozer -v android debug || {
-          echo "=== BUILD FAILED, SEARCHING AND PRINTING LOGS ==="
-          find /home/runner/.buildozer -name "*.txt" -o -name "*.log" | while read logfile; do
-            echo "=========================================="
-            echo "FILE: $logfile"
-            echo "=========================================="
-            tail -n 120 "$logfile"
-          done
-          exit 1
-        }
+        # 'yes |' yahan automatically SDK licenses ko accept kar lega
+        yes | buildozer -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
