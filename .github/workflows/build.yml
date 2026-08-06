@@ -50,18 +50,23 @@ jobs:
         mkdir -p "$SDK_DIR"
         cd "$SDK_DIR"
         
-        # Download and extract command-line tools into the correct structure: cmdline-tools/latest/
         curl -o cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
         rm -rf temp_tools
         mkdir temp_tools
         unzip -q cmdline-tools.zip -d temp_tools
+        
+        # Buildozer ke liye 'tools' aur naye sdkmanager ke liye 'cmdline-tools/latest' dono bana dete hain
+        mkdir -p tools
+        rm -rf tools/*
+        cp -r temp_tools/cmdline-tools/* tools/
+        
         mkdir -p cmdline-tools/latest
         rm -rf cmdline-tools/latest/*
-        mv temp_tools/cmdline-tools/* cmdline-tools/latest/
+        cp -r temp_tools/cmdline-tools/* cmdline-tools/latest/
+        
         rm -rf temp_tools cmdline-tools.zip
         
-        # Accept all SDK licenses automatically and install required platform tools
-        export PATH="$SDK_DIR/cmdline-tools/latest/bin:$PATH"
+        export PATH="$SDK_DIR/tools/bin:$PATH"
         yes | sdkmanager --licenses || true
         sdkmanager "platforms;android-33" "build-tools;33.0.2" "platform-tools"
 
