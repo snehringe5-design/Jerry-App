@@ -34,7 +34,7 @@ orientation = portrait
 # Android specific
 #
 
-# (list) Permissions - Yahan humne camera, mic, storage aur internet ki permissions add kar di hain
+# (list) Permissions - Camera, Microphone, aur Storage ki permissions yahan hain
 android.permissions = INTERNET,CAMERA,RECORD_AUDIO,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
 
 # (int) Target Android API, should be as high as possible.
