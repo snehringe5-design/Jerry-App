@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = My Application
+title = Jerry AI
 
 # (str) Package name
-package.name = myapp
+package.name = jerry
 
 # (str) Package domain (needed for android packaging)
-package.domain = org.example
+package.domain = org.jerry
 
 # (str) Source directory where the application resides
 source.dir = .
@@ -34,8 +34,8 @@ orientation = portrait
 # Android specific
 #
 
-# (list) Permissions
-android.permissions = INTERNET
+# (list) Permissions - Yahan humne camera, mic, storage aur internet ki permissions add kar di hain
+android.permissions = INTERNET,CAMERA,RECORD_AUDIO,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
 
 # (int) Target Android API, should be as high as possible.
 android.api = 33
