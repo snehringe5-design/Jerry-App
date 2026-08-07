@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = Jerry AI
+title = Jerry AI Assistant
 
 # (str) Package name
-package.name = jerry
+package.name = jerryai
 
 # (str) Package domain (needed for android packaging)
 package.domain = org.jerry
@@ -21,8 +21,8 @@ source.exclude_exts = spec
 # (list) List of directory to exclude (let separate with commas)
 source.exclude_dirs = bin, venv, .git, .github
 
-# (list) Application requirements - Plyer ko yahan joda gaya hai taaki hardware access ho sake
-requirements = python3,kivy,plyer
+# (list) Application requirements - Gemini AI aur Plyer ke liye zaroori libraries
+requirements = python3,kivy,plyer,google-generativeai,grpcio,protobuf,certifi
 
 # (str) Version of the application
 version = 0.1
@@ -34,7 +34,7 @@ orientation = portrait
 # Android specific
 #
 
-# (list) Permissions - Camera, Mic, aur Storage ki permissions
+# (list) Permissions - Internet (Gemini ke liye), Camera, aur Storage
 android.permissions = INTERNET,CAMERA,RECORD_AUDIO,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
 
 # (int) Target Android API, should be as high as possible.
