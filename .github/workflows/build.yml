@@ -49,7 +49,7 @@ jobs:
 
     - name: Build APK
       run: |
-        buildozer -v android debug
+        buildozer --debug android debug || (echo "=== BUILD FAILED, CHECKING LOGS ===" && cat .buildozer/*.log || find . -name "*.log" -exec cat {} + || true)
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
