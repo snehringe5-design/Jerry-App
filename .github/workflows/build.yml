@@ -2,58 +2,56 @@ name: Build APK with Buildozer
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
         python-version: '3.10'
 
-    - name: Install Dependencies
+    - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-          git \
-          zip \
-          unzip \
-          autoconf \
-          libtool \
-          pkg-config \
-          zlib1g-dev \
-          libncurses-dev \
-          cmake \
-          libffi-dev \
-          libssl-dev \
-          openjdk-17-jdk \
-          ant
-
-    - name: Set up Android SDK/NDK environment variables
-      run: |
-        echo "ANDROID_HOME=$HOME/.android" >> $GITHUB_ENV
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
+            python3-pip \
+            build-setup \
+            git \
+            autoconf \
+            libtool \
+            pkg-config \
+            zlib1g-dev \
+            libncurses5-dev \
+            libncursesw5-dev \
+            libsdl2-dev \
+            libsdl2-image-dev \
+            libsdl2-mixer-dev \
+            libsdl2-ttf-dev \
+            libfreetype6-dev \
+            libsqlite3-dev \
+            libssl-dev \
+            libffi-dev \
+            liblzma-dev \
+            libreadline-dev
 
     - name: Install Buildozer and Cython
       run: |
         pip install --upgrade pip
-        pip install --upgrade cython==0.29.36 buildozer
+        pip install Cython==0.29.36 buildozer
 
-    - name: Build APK
+    - name: Build with Buildozer
       run: |
-        buildozer --debug android debug || (echo "=== BUILD FAILED, CHECKING LOGS ===" && cat .buildozer/*.log || find . -name "*.log" -exec cat {} + || true)
+        buildozer -v android debug
 
     - name: Upload APK Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
-        name: jerry-apk
+        name: package
         path: bin/*.apk
         
