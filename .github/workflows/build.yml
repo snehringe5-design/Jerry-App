@@ -54,6 +54,14 @@ jobs:
         pip install --upgrade pip
         pip install Cython==0.29.36 buildozer
 
+    - name: Cache Buildozer directory
+      uses: actions/cache@v3
+      with:
+        path: ~/.buildozer
+        key: buildozer-${{ hashFiles('buildozer.spec') }}
+        restore-keys: |
+          buildozer-
+
     - name: Build with Buildozer
       run: |
         buildozer -v android debug
