@@ -21,8 +21,8 @@ source.exclude_exts = spec
 # (list) List of directory to exclude (let separate with commas)
 source.exclude_dirs = bin, venv, .git, .github
 
-# (list) Application requirements
-requirements = python3,kivy
+# (list) Application requirements - Plyer ko yahan joda gaya hai taaki hardware access ho sake
+requirements = python3,kivy,plyer
 
 # (str) Version of the application
 version = 0.1
@@ -34,7 +34,7 @@ orientation = portrait
 # Android specific
 #
 
-# (list) Permissions - Camera, Microphone, aur Storage ki permissions yahan hain
+# (list) Permissions - Camera, Mic, aur Storage ki permissions
 android.permissions = INTERNET,CAMERA,RECORD_AUDIO,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
 
 # (int) Target Android API, should be as high as possible.
