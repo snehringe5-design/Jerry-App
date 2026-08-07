@@ -9,6 +9,9 @@ package.name = myapp
 # (str) Package domain (needed for android packaging)
 package.domain = org.example
 
+# (str) Source directory where the application resides
+source.dir = .
+
 # (str) Source files to include (let separate with commas)
 source.include_exts = py,png,jpg,kv,atlas
 
@@ -19,7 +22,6 @@ source.exclude_exts = spec
 source.exclude_dirs = bin, venv, .git, .github
 
 # (list) Application requirements
-# comma separated e.g. requirements = python3,kivy,kivymd
 requirements = python3,kivy
 
 # (str) Version of the application
@@ -41,7 +43,7 @@ android.api = 33
 # (int) Minimum API your APK will support.
 android.min_api = 21
 
-# (str) Android NDK version to use. (Blank chhodne par p4a automatically compatible version le leta hai)
+# (str) Android NDK version to use
 android.ndk = 
 
 # (bool) Use AndroidX support
