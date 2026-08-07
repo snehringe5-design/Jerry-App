@@ -21,8 +21,8 @@ source.exclude_exts = spec
 # (list) List of directory to exclude (let separate with commas)
 source.exclude_dirs = bin, venv, .git, .github
 
-# (list) Application requirements - Gemini AI aur Plyer ke liye zaroori libraries
-requirements = python3,kivy,plyer,google-generativeai,grpcio,protobuf,certifi
+# (list) Application requirements
+requirements = python3,kivy,plyer
 
 # (str) Version of the application
 version = 0.1
@@ -34,7 +34,7 @@ orientation = portrait
 # Android specific
 #
 
-# (list) Permissions - Internet (Gemini ke liye), Camera, aur Storage
+# (list) Permissions
 android.permissions = INTERNET,CAMERA,RECORD_AUDIO,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
 
 # (int) Target Android API, should be as high as possible.
