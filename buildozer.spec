@@ -19,3 +19,5 @@ android.min_api = 21
 android.ndk = 25b
 android.accept_sdk_license = True
 android.androidx = True
+
+p4a.branch = master
