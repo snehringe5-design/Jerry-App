@@ -21,10 +21,10 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev lld autoconf-archive libltdl-dev gettext patchelf
 
-    - name: Install Buildozer and Dependencies
+    - name: Install Buildozer and Cython < 3.0
       run: |
         pip3 install --upgrade pip
-        pip3 install --upgrade buildozer cython==0.29.33 python-for-android
+        pip3 install --upgrade buildozer "cython<3.0" python-for-android
 
     - name: Cache Buildozer global directory
       uses: actions/cache@v4
