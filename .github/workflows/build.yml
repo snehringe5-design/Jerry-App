@@ -21,12 +21,24 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev lld autoconf-archive libltdl-dev gettext patchelf
 
-    - name: Install Buildozer and Cython
+    - name: Install Stable Cython and Buildozer
       run: |
         pip3 install --upgrade pip
-        pip3 install --upgrade buildozer "cython<3.0" python-for-android
+        pip3 install --upgrade buildozer "cython==0.29.33" python-for-android
 
-    - name: Manual SDK, NDK & Ant Setup (Bypasses all 404 errors)
+    - name: Cache Buildozer global directory
+      uses: actions/cache@v4
+      id: cache-buildozer
+      with:
+        path: |
+          ~/.buildozer
+          .buildozer
+        key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
+        restore-keys: |
+          ${{ runner.os }}-buildozer-
+
+    - name: Manual SDK, NDK & Ant Setup
+      if: steps.cache-buildozer.outputs.cache-hit != 'true'
       run: |
         mkdir -p $HOME/.buildozer/android/platform
         
@@ -49,7 +61,7 @@ jobs:
         ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
         ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager $ANDROID_HOME/tools/bin/avdmanager
 
-        # Download Apache Ant manually to prevent 404
+        # Download Apache Ant manually
         wget -q https://archive.apache.org/dist/ant/binaries/apache-ant-1.9.4-bin.tar.gz -O ant.tar.gz
         tar -xzf ant.tar.gz -C $HOME/.buildozer/android/platform/
         rm ant.tar.gz
@@ -67,6 +79,7 @@ jobs:
     - name: Build APK with Buildozer
       run: |
         export PATH=$PATH:~/.local/bin
+        export CFLAGS="-Wno-error=incompatible-pointer-types -Wno-error=int-conversion"
         buildozer -v android debug
 
     - name: Upload APK Artifact
