@@ -22,6 +22,16 @@ jobs:
         distribution: 'temurin'
         java-version: '11'
 
+    - name: Cache Buildozer Global Directory
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.buildozer
+          .buildozer
+        key: ${{ runner.os }}-buildozer-cache-v1
+        restore-keys: |
+          ${{ runner.os }}-buildozer-cache-
+
     - name: Install dependencies
       run: |
         sudo dpkg --add-architecture i386
@@ -53,14 +63,6 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install Cython==0.29.36 buildozer
-
-    - name: Cache Buildozer global directory
-      uses: actions/cache@v3
-      with:
-        path: ~/.buildozer
-        key: buildozer-${{ hashFiles('buildozer.spec') }}
-        restore-keys: |
-          buildozer-
 
     - name: Build with Buildozer
       run: |
