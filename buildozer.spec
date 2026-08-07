@@ -1,55 +1,51 @@
 [app]
 
 # (str) Title of your application
-title = Jerry AI
+title = My Application
 
 # (str) Package name
-package.name = jerryai
+package.name = myapp
 
 # (str) Package domain (needed for android packaging)
-package.domain = org.jerry
+package.domain = org.example
 
-# (str) Source directory where the application resides
-source.dir = .
-
-# (list) Source files to include
+# (str) Source files to include (let separate with commas)
 source.include_exts = py,png,jpg,kv,atlas
 
-# (list) List of inclusion patterns
-source.include_patterns = assets/*,images/*
+# (list) Source files to exclude (let separate with commas)
+source.exclude_exts = spec
 
-# (str) Application versioning
-version = 0.1
+# (list) List of directory to exclude (let separate with commas)
+source.exclude_dirs = bin, venv, .git, .github
 
 # (list) Application requirements
-requirements = python3,kivy,requests,urllib3,certifi,idna,charset-normalizer,pyjnius,android
+# comma separated e.g. requirements = python3,kivy,kivymd
+requirements = python3,kivy
 
-# (str) Supported orientations
+# (str) Version of the application
+version = 0.1
+
+# (list) Supported orientations
 orientation = portrait
+
+#
+# Android specific
+#
 
 # (list) Permissions
 android.permissions = INTERNET
 
-# (list) The Android supported architectures
-android.architectures = arm64-v8a, armeabi-v7a
-
-# (int) Target Android API
+# (int) Target Android API, should be as high as possible.
 android.api = 33
 
-# (int) Minimum API your APK will support
-android.minapi = 21
+# (int) Minimum API your APK will support.
+android.min_api = 21
 
-# (str) Android NDK version to use
-android.ndk = r25b
+# (str) Android NDK version to use. (Blank chhodne par p4a automatically compatible version le leta hai)
+android.ndk = 
 
-# Explicit paths to bypass internal downloads
-android.sdk_path = /home/runner/.buildozer/android/platform/android-sdk
-android.ndk_path = /home/runner/.buildozer/android/platform/android-ndk-r25b
+# (bool) Use AndroidX support
+android.androidx = True
 
-[buildozer]
-
-# (int) Log level (0 = error, 1 = info, 2 = debug)
-log_level = 2
-
-# (int) Display warning if buildozer is run as root (0 to bypass prompt in CI)
-warn_on_root = 0
+# (str) python-for-android branch
+p4a.branch = master
