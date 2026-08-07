@@ -8,22 +8,16 @@ from kivy.clock import Clock
 # Plyer imports for Android hardware access
 from plyer import camera, tts
 import os
-import google.generativeai as genai
+import json
+import urllib.request
 
-# Aapki Gemini API Key yahan set kar di gayi hai, sir!
+# Aapki Gemini API Key
 GEMINI_API_KEY = "AQ.Ab8RN6KP1nOyPfVMMdSFHEUNGAe7R-0LOhwBLvAfyEOBo_2-eg"
 
 class JerryAIApp(App):
     def build(self):
         self.title = "Jerry AI Assistant"
         
-        # Configure Gemini API
-        if GEMINI_API_KEY != "YOUR_GEMINI_API_KEY_HERE":
-            genai.configure(api_key=GEMINI_API_KEY)
-            self.model = genai.GenerativeModel('gemini-1.5-flash')
-        else:
-            self.model = None
-
         layout = BoxLayout(orientation='vertical', padding=20, spacing=15)
         
         # Status / Output Label
@@ -64,27 +58,30 @@ class JerryAIApp(App):
         except Exception as e:
             print(e)
 
-    # Gemini AI se baat karne aur bolne ka function
+    # Gemini REST API se baat karne aur bolne ka function
     def ask_gemini(self, instance):
         query = self.user_input.text.strip()
         if not query:
             self.status_label.text = "Please type something first, sir!"
             return
-            
-        if not self.model:
-            self.status_label.text = "Error: Please add your Gemini API Key in the code."
-            return
 
         self.status_label.text = "Jerry is thinking..."
         try:
-            # Gemini se jawab lena
-            response = self.model.generate_content(query)
-            answer = response.text
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+            headers = {'Content-Type': 'application/json'}
+            data = {
+                "contents": [{
+                    "parts": [{"text": query}]
+                }]
+            }
             
-            # Screen par dikhana
+            req = urllib.request.Request(url, data=json.dumps(data).encode('utf-8'), headers=headers, method='POST')
+            with urllib.request.urlopen(req) as response:
+                res_body = json.loads(response.read().decode('utf-8'))
+                answer = res_body['candidates'][0]['content']['parts'][0]['text']
+            
+            # Screen par dikhana aur speaker se bolna
             self.status_label.text = f"Jerry: {answer}"
-            
-            # Speaker se bolna
             tts.speak(answer)
         except Exception as e:
             self.status_label.text = f"AI Error: {str(e)}"
@@ -110,4 +107,4 @@ class JerryAIApp(App):
 
 if __name__ == '__main__':
     JerryAIApp().run()
-            
+        
