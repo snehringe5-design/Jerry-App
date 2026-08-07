@@ -19,7 +19,7 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install system dependencies
+    - name: Install Dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y \
@@ -36,22 +36,26 @@ jobs:
           cmake \
           libffi-dev \
           libssl-dev \
-          openjdk-17-jdk
+          openjdk-17-jdk \
+          ant
 
-    - name: Install Python packages (Buildozer and Cython)
+    - name: Set up Android SDK/NDK environment variables
+      run: |
+        echo "ANDROID_HOME=$HOME/.android" >> $GITHUB_ENV
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Install Buildozer and Cython
       run: |
         pip install --upgrade pip
         pip install --upgrade cython==0.29.36 buildozer
 
-    - name: Build with Buildozer
-      uses: ArtemSBulgakov/buildozer-action@v1
-      id: buildozer
-      with:
-        command: buildozer android debug
+    - name: Build APK
+      run: |
+        buildozer -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: package
+        name: jerry-apk
         path: bin/*.apk
         
