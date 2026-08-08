@@ -12,7 +12,6 @@ requirements = python3,kivy,plyer,cython==0.29.36,openssl,certifi
 version = 0.3
 orientation = portrait
 
-# Sirf arm64-v8a set karne se build fast hoga aur error nahi aayegi
 android.archs = arm64-v8a
 
 android.permissions = INTERNET,CAMERA,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
@@ -23,3 +22,6 @@ android.accept_sdk_license = True
 android.androidx = True
 
 p4a.branch = v2024.01.21
+
+# Yeh line asli error ko chhupne nahi degi
+log_level = 2
