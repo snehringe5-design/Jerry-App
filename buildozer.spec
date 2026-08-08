@@ -7,11 +7,13 @@ source.include_exts = py,png,jpg,kv,atlas
 source.exclude_exts = spec
 source.exclude_dirs = bin, venv, .git, .github
 
-# openssl aur certifi add kar diye hain taaki API error na aaye
 requirements = python3,kivy,plyer,cython==0.29.36,openssl,certifi
 
 version = 0.3
 orientation = portrait
+
+# Sirf arm64-v8a set karne se build fast hoga aur error nahi aayegi
+android.archs = arm64-v8a
 
 android.permissions = INTERNET,CAMERA,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
 android.api = 33
