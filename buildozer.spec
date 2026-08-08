@@ -20,4 +20,4 @@ android.ndk = 25b
 android.accept_sdk_license = True
 android.androidx = True
 
-p4a.branch = master
+# p4a.branch line yahan se hata di gayi hai taaki stable version use ho
