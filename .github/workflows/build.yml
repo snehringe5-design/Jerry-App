@@ -64,9 +64,9 @@ jobs:
         pip install --upgrade pip
         pip install Cython==0.29.36 setuptools==65.5.0 pip==23.2.1 buildozer
 
-    - name: Build with Buildozer (Debug Mode)
+    - name: Build with Buildozer (Auto Error Capture)
       run: |
-        buildozer -d -v android debug
+        buildozer -d -v android debug || (echo "========== BUILD FAILED ERROR LOG ==========" && find ~/.buildozer -name "build.log" -exec tail -n 100 {} \; && exit 1)
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
