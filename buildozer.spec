@@ -20,5 +20,4 @@ android.ndk = 25b
 android.accept_sdk_license = True
 android.androidx = True
 
-# Stable p4a branch pin ki gayi hai taaki Python 3.14 error na aaye
 p4a.branch = v2024.01.21
