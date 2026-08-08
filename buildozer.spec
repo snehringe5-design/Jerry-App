@@ -8,7 +8,8 @@ source.include_exts = py,png,jpg,kv,atlas
 source.exclude_exts = spec
 source.exclude_dirs = bin, venv, .git, .github
 
-requirements = python3,kivy,plyer
+# Requirements mein cython==0.29.36 joda gaya hai
+requirements = python3,kivy,plyer,cython==0.29.36
 
 version = 0.1
 orientation = portrait
