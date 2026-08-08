@@ -10,7 +10,7 @@ source.exclude_dirs = bin, venv, .git, .github
 
 requirements = python3,kivy,plyer,cython==0.29.36
 
-version = 0.1
+version = 0.2
 orientation = portrait
 
 android.permissions = INTERNET,CAMERA,RECORD_AUDIO,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
@@ -20,4 +20,5 @@ android.ndk = 25b
 android.accept_sdk_license = True
 android.androidx = True
 
+# Python 3.14 compilation error fix karne ke liye stable branch
 p4a.branch = v2024.01.21
