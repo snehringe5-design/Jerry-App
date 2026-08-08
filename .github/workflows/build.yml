@@ -28,7 +28,7 @@ jobs:
         path: |
           ~/.buildozer
           .buildozer
-        key: ${{ runner.os }}-buildozer-cache-v11
+        key: ${{ runner.os }}-buildozer-cache-v12
         restore-keys: |
           ${{ runner.os }}-buildozer-cache-
 
@@ -62,7 +62,7 @@ jobs:
     - name: Install Compatible Buildozer & Cython
       run: |
         pip install --upgrade pip
-        pip install Cython==0.29.36 setuptools==65.5.0 pip==23.2.1 buildozer==1.50.0
+        pip install Cython==0.29.36 setuptools==65.5.0 pip==23.2.1 buildozer==1.6.0
 
     - name: Build with Buildozer (Fast Mode)
       run: |
