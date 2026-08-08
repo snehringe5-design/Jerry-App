@@ -20,5 +20,4 @@ android.ndk = 25b
 android.accept_sdk_license = True
 android.androidx = True
 
-# Stable branch use ki gayi hai taaki clone error na aaye
 p4a.branch = stable
