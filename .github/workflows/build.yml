@@ -28,7 +28,7 @@ jobs:
         path: |
           ~/.buildozer
           .buildozer
-        key: ${{ runner.os }}-buildozer-cache-v10
+        key: ${{ runner.os }}-buildozer-cache-v11
         restore-keys: |
           ${{ runner.os }}-buildozer-cache-
 
