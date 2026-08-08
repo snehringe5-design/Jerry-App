@@ -20,5 +20,5 @@ android.ndk = 25b
 android.accept_sdk_license = True
 android.androidx = True
 
-# Python 3.14 error se bachne ke liye stable p4a branch lock ki gayi hai
-p4a.branch = release-2024.05.08
+# Stable branch use ki gayi hai taaki clone error na aaye
+p4a.branch = stable
