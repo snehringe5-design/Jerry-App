@@ -20,4 +20,5 @@ android.ndk = 25b
 android.accept_sdk_license = True
 android.androidx = True
 
-p4a.branch = stable
+# Master branch use ki gayi hai taaki AAB support ka error na aaye
+p4a.branch = master
