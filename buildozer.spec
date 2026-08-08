@@ -8,7 +8,6 @@ source.include_exts = py,png,jpg,kv,atlas
 source.exclude_exts = spec
 source.exclude_dirs = bin, venv, .git, .github
 
-# Requirements mein cython==0.29.36 joda gaya hai
 requirements = python3,kivy,plyer,cython==0.29.36
 
 version = 0.1
@@ -21,4 +20,5 @@ android.ndk = 25b
 android.accept_sdk_license = True
 android.androidx = True
 
-p4a.branch = master
+# Python 3.14 error se bachne ke liye stable p4a branch lock ki gayi hai
+p4a.branch = release-2024.05.08
