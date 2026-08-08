@@ -28,7 +28,7 @@ jobs:
         path: |
           ~/.buildozer
           .buildozer
-        key: ${{ runner.os }}-buildozer-cache-v8
+        key: ${{ runner.os }}-buildozer-cache-v9
         restore-keys: |
           ${{ runner.os }}-buildozer-cache-
 
@@ -64,14 +64,9 @@ jobs:
         pip install --upgrade pip
         pip install Cython==0.29.36 setuptools==65.5.0 pip==23.2.1 buildozer
 
-    - name: Build with Buildozer & Capture Error
+    - name: Build with Buildozer (Fast Mode)
       run: |
-        buildozer -v android debug || {
-          echo "================ EXACT ERROR LOG ================"
-          find . -name "build.log" -exec tail -n 150 {} \;
-          find ~/.buildozer -name "build.log" -exec tail -n 150 {} \;
-          exit 1
-        }
+        buildozer -v android debug --jobs 4
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
