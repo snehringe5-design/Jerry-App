@@ -7,7 +7,8 @@ source.include_exts = py,png,jpg,kv,atlas
 source.exclude_exts = spec
 source.exclude_dirs = bin, venv, .git, .github
 
-requirements = python3,kivy,plyer,cython==0.29.36,openssl,certifi
+# 'certifi' ko hata diya gaya hai taaki build crash na ho
+requirements = python3,kivy,plyer,cython==0.29.36,openssl
 
 version = 0.3
 orientation = portrait
@@ -22,6 +23,4 @@ android.accept_sdk_license = True
 android.androidx = True
 
 p4a.branch = v2024.01.21
-
-# Yeh line asli error ko chhupne nahi degi
 log_level = 2
